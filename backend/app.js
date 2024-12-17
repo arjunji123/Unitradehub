@@ -22,7 +22,7 @@ const localStorage = new LocalStorage("./scratch");
 app.use(
   cors({
     origin:
-      "https://telegram-bot-git-frontuni-arjuns-projects-e072bddd.vercel.app",
+      "https://user.theunitradehub.com",
     methods: ["GET", "POST", "PATCH","PUT"],
     credentials: true,
   })
