@@ -22,7 +22,7 @@ const localStorage = new LocalStorage("./scratch");
 app.use(
   cors({
     origin:
-      "https://user.theunitradehub.com",
+      "*",
     methods: ["GET", "POST", "PATCH","PUT"],
     credentials: true,
   })
