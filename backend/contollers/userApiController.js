@@ -797,7 +797,6 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-
 // exports.getUserDetailApi = catchAsyncErrors(async (req, res, next) => {
 //   try {
 //     // Fetch the user's ID from the request
