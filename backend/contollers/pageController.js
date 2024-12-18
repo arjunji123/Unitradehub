@@ -567,7 +567,6 @@ exports.getQuestHistory = async (req, res) => {
     q.end_date,
     q.description,
     q.status,
-    q.image,
     q.coin_earn,
     q.social_media,
     CASE 
@@ -629,7 +628,7 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
   try {
     const [quest_records] = await db.query(
       `
-      SELECT q.quest_name, q.quest_type, q.quest_url, q.date_created, q.description, q.status, q.coin_earn, q.image, 
+      SELECT q.quest_name, q.quest_type, q.quest_url, q.date_created, q.description, q.status, q.coin_earn,
              COALESCE(u.status, 'not_completed') AS user_status
       FROM quest q
       LEFT JOIN usercoin_audit u ON u.quest_id = q.id AND u.user_id = ?
