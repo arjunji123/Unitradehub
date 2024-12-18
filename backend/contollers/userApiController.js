@@ -644,8 +644,6 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database operation failed", 500));
   }
 });
-
-
 exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
   const userId = req.user.id; // Get the user ID from the request
   const quest_id = req.params.quest_id;
@@ -657,57 +655,54 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
   );
 
   if (existingStatusResult.length > 0) {
-    // If status is already "waiting", prevent new uploads
     return res.status(400).json({
       success: false,
       message: "Image already uploaded. Status is still 'waiting'.",
     });
   }
 
-  // Check if files were uploaded
   if (!req.files || req.files.length === 0) {
     return next(new ErrorHandler("No files uploaded", 400));
   }
 
-  // Map each uploaded file to get the filename
-  const quest_screenshot = req.files.map(file => file.filename);
- 
+  const quest_screenshot = req.files.map((file) => file.filename);
+
+  const connection = await db.getConnection(); // Get a connection for manual transaction handling
 
   try {
-    await db.query("START TRANSACTION");
+    await connection.query("START TRANSACTION"); // Start the transaction
 
-
-    // Step 2: Fetch quest details
-    const [questResult] = await db.query(
+    const [questResult] = await connection.query(
       "SELECT id, coin_earn, activity, quest_name FROM quest WHERE id = ?",
       [quest_id]
     );
 
     if (questResult.length === 0) {
-      await db.query("ROLLBACK");
+      await connection.query("ROLLBACK");
       return next(new ErrorHandler("Quest not found", 404));
     }
 
-    const { id: fetchedQuestId, coin_earn: coinEarn, activity, quest_name: fetchedQuestName } = questResult[0];
-    console.log("Quest details fetched:", { fetchedQuestId, coinEarn, activity, fetchedQuestName });
+    const {
+      id: fetchedQuestId,
+      coin_earn: coinEarn,
+      activity,
+      quest_name: fetchedQuestName,
+    } = questResult[0];
 
     const coinEarnValue = Math.floor(parseFloat(coinEarn));
     if (isNaN(coinEarnValue) || coinEarnValue < 0) {
-      await db.query("ROLLBACK");
+      await connection.query("ROLLBACK");
       return next(new ErrorHandler("Invalid coin earn value", 400));
     }
 
-    let pendingCoinValue = coinEarnValue; // Default value
-    let status = "completed"; // Default status
+    let pendingCoinValue = coinEarnValue;
+    let status = "completed";
 
-    if (activity === "follow") { // If activity is "follow"
+    if (activity === "follow") {
       pendingCoinValue = 0;
       status = "waiting";
     }
 
-    console.log("Pending Coin Value:", pendingCoinValue, "Status:", status);
-
-    // Step 3: Insert into usercoin_audit
     const insertAuditData = {
       user_id: userId,
       quest_id: fetchedQuestId,
@@ -720,30 +715,33 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
       date_entered: new Date().toISOString().slice(0, 19).replace("T", " "),
     };
 
-    const [insertAuditResult] = await db.query("INSERT INTO usercoin_audit SET ?", insertAuditData);
+    const [insertAuditResult] = await connection.query(
+      "INSERT INTO usercoin_audit SET ?",
+      insertAuditData
+    );
 
     if (insertAuditResult.affectedRows === 0) {
-      await db.query("ROLLBACK");
+      await connection.query("ROLLBACK");
       return next(new ErrorHandler("Failed to complete quest", 500));
     }
 
-    console.log("Audit log entry created for quest completion.");
-    console.log('hhjhjhjhj===>'+quest_screenshot);
-    // Step 1: Update screenshots in usercoin_audit
-    const updateResult = await db.query(
+    const [updateResult] = await connection.query(
       "UPDATE usercoin_audit SET quest_screenshot= ?,screenshot_upload_date = NOW(), status = 'waiting' WHERE quest_id = ? AND user_id = ?",
-      [JSON.stringify(quest_screenshot),quest_id, userId]
+      [JSON.stringify(quest_screenshot), quest_id, userId]
     );
 
     if (updateResult.affectedRows === 0) {
-      await db.query("ROLLBACK");
-      return next(new ErrorHandler("No quest found with the provided quest ID or user ID", 404));
+      await connection.query("ROLLBACK");
+      return next(
+        new ErrorHandler(
+          "No quest found with the provided quest ID or user ID",
+          404
+        )
+      );
     }
 
-    console.log("Quest screenshots updated successfully in usercoin_audit.");
-    // Step 4: Update pending_coin in user_data (only if activity is not "follow")
     if (activity !== "follow") {
-      const [currentCoinResult] = await db.query(
+      const [currentCoinResult] = await connection.query(
         "SELECT pending_coin FROM user_data WHERE user_id = ?",
         [userId]
       );
@@ -757,28 +755,26 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
         WHERE user_id = ?
       `;
 
-      const [updateUserResult] = await db.query(updateUserDataQuery, [
+      const [updateUserResult] = await connection.query(updateUserDataQuery, [
         newPendingCoin,
         userId,
       ]);
 
       if (updateUserResult.affectedRows === 0) {
-        await db.query("ROLLBACK");
-        return next(new ErrorHandler("Failed to update pending_coin in user_data", 500));
+        await connection.query("ROLLBACK");
+        return next(
+          new ErrorHandler("Failed to update pending_coin in user_data", 500)
+        );
       }
-
-      console.log("Pending_coin updated successfully for user.");
     }
 
-    // Step 5: Commit the transaction
-    await db.query("COMMIT");
+    await connection.query("COMMIT");
 
     let responseMessage = `Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
     if (activity === "follow") {
       responseMessage = "Quest completed successfully. Approve by admin.";
     }
 
-    // Final response
     res.status(200).json({
       success: true,
       message: responseMessage,
@@ -794,10 +790,13 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error during quest completion:", error);
-    await db.query("ROLLBACK");
+    await connection.query("ROLLBACK");
     return next(new ErrorHandler("Database query failed", 500));
+  } finally {
+    connection.release(); // Always release the connection
   }
 });
+
 
 // exports.getUserDetailApi = catchAsyncErrors(async (req, res, next) => {
 //   try {
