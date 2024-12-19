@@ -42,8 +42,17 @@ console.log('withdrawal', withdrawal)
       return acc;
     }, {});
 
+  // Group transactions by date
+  const groupByDateWith = (data) =>
+    data.reduce((acc, item) => {
+      const date = new Date(item.date_entered).toLocaleDateString();
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(item);
+      return acc;
+    }, {});
+
   const groupedTransactions = useMemo(() => groupByDate(historyData), [historyData]);
-  const groupedWithdrawals = useMemo(() => groupByDate(withdrawal), [withdrawal]);
+  const groupedWithdrawals = useMemo(() => groupByDateWith(withdrawal), [withdrawal]);
 
   // Handle tab switch
   const handleTabSwitch = (tab) => setActiveTab(tab);
@@ -124,7 +133,8 @@ console.log('withdrawal', withdrawal)
                       {groupedTransactions[date].map((transaction, index) => (
                         <div key={index} className="flex items-center justify-between py-3">
                           <div className="flex items-center space-x-3">
-                            <BsCoin size={30} className="text-white" />
+                            {/* <BsCoin size={30} className="text-white" /> */}
+                            <img src="src/assets/logo/U.png" className="w-5 h-5" alt="" />
                             <h3 className="text-sm font-semibold capitalize">{transaction.title}</h3>
                           </div>
                           <p className="text-sm font-medium">
@@ -151,8 +161,8 @@ console.log('withdrawal', withdrawal)
                       {groupedWithdrawals[date].map((transaction, index) => (
                         <div key={index} className="flex items-center justify-between py-3">
                           <div className="flex items-center space-x-3">
-                            <BsCoin size={30} className="text-white" />
-                            <h3 className="text-sm font-semibold capitalize">{transaction.title}</h3>
+                          <img src="src/assets/logo/U.png" className="w-5 h-5" alt="" />
+                          <h3 className="text-sm font-semibold capitalize">{transaction.title}</h3>
                           </div>
                           <button
                             onClick={() => handleApprove(transaction.transaction_id)}
