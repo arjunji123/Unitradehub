@@ -840,7 +840,7 @@ exports.reqGetAllReqApi = async (req, res, next) => {
 
     // Check if any transactions were found
     if (!filteredTransactions || filteredTransactions.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message:
           "No unapproved user requests without documents found for the specified company",
       });
