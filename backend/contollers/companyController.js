@@ -898,7 +898,7 @@ exports.reqGetUnapprovedWithDocApi = async (req, res, next) => {
         ut.user_id = ud.user_id
       WHERE 
         ut.company_id = ? 
-        AND ut.trans_doc IS NOT NULL 
+        AND ut.trans_doc IS NULL 
         AND ut.status != 'approved'`, // Filter by trans_doc not null and unapproved status
       [userId]
     );
