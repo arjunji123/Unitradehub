@@ -1582,6 +1582,7 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
+
 exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
   try {
     console.log("req.body:", req.body);
@@ -1596,11 +1597,14 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
+    // Get current date and time in the desired format
+    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
+
     // Retrieve transaction details for the given transaction_id
     const transactionDetails = await db.query(
       `SELECT company_id, tranction_coin 
-       FROM user_transaction 
-       WHERE id = ? AND status != 'approved'`,  // Corrected table name here
+       FROM user_transction 
+       WHERE id = ? AND status != 'approved'`,
       [transaction_id]
     );
 
@@ -1621,13 +1625,13 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    // Update the specific transaction in the user_transaction table
+    // Update the specific transaction in the user_transction table
     const transactionResult = await db.query(
-      `UPDATE user_transaction 
+      `UPDATE user_transction 
        SET status = 'approved', 
-           date_approved = NOW()  -- Set the current date and time here
+           date_approved = ? 
        WHERE id = ?`,
-      [transaction_id]
+      [dateApprove, transaction_id]
     );
 
     if (transactionResult.affectedRows === 0) {
@@ -1641,9 +1645,9 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
     const auditResult = await db.query(
       `UPDATE usercoin_audit 
        SET status = 'completed', 
-           date_approved = NOW()  -- Set the current date and time here as well
+           date_approved = ? 
        WHERE transaction_id = ?`,
-      [transaction_id]
+      [dateApprove, transaction_id]
     );
 
     if (auditResult.affectedRows === 0) {
@@ -1694,6 +1698,5 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-
 
 
