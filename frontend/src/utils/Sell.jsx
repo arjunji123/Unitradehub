@@ -17,6 +17,13 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
+     // Ensure that the input is a valid positive number (greater than or equal to 0)
+  if (inputValue < 0) {
+    // If a negative number is entered, reset to zero or handle accordingly
+    setCoinAmount(0);
+    setError('Amount cannot be negative');
+    return;
+  }
 
     // Check if input value exceeds the total available coins
     if (inputValue > totalCoin) {
@@ -70,6 +77,7 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
 
       <input
          type="number"
+        min="0" // Prevent negative numbers
          value={coinAmount}
          onChange={handleInputChange}
          placeholder="Enter coin amount"
