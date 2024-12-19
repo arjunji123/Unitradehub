@@ -32,6 +32,8 @@ function Withdrawal() {
   const [company_id, setCompany_id] = useState(null);
   const toggleSharePopup = () => {
     setSharePopup(!sharePopup);
+    setSendData({ amount: '', recipientReferralCode: '' });
+
   };
   const [sendData, setSendData] = useState({
     recipientReferralCode: '',
@@ -156,9 +158,9 @@ function Withdrawal() {
 
     try {
       await dispatch(shareCoins(sendData));
-      // toast.success("Coins sent successfully!");
+     dispatch(fetchMeData());
     } catch (error) {
-      toast.error("Failed to send coins.");
+      toast.error(error);
     } finally {
       setLoading(false);
     }
@@ -353,6 +355,7 @@ function Withdrawal() {
             handleSendMoney={handleSendMoney}
             sendData={sendData}
             setSendData={setSendData}
+            userData={userData}
           />
         }
         {
