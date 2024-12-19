@@ -1247,11 +1247,13 @@ exports.transferPendingCoinsToTotal = catchAsyncErrors(
       //   ]
       // );
    await db.query(
-        "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin) VALUES (?, ?, ?)",
+        "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin, title, date_entered) VALUES (?, ?, ?, ?, ?)",
         [
           user_id,
           updatedPendingCoins,
           earnCoins,
+          title,
+          dateEntered,
         ]
       );
    
