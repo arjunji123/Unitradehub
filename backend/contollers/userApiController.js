@@ -1582,8 +1582,6 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
-
-
 exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
   try {
     console.log("req.body:", req.body);
@@ -1598,14 +1596,11 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    // Get current date and time in the desired format
-    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
-
     // Retrieve transaction details for the given transaction_id
     const transactionDetails = await db.query(
       `SELECT company_id, tranction_coin 
-       FROM user_transction 
-       WHERE id = ? AND status != 'approved'`,
+       FROM user_transaction 
+       WHERE id = ? AND status != 'approved'`,  // Corrected table name here
       [transaction_id]
     );
 
@@ -1621,17 +1616,18 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
     if (!company_id || !tranction_coin) {
       return res.status(400).json({
         success: false,
-        message: "Invalid transaction details (company_id or tranction_coin missing)",
+        message:
+          "Invalid transaction details (company_id or tranction_coin missing)",
       });
     }
 
-    // Update the specific transaction in the user_transction table
+    // Update the specific transaction in the user_transaction table
     const transactionResult = await db.query(
-      `UPDATE user_transction 
+      `UPDATE user_transaction 
        SET status = 'approved', 
-           date_approved = ? 
+           date_approved = NOW()  -- Set the current date and time here
        WHERE id = ?`,
-      [dateApprove, transaction_id]
+      [transaction_id]
     );
 
     if (transactionResult.affectedRows === 0) {
@@ -1641,10 +1637,11 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    // Update the corresponding entry in the usercoin_audit table
+    // Update the corresponding entry in the usercoin_audit table, including date_approved
     const auditResult = await db.query(
       `UPDATE usercoin_audit 
-       SET status = 'completed' 
+       SET status = 'completed', 
+           date_approved = NOW()  -- Set the current date and time here as well
        WHERE transaction_id = ?`,
       [transaction_id]
     );
@@ -1689,14 +1686,14 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
     // Respond with success
     res.json({
       success: true,
-      message: "Transaction approved, audit updated, and company coins added successfully!",
+      message:
+        "Transaction approved, audit updated, and company coins added successfully!",
     });
   } catch (error) {
     console.error("Error approving transaction:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-
 
 
 
