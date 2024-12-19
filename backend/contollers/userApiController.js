@@ -1232,6 +1232,7 @@ exports.getUserReferralCode = catchAsyncErrors(async (req, res, next) => {
 //     );
 //   }
 // });
+
 exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
   const { amount, recipientReferralCode } = req.body;
   const senderId = req.user.id; // Sender's user ID
@@ -1331,7 +1332,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
         currentTime,
         "cr", // Recipient's coin_operation "cr"
         "Amount received", // Description
-        amount,
+         '+'+ amount ,
         "transfer",
         "completed", // Status set to 'completed'
         "Coins Received", // Title for recipient
