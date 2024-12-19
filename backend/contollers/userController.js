@@ -1475,6 +1475,7 @@ exports.disapproveQuest = catchAsyncErrors(async (req, res, next) => {
 // }
 
 
+
 exports.renderTreeView = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -1557,25 +1558,22 @@ function filterSubTree(userTree, userId, maxDepth) {
     return false;
   }
 
-  // function limitDepth(node, depth) {
-  //   if (depth >= maxDepth) {
-  //     node.children = []; // Remove deeper levels
-  //     return;
-  //   }
-  //   node.children.forEach((child) => limitDepth(child, depth + 1));
-  // }
+  function limitDepth(node, depth) {
+    if (depth >= maxDepth) {
+      node.children = []; // Remove deeper levels
+      return;
+    }
+    node.children.forEach((child) => limitDepth(child, depth + 1));
+  }
 
   userTree.forEach((root) => findNode(root));
 
-  // if (targetNode) {
-  //   limitDepth(targetNode, 1); // Start depth from 1
-  //   return [targetNode];
-  // }
-  // return [];
-    return targetNode ? [targetNode] : [];
-
+  if (targetNode) {
+    limitDepth(targetNode, 1); // Start depth from 1
+    return [targetNode];
+  }
+  return [];
 }
-
 
 // function filterSubTree(userTree, userId, maxLevel = 5) {
 //   let targetNode = null;
