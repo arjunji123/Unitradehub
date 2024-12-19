@@ -1357,6 +1357,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+
 /////////////////////////////////////
 const sellTransactionSchema = Joi.object({
   company_id: Joi.string().required(), // Company ID to identify the company
