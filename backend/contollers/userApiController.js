@@ -1322,6 +1322,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
       ]
     );
     console.log("Sender Audit Result:", senderAuditResult);
+const updatedAmount = '+' + amount;
 
     const recipientAuditResult = await db.query(
       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -1332,7 +1333,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
         currentTime,
         "cr", // Recipient's coin_operation "cr"
         "Amount received", // Description
-         '+'+ amount ,
+        updatedAmount,
         "transfer",
         "completed", // Status set to 'completed'
         "Coins Received", // Title for recipient
