@@ -94,16 +94,18 @@ export const fetcherPost = async (url, body = {}) => {
 
     // Execute the fetch call
     const response = await fetch(url, options);
-
+   // Parse response as JSON
+   const responseData = await response.json();
     // Check for non-2xx responses
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+   // Use backend-provided error message if available
+   const backendError = responseData?.error || response.statusText || 'An unknown error occurred.';
+   throw new Error(backendError);
     }
 
-    // Parse and return JSON response
-    const data = await response.json();
-    return data;
+    return responseData; // Return successful response data
+
   } catch (error) {
-    throw new Error(`Error in fetcherPost: ${error.message}`);
+    throw new Error(`${error.message}`);
   }
 };
