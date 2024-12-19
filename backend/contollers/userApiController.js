@@ -1304,6 +1304,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
 
     // Step 6: Insert entries into usercoin_audit table with status 'completed'
     const currentTime = new Date();
+const updatedrecieverAmount = '-' + String(amount) ;
 
     // Entry 1: Sender's transaction
     const senderAuditResult = await db.query(
@@ -1315,7 +1316,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
         currentTime,
         "dr", // Sender's coin_operation "dr"
         "Amount sent", // Description
-        amount, // earn_coin set to transferred amount
+        updatedrecieverAmount, // earn_coin set to transferred amount
         "transfer",
         "completed", // Status set to 'completed'
         "Coins Transferred", // Title for sender
