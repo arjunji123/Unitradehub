@@ -1557,21 +1557,23 @@ function filterSubTree(userTree, userId, maxDepth) {
     return false;
   }
 
-  function limitDepth(node, depth) {
-    if (depth >= maxDepth) {
-      node.children = []; // Remove deeper levels
-      return;
-    }
-    node.children.forEach((child) => limitDepth(child, depth + 1));
-  }
+  // function limitDepth(node, depth) {
+  //   if (depth >= maxDepth) {
+  //     node.children = []; // Remove deeper levels
+  //     return;
+  //   }
+  //   node.children.forEach((child) => limitDepth(child, depth + 1));
+  // }
 
   userTree.forEach((root) => findNode(root));
 
-  if (targetNode) {
-    limitDepth(targetNode, 1); // Start depth from 1
-    return [targetNode];
-  }
-  return [];
+  // if (targetNode) {
+  //   limitDepth(targetNode, 1); // Start depth from 1
+  //   return [targetNode];
+  // }
+  // return [];
+    return targetNode ? [targetNode] : [];
+
 }
 
 
