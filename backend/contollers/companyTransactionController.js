@@ -73,10 +73,6 @@ exports.allCompanyTransactions = catchAsyncErrors(async (req, res, next) => {
 
     console.log("Transactions:", companytransactions); // Log for debugging
 
-    if (!companytransactions || companytransactions.length === 0) {
-      return next(new ErrorHandler("No transactions found", 404));
-    }
-
     // Send response
     res.render("companytransactions/index", {
       layout: "layouts/main",
