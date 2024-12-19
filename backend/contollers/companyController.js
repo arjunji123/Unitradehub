@@ -826,7 +826,7 @@ exports.reqGetAllReqApi = async (req, res, next) => {
       WHERE 
         ut.company_id = ? 
         AND ut.trans_doc IS NULL 
-        AND ut.status != 'approved'`, // Filter for trans_doc null and unapproved status
+        AND ut.status != 'waiting'`, // Filter for trans_doc null and unapproved status
       [userId]
     );
 
