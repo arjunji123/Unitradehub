@@ -644,6 +644,8 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database operation failed", 500));
   }
 });
+
+
 exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
   const userId = req.user.id; // Get the user ID from the request
   const quest_id = req.params.quest_id;
