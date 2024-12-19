@@ -1322,7 +1322,7 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
       ]
     );
     console.log("Sender Audit Result:", senderAuditResult);
-const updatedAmount = String(amount) + '+';
+const updatedAmount = '+' + String(amount) ;
 
     const recipientAuditResult = await db.query(
       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
