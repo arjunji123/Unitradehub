@@ -129,8 +129,8 @@ console.log('withdrawal', withdrawal)
                           </div>
                           <p className="text-sm font-medium">
                             {transaction.pending_coin === 0
-                              ? `${transaction.earn_coin > 0 ? "-" : ""}${transaction.earn_coin} Coins`
-                              : `+ ${transaction.pending_coin} Coins`}
+                              ? `${transaction.earn_coin > 0 ? "" : ""}${transaction.earn_coin} Coins`
+                              : ` ${transaction.pending_coin} Coins`}
                           </p>
                         </div>
                       ))}
