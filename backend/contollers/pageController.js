@@ -1235,24 +1235,23 @@ exports.transferPendingCoinsToTotal = catchAsyncErrors(
       //   "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin) VALUES (?, ?, ?)",
       //   [user_id, updatedPendingCoins, earnCoins]
       // );
-      // await db.query(
-      //   "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin, title, description, date_entered) VALUES (?, ?, ?, ?, ?, ?)",
-      //   [
-      //     user_id,
-      //     updatedPendingCoins,
-      //     earnCoins,
-      //     title,
-      //     description,
-      //     dateEntered,
-      //   ]
-      // );
-
-         await db.query(
-        "INSERT INTO usercoin_audit (user_id, date_entered) VALUES (?, CURDATE())",
+      await db.query(
+        "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin, title, description, date_entered) VALUES (?, ?, ?, ?, ?, CURDATE())",
         [
           user_id,
+          updatedPendingCoins,
+          earnCoins,
+          title,
+          description,
         ]
       );
+
+      //    await db.query(
+      //   "INSERT INTO usercoin_audit (user_id, date_entered) VALUES (?, CURDATE())",
+      //   [
+      //     user_id,
+      //   ]
+      // );
 
       // Step 5: Fetch updated values for response
       const updatedPendingCoinsResult = await db.query(
