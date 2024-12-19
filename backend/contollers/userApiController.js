@@ -1232,8 +1232,6 @@ exports.getUserReferralCode = catchAsyncErrors(async (req, res, next) => {
 //     );
 //   }
 // });
-
-
 exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
   const { amount, recipientReferralCode } = req.body;
   const senderId = req.user.id; // Sender's user ID
@@ -1323,12 +1321,12 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
       ]
     );
     console.log("Sender Audit Result:", senderAuditResult);
-    
+
     const recipientAuditResult = await db.query(
       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         recipientId,
-        0, 
+        0,
         senderId, // Sender ID as transaction_id
         currentTime,
         "cr", // Recipient's coin_operation "cr"
@@ -1340,7 +1338,6 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
       ]
     );
     console.log("Recipient Audit Result:", recipientAuditResult);
-    
 
     // Step 7: Commit the transaction
     await db.query("COMMIT");
