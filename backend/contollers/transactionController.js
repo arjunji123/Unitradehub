@@ -118,7 +118,7 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
 //     connection.release();
 //   }
 // });
-// exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
+exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   const { user_id } = req.body;
 
   // Validate the input
