@@ -1,44 +1,84 @@
 <!doctype html>
-  
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
-
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />  -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,  viewport-fit=cover" /> 
-  <!-- Mobile app capabilities -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
-  <title>Invite Frineds</title>
+  <title>Invite Friends</title>
+
+  <!-- Telegram Web App JS -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const tg = window.Telegram.WebApp;
-      const userId = tg.initDataUnsafe?.user?.id;
-      // console.log('User ID:', userId);
-    })
+      tg.ready(); // Ensure Telegram Web App is initialized
 
+      // Disable touch and drag actions on the entire page
+      document.body.addEventListener('touchstart', function (e) {
+        e.preventDefault();  // Disable touch interactions
+      }, { passive: false });
+
+      document.body.addEventListener('touchmove', function (e) {
+        e.preventDefault();  // Disable scrolling and movement
+      }, { passive: false });
+
+      // Prevent dragging elements
+      document.body.addEventListener('dragstart', function (e) {
+        e.preventDefault();  // Disable drag behavior
+      });
+
+      // Optionally, disable user selection (if you don't want text selection)
+      document.body.style.userSelect = 'none';
+    });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
-  <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
-  <!-- <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@500&display=swap" rel="stylesheet"> -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Ensure the body remains static, prevent any scrolling or drag */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent any scrolling */
+      user-select: none;  /* Prevent text selection */
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    /* Specific classes for clickable elements */
+    .clickable {
+      user-select: text; /* Allow text selection for clickable items */
+      touch-action: auto; /* Allow gestures on interactive elements */
+    }
+
+    * {
+      -webkit-user-drag: none; /* Prevent drag on webkit browsers */
+      user-drag: none; /* Prevent drag on other browsers */
+    }
+  </style>
 
 </head>
 
+<body>
+  <div id="root">
+    <div class="clickable">
+      <!-- Example button or clickable area -->
+      <button onclick="alert('Button Clicked!')">Click Me</button>
+    </div>
+  </div>
 
-  <body>
-  <div id="root"></div>
-
+  <!-- Telegram Web App Initialization -->
   <script type="module" src="/src/main.jsx"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
- 
+
 </body>
 
 </html>
