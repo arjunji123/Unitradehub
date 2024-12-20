@@ -144,6 +144,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [user_id]
     );
 
+    // Ensure that we have transaction details
     if (!transactionDetails || transactionDetails.length === 0) {
       throw new Error("No pending transaction found for the provided user_id");
     }
@@ -154,12 +155,12 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     const updateTransaction = await connection.query(
       `UPDATE user_transction 
        SET status = 'approved'
-       WHERE user_id = ?`,
+       WHERE user_id = ? AND status != 'approved'`,
       [user_id]
     );
 
     // Check if the transaction was updated
-    if (updateTransaction[0].affectedRows === 0) {
+    if (updateTransaction.affectedRows === 0) {
       throw new Error("Failed to approve the transaction");
     }
 
@@ -170,13 +171,13 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
        WHERE transaction_id = (
            SELECT id 
            FROM user_transction 
-           WHERE user_id = ?
+           WHERE user_id = ? AND status != 'approved'
        )`,
       [user_id]
     );
 
     // Check if the audit record was updated
-    if (updateAudit[0].affectedRows === 0) {
+    if (updateAudit.affectedRows === 0) {
       throw new Error("Failed to update the audit entry");
     }
 
@@ -200,7 +201,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [tranction_coin, company_id]
     );
 
-    if (companyCoinUpdateResult[0].affectedRows === 0) {
+    if (companyCoinUpdateResult.affectedRows === 0) {
       throw new Error("Failed to update the company's coin balance");
     }
 
@@ -223,12 +224,16 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     });
 
     // Send an error response
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Internal server error" 
+    });
   } finally {
     // Release the connection
     connection.release();
   }
 });
+
 
 
 
