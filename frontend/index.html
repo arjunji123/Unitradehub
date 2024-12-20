@@ -18,15 +18,15 @@
       const tg = window.Telegram.WebApp;
       tg.ready(); // Initialize Telegram Web App
 
-      // Allow scrolling
+      // Allow scrolling and prevent dragging
       document.body.style.overflow = 'auto';  // Allow scrolling
 
-      // Prevent drag on the whole body but allow clicks
+      // Prevent dragging on the entire document body
       document.body.style.userSelect = 'none';  // Prevent text selection
       document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
       document.body.style.userDrag = 'none';  // Prevent drag on other browsers
 
-      // Enable the Telegram app functionality
+      // Allow Telegram app to adjust layout
       tg.resize();
     });
   </script>
@@ -58,13 +58,21 @@
       -webkit-user-drag: none;
       user-drag: none;
     }
+
+    /* Prevent dragging of the body */
+    body {
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
   </style>
 
 </head>
 
 <body>
-  <!-- This div is empty and can be used for your existing content -->
-  <div id="root"></div>
+  <!-- The root div is empty as per your requirement -->
+  <div id="root">
+    <!-- No content inside this div, it's intentionally kept empty -->
+  </div>
 
   <script type="module" src="/src/main.jsx"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
