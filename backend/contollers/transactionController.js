@@ -138,7 +138,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 
     // Step 1: Retrieve transaction details for the given user_id
     const transactionDetails = await connection.query(
-      `SELECT company_id, tranction_coin
+      `SELECT id, company_id, tranction_coin
        FROM user_transction 
        WHERE user_id = ? AND status != 'approved'`,
       [user_id]
@@ -149,14 +149,14 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("No pending transaction found for the provided user_id");
     }
 
-    const { company_id, tranction_coin } = transactionDetails[0];
+    const { id: transaction_id, company_id, tranction_coin } = transactionDetails[0];
 
-    // Step 2: Update the transaction in user_transction table
+    // Step 2: Update the transaction status in user_transction table
     const updateTransaction = await connection.query(
       `UPDATE user_transction 
        SET status = 'approved'
-       WHERE user_id = ? AND status != 'approved'`,
-      [user_id]
+       WHERE id = ?`,
+      [transaction_id]
     );
 
     // Check if the transaction was updated
@@ -168,17 +168,16 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     const updateAudit = await connection.query(
       `UPDATE usercoin_audit 
        SET status = 'completed' 
-       WHERE transaction_id = (
-           SELECT id 
-           FROM user_transction 
-           WHERE user_id = ? AND status != 'approved'
-       )`,
-      [user_id]
+       WHERE transaction_id = ?`,
+      [transaction_id]
     );
 
     // Check if the audit record was updated
     if (updateAudit.affectedRows === 0) {
+      console.error("Failed to update usercoin_audit for transaction_id:", transaction_id);
       throw new Error("Failed to update the audit entry");
+    } else {
+      console.log("Audit entry updated successfully for transaction_id:", transaction_id);
     }
 
     // Step 4: Check if company_id exists in company_data
@@ -190,6 +189,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (!companyExists || companyExists.length === 0) {
+      console.error("Company not found in company_data table for company_id:", company_id);
       throw new Error("Company not found in company_data table");
     }
 
@@ -202,7 +202,10 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (companyCoinUpdateResult.affectedRows === 0) {
+      console.error("Failed to update company_coin for company_id:", company_id);
       throw new Error("Failed to update the company's coin balance");
+    } else {
+      console.log("Company coin balance updated successfully for company_id:", company_id);
     }
 
     // Commit the transaction
@@ -224,15 +227,16 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     });
 
     // Send an error response
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Internal server error" 
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
     });
   } finally {
     // Release the connection
     connection.release();
   }
 });
+
 
 
 
