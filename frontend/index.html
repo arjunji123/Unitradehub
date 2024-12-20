@@ -21,11 +21,7 @@
       // Disable scrolling and dragging but keep clicks enabled
       document.body.style.overflow = 'hidden';  // Disable scrolling
 
-      // Prevent dragging but allow clicks on interactive elements
-      document.body.addEventListener('touchstart', function (e) {
-        // Allow clicks but prevent drag actions
-        e.preventDefault();
-      }, { passive: false });
+    
     });
   </script>
 
