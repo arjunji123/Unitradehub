@@ -21,7 +21,10 @@
       // Disable scrolling and dragging but keep clicks enabled
       document.body.style.overflow = 'hidden';  // Disable scrolling
 
-    
+         // Prevent drag on the entire body
+      document.body.style.userSelect = 'none';  // Prevent text selection
+      document.body.style.webkitUserDrag = 'none';  // Prevent dragging in webkit browsers
+      document.body.style.userDrag = 'none';  // Prevent dragging in other browsers
     });
   </script>
 
@@ -41,7 +44,9 @@
     html, body {
       height: 100%;
     }
-
+ .interactive {
+      touch-action: manipulation; /* Allow touch events for interactive elements */
+    }
 
   </style>
 
