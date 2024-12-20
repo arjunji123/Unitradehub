@@ -11,27 +11,21 @@
   <title>Invite Friends</title>
 
   <!-- Telegram Web App JS -->
- <script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <script>
     document.addEventListener('DOMContentLoaded', function () {
       const tg = window.Telegram.WebApp;
       tg.ready(); // Ensure Telegram Web App is initialized
 
-      // Disable touch and drag actions on the entire page
+      // Prevent unwanted touch interactions on the whole body
       document.body.addEventListener('touchstart', function (e) {
-        e.preventDefault();  // Disable touch interactions globally
+        e.preventDefault();
       }, { passive: false });
 
       document.body.addEventListener('touchmove', function (e) {
-        e.preventDefault();  // Disable scrolling and movement globally
+        e.preventDefault();
       }, { passive: false });
-
-      // Prevent dragging elements globally
-      document.body.addEventListener('dragstart', function (e) {
-        e.preventDefault();  // Disable drag behavior globally
-      });
-
-      // Optionally, disable user selection (if you don't want text selection)
-      document.body.style.userSelect = 'none';
     });
   </script>
 
@@ -45,38 +39,32 @@
       padding: 0;
       overflow: hidden; /* Prevent any scrolling */
       user-select: none;  /* Prevent text selection globally */
+      touch-action: none;  /* Prevent touch interactions globally */
+      background-color: black;  /* Set the background to black */
+      color: white;  /* Text color for contrast */
     }
 
     html, body {
       height: 100%;
     }
 
-    /* Allow specific areas like buttons to scroll and interact */
+    /* Optional: Add a container with scrollable content */
     .scrollable {
       overflow-y: auto; /* Enable vertical scrolling */
-      height: 100%; /* Allow container to take full height */
-      padding: 20px; /* Add some padding to the scrollable content */
-      user-select: text; /* Allow text selection within scrollable areas */
-    }
-
-    .clickable {
-      user-select: text; /* Allow text selection for clickable items */
-      touch-action: auto; /* Allow gestures on interactive elements */
-    }
-
-    /* Disable dragging on any element */
-    * {
-      -webkit-user-drag: none; /* Prevent drag on webkit browsers */
-      user-drag: none; /* Prevent drag on other browsers */
+      max-height: 100vh; /* Limit height for scrollable area */
     }
   </style>
 
 </head>
 
 <body>
- <div id="root"></div>
+  <div id="root">
+    <!-- Add your static content here -->
+    <div class="scrollable">
+ 
+    </div>
+  </div>
 
-  <!-- Telegram Web App Initialization -->
   <script type="module" src="/src/main.jsx"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
