@@ -16,14 +16,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const tg = window.Telegram.WebApp;
-      tg.ready(); // Ensure Telegram Web App is initialized
+      tg.ready(); // Initialize Telegram Web App
 
-      // Prevent unwanted touch interactions on the whole body
+      // Enable the WebApp to respond to interactions
       document.body.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-      }, { passive: false });
-
-      document.body.addEventListener('touchmove', function (e) {
+        // Prevent dragging but allow other interactions like tapping buttons
         e.preventDefault();
       }, { passive: false });
     });
@@ -39,7 +36,6 @@
       padding: 0;
       overflow: hidden; /* Prevent any scrolling */
       user-select: none;  /* Prevent text selection globally */
-      touch-action: none;  /* Prevent touch interactions globally */
       background-color: black;  /* Set the background to black */
       color: white;  /* Text color for contrast */
     }
@@ -61,7 +57,7 @@
   <div id="root">
     <!-- Add your static content here -->
     <div class="scrollable">
- 
+
     </div>
   </div>
 
