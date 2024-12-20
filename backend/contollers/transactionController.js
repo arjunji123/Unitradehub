@@ -18,10 +18,38 @@ const localStorage = new LocalStorage("./scratch");
 
 // Define the GET API to retrieve all user requests and render them in a view
 // Define the API to fetch transactions
+// exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
+//   // Fetch transaction data with related user info
+//   const [transactions] = await db.query(
+//     `SELECT 
+//         ut.user_id,
+//         ut.company_id,
+//         ut.tranction_coin,
+//         ut.tranction_rate,
+//         ut.transction_amount,
+//         ut.trans_doc,
+//         DATE_FORMAT(ut.data_created, "%d-%m-%Y %H:%i:%s") AS data_created,
+//         ut.status,
+//         u.user_name,
+//         ud.upi_id -- Added field from user_data table
+//      FROM user_transction ut
+//      JOIN users u ON ut.user_id = u.id
+//      LEFT JOIN user_data ud ON u.id = ud.user_id` );
+  
+  
+//   console.log("transactions:", transactions); // Log for debugging
+
+//   res.render("transactions/index", {
+//     layout: "layouts/main",
+//     title: "User Transactions", 
+//     transactions, // Pass transactions array to the frontendsdg
+//   });
+// });
 exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
   // Fetch transaction data with related user info
   const [transactions] = await db.query(
     `SELECT 
+        ut.transaction_id,
         ut.user_id,
         ut.company_id,
         ut.tranction_coin,
@@ -34,15 +62,15 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
         ud.upi_id -- Added field from user_data table
      FROM user_transction ut
      JOIN users u ON ut.user_id = u.id
-     LEFT JOIN user_data ud ON u.id = ud.user_id` );
-  
+     LEFT JOIN user_data ud ON u.id = ud.user_id`
+  );
   
   console.log("transactions:", transactions); // Log for debugging
 
   res.render("transactions/index", {
     layout: "layouts/main",
     title: "User Transactions", 
-    transactions, // Pass transactions array to the frontendsdg
+    transactions, // Pass transactions array to the frontend
   });
 });
 
