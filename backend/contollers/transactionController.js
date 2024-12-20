@@ -123,16 +123,19 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Failed to update the audit entry");
     }
 
-    // Step 4: Update the company data table with the transaction coin
-    const [companyCoinUpdateResult] = await connection.query(
-      `UPDATE company_data SET company_coin = COALESCE(company_coin, 0) + ? WHERE company_id = ?`,
-      [tranction_coin, company_id]
-    );
+// Update the company's coin balance by adding the transaction_coin
+const [companyCoinUpdateResult] = await connection.query(
+  `UPDATE company_data 
+   SET company_coin = company_coin + ? 
+   WHERE company_id = ?`,
+  [tranction_coin, company_id]
+);
 
-    // Check if the company data was updated
-    if (companyCoinUpdateResult.affectedRows === 0) {
-      throw new Error("Failed to update the company's coin balance");
-    }
+// Check if the company data was updated successfully
+if (companyCoinUpdateResult.affectedRows === 0) {
+  throw new Error("Failed to update the company's coin balance");
+}
+
 
     // Commit the transaction
     await connection.commit();
