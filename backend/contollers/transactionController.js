@@ -49,7 +49,7 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
   // Fetch transaction data with related user info
   const [transactions] = await db.query(
     `SELECT 
-        ut.transaction_id,
+        ut.id, -- Include the 'id' field (unique transaction identifier)
         ut.user_id,
         ut.company_id,
         ut.tranction_coin,
@@ -62,7 +62,7 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
         ud.upi_id -- Added field from user_data table
      FROM user_transction ut
      JOIN users u ON ut.user_id = u.id
-     LEFT JOIN user_data ud ON u.id = ud.user_id`
+     LEFT JOIN user_data ud ON u.id = ud.user_id` 
   );
   
   console.log("transactions:", transactions); // Log for debugging
