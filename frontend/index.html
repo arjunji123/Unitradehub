@@ -38,7 +38,6 @@
       margin: 0;
       padding: 0;
       overflow: hidden; /* Prevent any scrolling */
-      user-select: none;  /* Prevent text selection globally */
       background-color: black;  /* Set the background to black */
       color: white;  /* Text color for contrast */
     }
@@ -47,11 +46,6 @@
       height: 100%;
     }
 
-    /* Allow interaction but prevent drag */
-    .no-drag {
-      -webkit-user-drag: none; /* Prevent drag in webkit browsers */
-      user-drag: none; /* Prevent drag in other browsers */
-    }
 
   </style>
 
@@ -59,12 +53,7 @@
 
 <body>
   <div id="root">
-    <!-- Your existing content goes here -->
-    <!-- This will be a static screen without scrolling or drag -->
 
-    <!-- Example content -->
-    <h1>Welcome to the App</h1>
-    <p>This is a static screen. No scrolling or dragging allowed.</p>
   </div>
 
   <script type="module" src="/src/main.jsx"></script>
