@@ -11,25 +11,23 @@
   <title>Invite Friends</title>
 
   <!-- Telegram Web App JS -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <script>
+ <script>
     document.addEventListener('DOMContentLoaded', function () {
       const tg = window.Telegram.WebApp;
       tg.ready(); // Ensure Telegram Web App is initialized
 
       // Disable touch and drag actions on the entire page
       document.body.addEventListener('touchstart', function (e) {
-        e.preventDefault();  // Disable touch interactions
+        e.preventDefault();  // Disable touch interactions globally
       }, { passive: false });
 
       document.body.addEventListener('touchmove', function (e) {
-        e.preventDefault();  // Disable scrolling and movement
+        e.preventDefault();  // Disable scrolling and movement globally
       }, { passive: false });
 
-      // Prevent dragging elements
+      // Prevent dragging elements globally
       document.body.addEventListener('dragstart', function (e) {
-        e.preventDefault();  // Disable drag behavior
+        e.preventDefault();  // Disable drag behavior globally
       });
 
       // Optionally, disable user selection (if you don't want text selection)
@@ -46,19 +44,27 @@
       margin: 0;
       padding: 0;
       overflow: hidden; /* Prevent any scrolling */
-      user-select: none;  /* Prevent text selection */
+      user-select: none;  /* Prevent text selection globally */
     }
 
     html, body {
       height: 100%;
     }
 
-    /* Specific classes for clickable elements */
+    /* Allow specific areas like buttons to scroll and interact */
+    .scrollable {
+      overflow-y: auto; /* Enable vertical scrolling */
+      height: 100%; /* Allow container to take full height */
+      padding: 20px; /* Add some padding to the scrollable content */
+      user-select: text; /* Allow text selection within scrollable areas */
+    }
+
     .clickable {
       user-select: text; /* Allow text selection for clickable items */
       touch-action: auto; /* Allow gestures on interactive elements */
     }
 
+    /* Disable dragging on any element */
     * {
       -webkit-user-drag: none; /* Prevent drag on webkit browsers */
       user-drag: none; /* Prevent drag on other browsers */
