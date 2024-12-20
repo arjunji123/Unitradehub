@@ -26,12 +26,6 @@
       document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
       document.body.style.userDrag = 'none';  // Prevent drag on other browsers
 
-      // Allow clickable elements to function (no touch blocking)
-      document.body.addEventListener('touchstart', function (e) {
-        // Prevent drag but allow normal clicks and touches
-        e.preventDefault();
-      }, { passive: false });
-
       // Enable the Telegram app functionality
       tg.resize();
     });
@@ -41,14 +35,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Ensure the body remains static, prevent any drag but allow scrolling */
+    /* Ensure the body remains static, allow scrolling */
     body {
       margin: 0;
       padding: 0;
       overflow: auto; /* Allow scrolling */
       background-color: black;  /* Set the background to black */
       color: white;  /* Text color for contrast */
-      touch-action: none;  /* Disable some gestures like pinch-to-zoom */
     }
 
     html, body {
@@ -60,7 +53,7 @@
       touch-action: manipulation; /* Allow touch events for interactive elements */
     }
 
-    /* Disable user drag actions globally */
+    /* Disable user drag actions globally but allow other interactions */
     * {
       -webkit-user-drag: none;
       user-drag: none;
