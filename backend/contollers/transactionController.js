@@ -45,8 +45,6 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
     transactions, // Pass transactions array to the frontendsdg
   });
 });
-
-
 exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   const { user_id } = req.body;
 
@@ -57,11 +55,15 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       .json({ success: false, message: "User ID is required" });
   }
 
+  const connection = await db.getConnection(); // Get a database connection for a transaction
+
   try {
+    await connection.beginTransaction(); // Start the transaction
+
     const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " "); // Current date & time
 
-    // Update the transaction in the database
-    const result = await db.query(
+    // Update `user_transction`
+    const result = await connection.query(
       `UPDATE user_transction 
            SET status = 'approved', 
                date_approved = ? 
@@ -70,14 +72,72 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback(); // Rollback transaction if no rows were updated
       return res
         .status(404)
         .json({ success: false, message: "Transaction not found" });
     }
 
-    res.json({ success: true, message: "Transaction approved successfully" });
+    // Update `usercoin_audit`
+    const updateAudit = await connection.query(
+      `UPDATE usercoin_audit 
+           SET status = 'completed' 
+           WHERE transaction_id = (
+               SELECT id FROM user_transction WHERE user_id = ?
+           )`,
+      [user_id]
+    );
+
+    if (updateAudit.affectedRows === 0) {
+      await connection.rollback(); // Rollback transaction if no rows were updated
+      return res
+        .status(404)
+        .json({ success: false, message: "Audit entry not found" });
+    }
+
+    await connection.commit(); // Commit the transaction if all updates succeed
+    res.json({ success: true, message: "Transaction and audit updated successfully" });
   } catch (error) {
+    await connection.rollback(); // Rollback on any error
     console.error("Error approving transaction:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    connection.release(); // Release the connection back to the pool
   }
 });
+
+
+// exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
+//   const { user_id } = req.body;
+
+//   // Validate input
+//   if (!user_id) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "User ID is required" });
+//   }
+
+//   try {
+//     const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " "); // Current date & time
+
+//     // Update the transaction in the database
+//     const result = await db.query(
+//       `UPDATE user_transction 
+//            SET status = 'approved', 
+//                date_approved = ? 
+//            WHERE user_id = ?`,
+//       [dateApprove, user_id]
+//     );
+
+//     if (result.affectedRows === 0) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Transaction not found" });
+//     }
+
+//     res.json({ success: true, message: "Transaction approved successfully" });
+//   } catch (error) {
+//     console.error("Error approving transaction:", error);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// });
