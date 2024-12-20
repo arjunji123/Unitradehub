@@ -73,15 +73,14 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
     transactions, // Pass transactions array to the frontend
   });
 });
-
 exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
-  const { transaction_id } = req.body;  // Use transaction_id instead of user_id
+  const { id } = req.body; // Use `id` instead of `transaction_id`
 
   // Validate the input
-  if (!transaction_id) {
+  if (!id) {
     return res.status(400).json({
       success: false,
-      message: "Transaction ID is required",
+      message: "Transaction ID (id) is required",
     });
   }
 
@@ -90,22 +89,22 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   try {
     await connection.beginTransaction();
 
-    // Step 1: Retrieve the transaction details using transaction_id
-    const transactionDetails = await connection.query(
+    // Step 1: Retrieve the transaction details using `id`
+    const [transactionDetails] = await connection.query(
       `SELECT company_id, tranction_coin FROM user_transction WHERE id = ? AND status != 'approved'`,
-      [transaction_id]
+      [id]
     );
 
     if (!transactionDetails || transactionDetails.length === 0) {
-      throw new Error("No pending transaction found for the provided transaction_id");
+      throw new Error("No pending transaction found for the provided ID");
     }
 
-    const { company_id, tranction_coin } = transactionDetails[0];
+    const { company_id, tranction_coin } = transactionDetails;
 
-    // Step 2: Update the transaction in user_transction table
-    const updateTransaction = await connection.query(
+    // Step 2: Update the transaction in the `user_transction` table
+    const [updateTransaction] = await connection.query(
       `UPDATE user_transction SET status = 'approved' WHERE id = ?`,
-      [transaction_id]
+      [id]
     );
 
     // Check if the transaction was updated
@@ -113,10 +112,10 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Failed to approve the transaction");
     }
 
-    // Step 3: Update the corresponding entry in the usercoin_audit table
-    const updateAudit = await connection.query(
+    // Step 3: Update the corresponding entry in the `usercoin_audit` table
+    const [updateAudit] = await connection.query(
       `UPDATE usercoin_audit SET status = 'completed' WHERE transaction_id = ?`,
-      [transaction_id]
+      [id]
     );
 
     // Check if the audit record was updated
@@ -125,7 +124,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     }
 
     // Step 4: Update the company data table with the transaction coin
-    const companyCoinUpdateResult = await connection.query(
+    const [companyCoinUpdateResult] = await connection.query(
       `UPDATE company_data SET company_coin = COALESCE(company_coin, 0) + ? WHERE company_id = ?`,
       [tranction_coin, company_id]
     );
