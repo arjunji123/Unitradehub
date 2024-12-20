@@ -167,16 +167,29 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Failed to approve the transaction");
     }
 
-    // Step 3: Update the corresponding entry in the usercoin_audit table
+    // Step 3: Retrieve transaction_id for updating the usercoin_audit table
+    const transactionIdResult = await connection.query(
+      `SELECT id 
+       FROM user_transction 
+       WHERE user_id = ? AND status = 'approved'`,
+      [user_id]
+    );
+
+    if (transactionIdResult.length === 0) {
+      throw new Error("No approved transaction found for the user");
+    }
+
+    const transaction_id = transactionIdResult[0].id;
+
+    // Log the retrieved transaction ID
+    console.log('Transaction ID:', transaction_id);
+
+    // Step 4: Update the corresponding entry in the usercoin_audit table
     const updateAudit = await connection.query(
       `UPDATE usercoin_audit 
        SET status = 'completed' 
-       WHERE transaction_id = (
-           SELECT id 
-           FROM user_transction 
-           WHERE user_id = ? AND status != 'approved'
-       )`,
-      [user_id]
+       WHERE transaction_id = ?`,
+      [transaction_id]
     );
 
     // Log the update audit result
@@ -187,7 +200,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Failed to update the audit entry");
     }
 
-    // Step 4: Check if company_id exists in company_data
+    // Step 5: Check if company_id exists in company_data
     const companyExists = await connection.query(
       `SELECT company_id 
        FROM company_data 
@@ -199,7 +212,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Company not found in company_data table");
     }
 
-    // Step 5: Update the company coin balance in the company_data table
+    // Step 6: Update the company coin balance in the company_data table
     const companyCoinUpdateResult = await connection.query(
       `UPDATE company_data 
        SET company_coin = COALESCE(company_coin, 0) + ? 
