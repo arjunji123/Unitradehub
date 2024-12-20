@@ -68,8 +68,8 @@
                                   <td>
     <% if (transactions.status !== 'approved') { %>
         <button class="btn btn-success approve-btn"
-            data-transaction-id="<%= transactions.transaction_id %>" <!-- Updated to transaction_id -->
-            data-row-id="transactions-row-<%= transactions.transaction_id %>"> <!-- Use transaction_id for row identification -->
+            data-transaction-id="<%= transactions.transaction_id %>"
+            data-row-id="transactions-row-<%= transactions.transaction_id %>">
             Approve
         </button>
     <% } else { %>
