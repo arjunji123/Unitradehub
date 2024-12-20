@@ -66,15 +66,16 @@
                                                 <% } %>
                                     </td>
                                   <td>
-    <% if (transactions.status !== 'approved') { %>
-        <button class="btn btn-success approve-btn"
-            data-transaction-id="<%= transactions.transaction_id %>"
-            data-row-id="transactions-row-<%= transactions.transaction_id %>">
-            Approve
-        </button>
-    <% } else { %>
-        Approved
-    <% } %>
+   <% if (transactions.status !== 'approved') { %>
+    <button class="btn btn-success approve-btn"
+        data-id="<%= transactions.id %>"
+        data-row-id="transactions-row-<%= transactions.id %>">
+        Approve
+    </button>
+<% } else { %>
+    Approved
+<% } %>
+
 </td>
 
                                 </tr>
@@ -113,20 +114,19 @@
         });
     });
 </script>
-
 <script>
     $(document).ready(function () {
         // Approve button click handler
         $('.approve-btn').click(function () {
-            const transactionId = $(this).data('transaction-id'); // Get the transaction_id from the button's data attribute
-            const rowId = $(this).data('row-id');
+            const id = $(this).data('id'); // Get the id from the button's data attribute
+            const rowId = $(this).data('row-id'); // Get the row id for UI update
 
             // Make the POST request
             $.ajax({
                 url: '<%- process.env.BACKEND_URL %>api/v1/approveTransaction', // Backend endpoint for approval
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ transaction_id: transactionId }), // Send transaction_id in the request body
+                data: JSON.stringify({ id: id }), // Send id in the request body
                 success: function (response) {
                     if (response.success) {
                         // Update the UI upon success
@@ -145,4 +145,3 @@
         });
     });
 </script>
-
