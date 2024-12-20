@@ -126,22 +126,23 @@
                 url: '<%- process.env.BACKEND_URL %>api/v1/approveTransaction', // Endpoint for the approve API
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ user_id: userId }),
+                data: JSON.stringify({ user_id: userId }), // Send user_id in the body
                 success: function (response) {
                     if (response.success) {
-                        // Update the UI
+                        // Update the UI upon success
                         const row = $(`#${rowId}`);
-                        row.find('.approve-btn').remove(); // Remove the button
-                        row.find('td:nth-child(7)').text('Approved'); // Update status
+                        row.find('.approve-btn').remove(); // Remove the approve button
+                        row.find('td:nth-child(7)').text('Approved'); // Update the status to 'Approved'
                     } else {
-                        alert('Error: ' + response.message);
+                        alert('Error: ' + response.message); // Display error message if transaction fails
                     }
                 },
                 error: function (error) {
                     console.error('Approval failed:', error);
-                    alert('Something went wrong! Please try again.');
+                    alert('Something went wrong! Please try again.'); // Display generic error message
                 }
             });
         });
     });
 </script>
+
