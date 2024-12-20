@@ -189,12 +189,12 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
     transactions, // Pass transactions array to the frontend
   });
 });
-
 exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.body; // Use `id` instead of `transaction_id`
 
   // Validate the input
   if (!id) {
+    console.log("Error: Transaction ID (id) is required");
     return res.status(400).json({
       success: false,
       message: "Transaction ID (id) is required",
@@ -213,13 +213,18 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (!transactionDetails || transactionDetails.length === 0) {
+      console.log(`Error: No pending transaction found for ID: ${id}`);
       throw new Error("No pending transaction found for the provided ID");
     }
 
     const { company_id, tranction_coin } = transactionDetails;
 
+    // Log transaction details
+    console.log("Transaction Details:", { company_id, tranction_coin });
+
     // Check if tranction_coin is null, set it to 0 if necessary
     if (tranction_coin === null) {
+      console.log("Error: Transaction coin value is missing");
       throw new Error("Transaction coin value is missing");
     }
 
@@ -229,8 +234,12 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [id]
     );
 
+    // Log the transaction update result
+    console.log("Transaction Update Result:", updateTransaction);
+
     // Check if the transaction was updated
     if (updateTransaction.affectedRows === 0) {
+      console.log("Error: Failed to approve the transaction");
       throw new Error("Failed to approve the transaction");
     }
 
@@ -240,8 +249,12 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [id]
     );
 
+    // Log the audit update result
+    console.log("Audit Update Result:", updateAudit);
+
     // Check if the audit record was updated
     if (updateAudit.affectedRows === 0) {
+      console.log("Error: Failed to update the audit entry");
       throw new Error("Failed to update the audit entry");
     }
 
@@ -251,7 +264,11 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [company_id]
     );
 
+    // Log the company data check
+    console.log("Company Data Check:", companyData);
+
     if (companyData.length === 0) {
+      console.log(`Error: Company ID ${company_id} does not exist in company_data table`);
       throw new Error("Company ID does not exist in company_data table");
     }
 
@@ -263,8 +280,12 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [tranction_coin, company_id]
     );
 
+    // Log the company coin update result
+    console.log("Company Coin Update Result:", companyCoinUpdateResult);
+
     // Check if the company data was updated successfully
     if (companyCoinUpdateResult.affectedRows === 0) {
+      console.log("Error: Failed to update the company's coin balance");
       throw new Error("Failed to update the company's coin balance");
     }
 
@@ -272,6 +293,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     await connection.commit();
 
     // Respond with success
+    console.log("Transaction approved successfully");
     res.json({
       success: true,
       message: "Transaction approved, audit updated, and company coins added successfully!",
@@ -290,3 +312,104 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     connection.release();
   }
 });
+
+// exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
+//   const { id } = req.body; // Use `id` instead of `transaction_id`
+
+//   // Validate the input
+//   if (!id) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Transaction ID (id) is required",
+//     });
+//   }
+
+//   const connection = await db.getConnection();
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // Step 1: Retrieve the transaction details using `id`
+//     const [transactionDetails] = await connection.query(
+//       `SELECT company_id, tranction_coin FROM user_transction WHERE id = ? AND status != 'approved'`,
+//       [id]
+//     );
+
+//     if (!transactionDetails || transactionDetails.length === 0) {
+//       throw new Error("No pending transaction found for the provided ID");
+//     }
+
+//     const { company_id, tranction_coin } = transactionDetails;
+
+//     // Check if tranction_coin is null, set it to 0 if necessary
+//     if (tranction_coin === null) {
+//       throw new Error("Transaction coin value is missing");
+//     }
+
+//     // Step 2: Update the transaction in the `user_transction` table
+//     const [updateTransaction] = await connection.query(
+//       `UPDATE user_transction SET status = 'approved' WHERE id = ?`,
+//       [id]
+//     );
+
+//     // Check if the transaction was updated
+//     if (updateTransaction.affectedRows === 0) {
+//       throw new Error("Failed to approve the transaction");
+//     }
+
+//     // Step 3: Update the corresponding entry in the `usercoin_audit` table
+//     const [updateAudit] = await connection.query(
+//       `UPDATE usercoin_audit SET status = 'completed' WHERE transaction_id = ?`,
+//       [id]
+//     );
+
+//     // Check if the audit record was updated
+//     if (updateAudit.affectedRows === 0) {
+//       throw new Error("Failed to update the audit entry");
+//     }
+
+//     // Check if company_id exists in company_data table
+//     const [companyData] = await connection.query(
+//       `SELECT 1 FROM company_data WHERE company_id = ?`,
+//       [company_id]
+//     );
+
+//     if (companyData.length === 0) {
+//       throw new Error("Company ID does not exist in company_data table");
+//     }
+
+//     // Step 4: Update the company's coin balance by adding the transaction_coin
+//     const [companyCoinUpdateResult] = await connection.query(
+//       `UPDATE company_data 
+//        SET company_coin = COALESCE(company_coin, 0) + ? 
+//        WHERE company_id = ?`,
+//       [tranction_coin, company_id]
+//     );
+
+//     // Check if the company data was updated successfully
+//     if (companyCoinUpdateResult.affectedRows === 0) {
+//       throw new Error("Failed to update the company's coin balance");
+//     }
+
+//     // Commit the transaction
+//     await connection.commit();
+
+//     // Respond with success
+//     res.json({
+//       success: true,
+//       message: "Transaction approved, audit updated, and company coins added successfully!",
+//     });
+//   } catch (error) {
+//     // Rollback the transaction in case of an error
+//     await connection.rollback();
+
+//     // Log the error for debugging
+//     console.error("Error approving transaction:", { message: error.message, stack: error.stack });
+
+//     // Send an error response
+//     res.status(500).json({ success: false, message: error.message || "Internal server error" });
+//   } finally {
+//     // Release the connection
+//     connection.release();
+//   }
+// });
