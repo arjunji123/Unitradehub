@@ -880,29 +880,29 @@ exports.reqGetUnapprovedWithDocApi = async (req, res, next) => {
     }
 
     // Query the database for transactions where trans_doc is not null and status is unapproved
-    const userTransactions = await db.query(
-      `SELECT 
-        ut.id AS transaction_id, 
-        ut.*, 
-        u.user_name, 
-        ud.upi_id 
-      FROM 
-        user_transction ut
-      JOIN 
-        users u 
-      ON 
-        ut.user_id = u.id
-      JOIN 
-        user_data ud
-      ON 
-        ut.user_id = ud.user_id
-      WHERE 
-        ut.company_id = ? 
-AND ut.trans_doc IS NOT NULL 
-AND ut.status != 'approved'
+ const userTransactions = await db.query(
+  `SELECT 
+    ut.id AS transaction_id, 
+    ut.*, 
+    u.user_name, 
+    ud.upi_id 
+  FROM 
+    user_transction ut
+  JOIN 
+    users u 
+  ON 
+    ut.user_id = u.id
+  JOIN 
+    user_data ud
+  ON 
+    ut.user_id = ud.user_id
+  WHERE 
+    ut.company_id = ? 
+    AND ut.trans_doc IS NOT NULL 
+    AND ut.status != 'approved'`,
+  [userId] // Pass the userId as the parameter here
+);
 
-      [userId]
-    );
 
     // Flatten the result if it’s an array of arrays
     const flattenedTransactions = userTransactions.flat();
