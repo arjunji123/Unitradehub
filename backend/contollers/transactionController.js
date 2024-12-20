@@ -45,64 +45,60 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
     transactions, // Pass transactions array to the frontendsdg
   });
 });
+
+
 exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   const { user_id } = req.body;
 
-  // Validate input
   if (!user_id) {
     return res
       .status(400)
       .json({ success: false, message: "User ID is required" });
   }
 
-  const connection = await db.getConnection(); // Get a database connection for a transaction
+  const connection = await db.getConnection();
 
   try {
-    await connection.beginTransaction(); // Start the transaction
+    await connection.beginTransaction();
 
-    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " "); // Current date & time
+    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-    // Update `user_transction`
     const result = await connection.query(
       `UPDATE user_transction 
-           SET status = 'approved', 
-               date_approved = ? 
-           WHERE user_id = ?`,
+       SET status = 'approved', 
+           date_approved = ? 
+       WHERE user_id = ?`,
       [dateApprove, user_id]
     );
 
     if (result.affectedRows === 0) {
-      await connection.rollback(); // Rollback transaction if no rows were updated
-      return res
-        .status(404)
-        .json({ success: false, message: "Transaction not found" });
+      throw new Error("No transaction found for the given user_id");
     }
 
-    // Update `usercoin_audit`
     const updateAudit = await connection.query(
       `UPDATE usercoin_audit 
-           SET status = 'completed' 
-           WHERE transaction_id = (
-               SELECT id FROM user_transction WHERE user_id = ?
-           )`,
+       SET status = 'completed' 
+       WHERE transaction_id = (
+           SELECT id FROM user_transction WHERE user_id = ?
+       )`,
       [user_id]
     );
 
     if (updateAudit.affectedRows === 0) {
-      await connection.rollback(); // Rollback transaction if no rows were updated
-      return res
-        .status(404)
-        .json({ success: false, message: "Audit entry not found" });
+      throw new Error("No audit entry found for the given transaction_id");
     }
 
-    await connection.commit(); // Commit the transaction if all updates succeed
+    await connection.commit();
     res.json({ success: true, message: "Transaction and audit updated successfully" });
   } catch (error) {
-    await connection.rollback(); // Rollback on any error
-    console.error("Error approving transaction:", error);
+    await connection.rollback();
+    console.error("Error approving transaction:", {
+      message: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ success: false, message: "Internal server error" });
   } finally {
-    connection.release(); // Release the connection back to the pool
+    connection.release();
   }
 });
 
