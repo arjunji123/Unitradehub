@@ -1,7 +1,7 @@
 import React, {useState  } from 'react';
 import { ImCross } from "react-icons/im";
 
-function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , sendData, loading }) {
+function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , sendData, loading, userData }) {
   const totalCoin = userData?.coins || 0; // Ensure totalCoin has a default value
   const [error, setError] = useState(''); // State for error message
 
@@ -18,6 +18,7 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
     // Pass the value to the parent handler
     handleSendInputChange(e);
   };
+  
   return (
     <div className="fixed inset-0 flex items-end justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={toggleSharePopup}>
     <div className="bg-[#1B1A1A] p-4 sm:p-6 rounded-t-3xl shadow-xl w-full max-w-lg relative" onClick={(e) => e.stopPropagation()}>
@@ -55,7 +56,6 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
             />
    {/* Error Message */}
    {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
         <div className="flex justify-center items-center">
             <button onClick={handleSendMoney} className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg"  disabled={loading} >
             {loading ? (
