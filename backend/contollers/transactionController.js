@@ -126,7 +126,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 // Update the company's coin balance by adding the transaction_coin
 const [companyCoinUpdateResult] = await connection.query(
   `UPDATE company_data 
-   SET company_coin = company_coin + ? 
+   SET company_coin = COALESCE(company_coin, 0) + ? 
    WHERE company_id = ?`,
   [tranction_coin, company_id]
 );
