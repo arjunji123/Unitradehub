@@ -18,13 +18,18 @@
       const tg = window.Telegram.WebApp;
       tg.ready(); // Initialize Telegram Web App
 
-      // Allow scrolling and prevent dragging
+      // Allow scrolling but prevent dragging and text selection
       document.body.style.overflow = 'auto';  // Allow scrolling
 
-      // Prevent dragging on the entire document body
+      // Prevent dragging across the entire body
       document.body.style.userSelect = 'none';  // Prevent text selection
       document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
       document.body.style.userDrag = 'none';  // Prevent drag on other browsers
+
+      // Disable drag on individual elements using event listener
+      document.body.addEventListener('touchmove', function (e) {
+        e.preventDefault(); // Prevent scrolling on touchmove to avoid drag behavior
+      }, { passive: false });
 
       // Allow Telegram app to adjust layout
       tg.resize();
@@ -42,6 +47,8 @@
       overflow: auto; /* Allow scrolling */
       background-color: black;  /* Set the background to black */
       color: white;  /* Text color for contrast */
+      -webkit-user-drag: none;  /* Prevent drag for webkit browsers */
+      user-drag: none;  /* Prevent drag for other browsers */
     }
 
     html, body {
@@ -51,18 +58,6 @@
     /* Allow interactive elements to function normally */
     .interactive {
       touch-action: manipulation; /* Allow touch events for interactive elements */
-    }
-
-    /* Disable user drag actions globally but allow other interactions */
-    * {
-      -webkit-user-drag: none;
-      user-drag: none;
-    }
-
-    /* Prevent dragging of the body */
-    body {
-      -webkit-user-drag: none;
-      user-drag: none;
     }
   </style>
 
