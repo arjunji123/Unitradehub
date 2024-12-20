@@ -58,8 +58,8 @@
                                     <td>
                                         <% if (transactions.trans_doc) { %>
                                             <button class="btn btn-info view-doc"
-                                                data-doc="<%= '<%- process.env.BACKEND_URL %>uploads/transactions' + transactions.trans_doc %>">
-                                                View Document
+ data-doc="<%- process.env.BACKEND_URL %>uploads/transactions/<%= transactions.trans_doc %>">
+                                             View Document
                                             </button>
                                             <% } else { %>
                                                 No document uploaded
