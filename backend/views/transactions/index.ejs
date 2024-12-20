@@ -65,17 +65,17 @@
                                                 No document uploaded
                                                 <% } %>
                                     </td>
-                                    <td>
-                                        <% if (transactions.status !=='approved' ) { %>
-                                            <button class="btn btn-success approve-btn"
-                                                data-id="<%= transactions.user_id %>"
-                                                data-row-id="transactions-row-<%= transactions.user_id %>">
-                                                Approve
-                                            </button>
-                                            <% } else { %>
-                                                Approved
-                                                <% } %>
-                                    </td>
+                                  <td>
+    <% if (transactions.status !== 'approved') { %>
+        <button class="btn btn-success approve-btn"
+            data-transaction-id="<%= transactions.transaction_id %>" <!-- Updated to transaction_id -->
+            data-row-id="transactions-row-<%= transactions.transaction_id %>"> <!-- Use transaction_id for row identification -->
+            Approve
+        </button>
+    <% } else { %>
+        Approved
+    <% } %>
+</td>
 
                                 </tr>
                                 <% }); %>
@@ -118,15 +118,15 @@
     $(document).ready(function () {
         // Approve button click handler
         $('.approve-btn').click(function () {
-            const userId = $(this).data('id');
+            const transactionId = $(this).data('transaction-id'); // Get the transaction_id from the button's data attribute
             const rowId = $(this).data('row-id');
 
             // Make the POST request
             $.ajax({
-                url: '<%- process.env.BACKEND_URL %>api/v1/approveTransaction', // Endpoint for the approve API
+                url: '<%- process.env.BACKEND_URL %>api/v1/approveTransaction', // Backend endpoint for approval
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ user_id: userId }), // Send user_id in the body
+                data: JSON.stringify({ transaction_id: transactionId }), // Send transaction_id in the request body
                 success: function (response) {
                     if (response.success) {
                         // Update the UI upon success
