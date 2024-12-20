@@ -18,9 +18,12 @@
       const tg = window.Telegram.WebApp;
       tg.ready(); // Initialize Telegram Web App
 
-      // Enable the WebApp to respond to interactions
+      // Disable scrolling and dragging but keep clicks enabled
+      document.body.style.overflow = 'hidden';  // Disable scrolling
+
+      // Prevent dragging but allow clicks on interactive elements
       document.body.addEventListener('touchstart', function (e) {
-        // Prevent dragging but allow other interactions like tapping buttons
+        // Allow clicks but prevent drag actions
         e.preventDefault();
       }, { passive: false });
     });
@@ -44,21 +47,24 @@
       height: 100%;
     }
 
-    /* Optional: Add a container with scrollable content */
-    .scrollable {
-      overflow-y: auto; /* Enable vertical scrolling */
-      max-height: 100vh; /* Limit height for scrollable area */
+    /* Allow interaction but prevent drag */
+    .no-drag {
+      -webkit-user-drag: none; /* Prevent drag in webkit browsers */
+      user-drag: none; /* Prevent drag in other browsers */
     }
+
   </style>
 
 </head>
 
 <body>
   <div id="root">
-    <!-- Add your static content here -->
-    <div class="scrollable">
+    <!-- Your existing content goes here -->
+    <!-- This will be a static screen without scrolling or drag -->
 
-    </div>
+    <!-- Example content -->
+    <h1>Welcome to the App</h1>
+    <p>This is a static screen. No scrolling or dragging allowed.</p>
   </div>
 
   <script type="module" src="/src/main.jsx"></script>
