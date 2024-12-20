@@ -153,8 +153,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     // Step 2: Update the transaction in user_transction table
     const updateTransaction = await connection.query(
       `UPDATE user_transction 
-       SET status = 'approved', 
-           date_approved = CURRENT_TIMESTAMP 
+       SET status = 'approved'
        WHERE user_id = ?`,
       [user_id]
     );
