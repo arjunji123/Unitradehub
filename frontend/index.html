@@ -18,14 +18,18 @@
       const tg = window.Telegram.WebApp;
       tg.ready(); // Initialize Telegram Web App
 
-      // Prevent dragging but allow scrolling
+      // Allow scrolling
+      document.body.style.overflow = 'auto';  // Allow scrolling
+
+      // Prevent drag on the whole body but allow clicks
       document.body.style.userSelect = 'none';  // Prevent text selection
       document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
       document.body.style.userDrag = 'none';  // Prevent drag on other browsers
 
-      // Prevent drag event on the whole document, but allow scrolling
+      // Allow clickable elements to function (no touch blocking)
       document.body.addEventListener('touchstart', function (e) {
-        e.preventDefault(); // Prevent drag/scroll on touch
+        // Prevent drag but allow normal clicks and touches
+        e.preventDefault();
       }, { passive: false });
 
       // Enable the Telegram app functionality
@@ -66,94 +70,8 @@
 </head>
 
 <body>
-  <div id="root">
-    <!-- Example content -->
-    <h1 class="interactive">Welcome to the App</h1>
-    <p class="interactive">This is a static screen. No drag but scrolling is enabled.</p>
-    
-    <!-- Example button to show click functionality -->
-    <button class="interactive" onclick="alert('Button clicked!')">Click me</button>
-    
-    <p class="interactive">You can scroll the page, but you cannot drag the whole page.</p>
-  </div>
-
-  <script type="module" src="/src/main.jsx"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-</body>
-
-</html>
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
-  <title>Invite Friends</title>
-
-  <!-- Telegram Web App JS -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const tg = window.Telegram.WebApp;
-      tg.ready(); // Initialize Telegram Web App
-
-      // Prevent dragging but allow scrolling
-      document.body.style.userSelect = 'none';  // Prevent text selection
-      document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
-      document.body.style.userDrag = 'none';  // Prevent drag on other browsers
-
-      // Prevent drag event on the whole document, but allow scrolling
-      document.body.addEventListener('touchstart', function (e) {
-        e.preventDefault(); // Prevent drag/scroll on touch
-      }, { passive: false });
-
-      // Enable the Telegram app functionality
-      tg.resize();
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
-  <style>
-    /* Ensure the body remains static, prevent any drag but allow scrolling */
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: auto; /* Allow scrolling */
-      background-color: black;  /* Set the background to black */
-      color: white;  /* Text color for contrast */
-      touch-action: none;  /* Disable some gestures like pinch-to-zoom */
-    }
-
-    html, body {
-      height: 100%;
-    }
-
-    /* Allow interactive elements to function normally */
-    .interactive {
-      touch-action: manipulation; /* Allow touch events for interactive elements */
-    }
-
-    /* Disable user drag actions globally */
-    * {
-      -webkit-user-drag: none;
-      user-drag: none;
-    }
-  </style>
-
-</head>
-
-<body>
-  <div id="root">
-
-  </div>
+  <!-- This div is empty and can be used for your existing content -->
+  <div id="root"></div>
 
   <script type="module" src="/src/main.jsx"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
