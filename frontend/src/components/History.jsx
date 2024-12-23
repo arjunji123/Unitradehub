@@ -68,23 +68,42 @@ console.log('withdrawal', withdrawal)
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, approve it!",
       customClass: {
-        popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]", // Adjust width for mobile
-        title: "text-white text-sm sm:text-base font-bold", // Smaller text for mobile, larger for larger screens
-        content: "text-gray-300 text-xs sm:text-sm", // Adjust description size for mobile
+        popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]", // Popup styling
+        title: "text-white text-sm sm:text-base font-bold", // Title styling
+        content: "text-gray-300 text-xs sm:text-sm", // Content styling
+        confirmButton: "bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded",
+        cancelButton: "bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded",
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        setLoading(true); // Show the loader before starting the API calls
+        setLoading(true); // Show loader
         try {
           await dispatch(userApprove({ transaction_id }));
           await dispatch(fetchWithdrawal());
-          await dispatch(fetchHistory()); // Refresh history data as well
-          Swal.fire("Approved!", "The transaction has been approved.", "success");
+          await dispatch(fetchHistory()); // Refresh history data
+          Swal.fire({
+            title: "Approved!",
+            text: "The transaction has been approved.",
+            icon: "success",
+            customClass: {
+              popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]",
+              title: "text-white text-sm sm:text-base font-bold",
+              content: "text-gray-300 text-xs sm:text-sm",
+            },
+          });
         } catch (error) {
-          Swal.fire("Failed!", "The transaction could not be approved.", "error");
-        }
-        finally {
-          setLoading(false); // Hide the loader after the operations are done
+          Swal.fire({
+            title: "Failed!",
+            text: "The transaction could not be approved.",
+            icon: "error",
+            customClass: {
+              popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]",
+              title: "text-white text-sm sm:text-base font-bold",
+              content: "text-gray-300 text-xs sm:text-sm",
+            },
+          });
+        } finally {
+          setLoading(false); // Hide loader
         }
       }
     });
