@@ -35,13 +35,29 @@
         const deltaY = moveY - startY;
   
         // Allow vertical scrolling but suppress large vertical swipes
-        if (Math.abs(deltaY) > 50) {
+        if (Math.abs(deltaY) > 50 && document.body.scrollHeight === window.innerHeight) {
           e.preventDefault(); // Prevent large swipe gestures that could trigger close
         }
       }, { passive: false });
   
       // Allow Telegram app to adjust layout
       tg.resize();
+         // Prevent overscroll bounce effect on iOS
+    document.addEventListener(
+      'touchmove',
+      function (e) {
+        if (window.scrollY === 0 && e.touches[0].clientY > startY) {
+          e.preventDefault();
+        }
+        if (
+          window.scrollY + window.innerHeight >= document.body.scrollHeight &&
+          e.touches[0].clientY < startY
+        ) {
+          e.preventDefault();
+        }
+      },
+      { passive: false }
+    );
     });
   </script>
 
