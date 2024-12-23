@@ -17,20 +17,29 @@
     document.addEventListener('DOMContentLoaded', function () {
       const tg = window.Telegram.WebApp;
       tg.ready(); // Initialize Telegram Web App
-
-      // Allow scrolling but prevent dragging and text selection
-      document.body.style.overflow = 'auto';  // Allow scrolling
-
-      // Prevent dragging across the entire body
-      document.body.style.userSelect = 'none';  // Prevent text selection
-      document.body.style.webkitUserDrag = 'none';  // Prevent drag on webkit browsers
-      document.body.style.userDrag = 'none';  // Prevent drag on other browsers
-
-      // Disable drag on individual elements using event listener
+  
+      // Allow scrolling by not interfering with normal touchmove events
+      document.body.style.overflow = 'auto'; // Allow scrolling
+      document.body.style.userSelect = 'none'; // Prevent text selection
+      document.body.style.webkitUserDrag = 'none'; // Prevent drag on webkit browsers
+      document.body.style.userDrag = 'none'; // Prevent drag on other browsers
+  
+      // Detect drag gestures and prevent closing the bot
+      let startY;
+      document.body.addEventListener('touchstart', function (e) {
+        startY = e.touches[0].clientY;
+      });
+  
       document.body.addEventListener('touchmove', function (e) {
-        e.preventDefault(); // Prevent scrolling on touchmove to avoid drag behavior
+        const moveY = e.touches[0].clientY;
+        const deltaY = moveY - startY;
+  
+        // Allow vertical scrolling but suppress large vertical swipes
+        if (Math.abs(deltaY) > 50) {
+          e.preventDefault(); // Prevent large swipe gestures that could trigger close
+        }
       }, { passive: false });
-
+  
       // Allow Telegram app to adjust layout
       tg.resize();
     });
@@ -40,21 +49,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Ensure the body remains static, allow scrolling */
     body {
       margin: 0;
       padding: 0;
       overflow: auto; /* Allow scrolling */
-      background-color: black;  /* Set the background to black */
-      color: white;  /* Text color for contrast */
-      -webkit-user-drag: none;  /* Prevent drag for webkit browsers */
-      user-drag: none;  /* Prevent drag for other browsers */
+      background-color: black; /* Set the background to black */
+      color: white; /* Text color for contrast */
+      -webkit-user-drag: none; /* Prevent drag for webkit browsers */
+      user-drag: none; /* Prevent drag for other browsers */
     }
-
+  
     html, body {
       height: 100%;
     }
-
+  
     /* Allow interactive elements to function normally */
     .interactive {
       touch-action: manipulation; /* Allow touch events for interactive elements */
