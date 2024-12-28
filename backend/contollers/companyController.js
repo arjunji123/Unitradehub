@@ -430,34 +430,56 @@ exports.deleteRecord = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("An error occurred while deleting data", 500));
   }
 });
-
 exports.getAllCompaniesApi = catchAsyncErrors(async (req, res, next) => {
   try {
-    // Fetch all users where user_type is 'company' and join with company_data to get additional details
+    // Fetch all companies and their coin rate ranges
     const companiesQuery = await db.query(
       `SELECT u.id AS company_id, u.user_name AS company_name, 
-              c.coin_rate, c.description 
-       FROM users u 
-       LEFT JOIN company_data c ON u.id = c.company_id 
+            c.description,
+              cr.min_coins, cr.max_coins, cr.rate AS range_rate
+       FROM users u
+       LEFT JOIN company_data c ON u.id = c.company_id
+       LEFT JOIN coin_rate_ranges cr ON c.company_id = cr.company_id
        WHERE u.user_type = 'company'`
     );
 
-    console.log("Companies query result:", companiesQuery);
+    console.log("Companies query result:", companiesQuery[0]);
 
     // If no companies are found
     if (companiesQuery[0].length === 0) {
       return next(new ErrorHandler("No companies found", 404));
     }
 
-    // Map the results to a structured array of companies
-    const companies = companiesQuery[0].map((company) => ({
-      company_id: company.company_id,
-      company_name: company.company_name,
-      coin_rate: company.coin_rate || 0, // Set to 0 if null
-      description: company.description || "", // Set to an empty string if null
-    }));
+    // Map the results to a structured array of companies with coin ranges
+    const companies = companiesQuery[0].reduce((acc, company) => {
+      let existingCompany = acc.find(
+        (item) => item.company_id === company.company_id
+      );
 
-    // Send the response with the list of companies
+      // If company doesn't exist yet in the accumulator, create it
+      if (!existingCompany) {
+        existingCompany = {
+          company_id: company.company_id,
+          company_name: company.company_name,
+          description: company.description || "",
+          coin_ranges: [],
+        };
+        acc.push(existingCompany);
+      }
+
+      // If there is a coin range, add it to the company's coin_ranges
+      if (company.min_coins && company.max_coins && company.range_rate) {
+        existingCompany.coin_ranges.push({
+          min_coins: company.min_coins,
+          max_coins: company.max_coins,
+          rate: company.range_rate,
+        });
+      }
+
+      return acc;
+    }, []);
+
+    // Send the response with the companies data including their coin ranges
     res.status(200).json({
       success: true,
       data: companies,
@@ -498,9 +520,12 @@ exports.getCompanyDetailApi = catchAsyncErrors(async (req, res, next) => {
 
     const user = userQuery[0][0]; // Extract user details
 
-    // Fetch company data from the 'company_data' table using the companyId
+    // Fetch company data and coin rate ranges using the companyId
     const companyDataQuery = await db.query(
-      "SELECT coin_rate, description FROM company_data WHERE company_id = ?",
+      `SELECT c.description, cr.min_coins, cr.max_coins, cr.rate AS range_rate
+       FROM company_data c
+       LEFT JOIN coin_rate_ranges cr ON c.company_id = cr.company_id
+       WHERE c.company_id = ?`,
       [companyId]
     );
 
@@ -513,14 +538,21 @@ exports.getCompanyDetailApi = catchAsyncErrors(async (req, res, next) => {
 
     const companyData = companyDataQuery[0][0]; // Extract company data details
 
+    // Map the coin ranges if they exist
+    const coinRanges = companyDataQuery[0].map((row) => ({
+      min_coins: row.min_coins,
+      max_coins: row.max_coins,
+      rate: row.range_rate,
+    }));
+
     // Construct the response object with all the necessary details
     const companyProfile = {
       company_name: user.user_name,
-      coin_rate: companyData.coin_rate || 0, // If coin_rate is null, set to 0
       description: companyData.description || "", // If description is null, set to an empty string
+      coin_ranges: coinRanges, // Add the coin ranges to the response
     };
 
-    // Send the response with the company's profile
+    // Send the response with the company's profile and coin ranges
     res.status(200).json({
       data: companyProfile,
     });
