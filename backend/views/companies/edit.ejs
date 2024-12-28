@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-12">
-        <div class="card" style="margin-top: 26px;">
+        <div class="card">
             <div class="card-body">
                 <h4 class="header-title">
                     Edit - <%= user.user_name %>
@@ -29,13 +29,7 @@
 
                             <!-- Company Fields -->
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label for="coin_rate" class="form-label">Coin Rate</label>
-                                        <input type="text" name="coin_rate" class="form-control"
-                                            value="<%= companyData.coin_rate %>" required>
-                                    </div>
-                                </div>
+
                                 <div class="row">
                                     <div class="col-lg-12 float-left">
                                         <div class="mb-3">
@@ -46,6 +40,55 @@
                                     </div>
                                 </div>
 
+                            </div>
+
+                            <!-- Coin Rate Ranges -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h5 class="text-primary mb-4">Coin Rate Ranges</h5>
+                                    <div class="mb-3">
+                                        <label for="coin_rate_ranges" class="form-label">Define Coin Rate Ranges</label>
+                                        <div id="coinRateRanges">
+                                            <% coinRateRanges.forEach(function(range, index) { %>
+                                                <div class="range-row mb-3 p-3 border rounded shadow-sm">
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <label for="min_coins_<%= index %>" class="form-label">Min
+                                                                Coins</label>
+                                                            <input type="number" name="coin_rate_ranges[start][]"
+                                                                class="form-control" value="<%= range.min_coins %>"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label for="max_coins_<%= index %>" class="form-label">Max
+                                                                Coins</label>
+                                                            <input type="number" name="coin_rate_ranges[end][]"
+                                                                class="form-control" value="<%= range.max_coins %>"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <label for="rate_<%= index %>"
+                                                                class="form-label">Rate</label>
+                                                            <input type="number" name="coin_rate_ranges[rate][]"
+                                                                class="form-control" value="<%= range.rate %>" required>
+                                                        </div>
+                                                        <div
+                                                            class="col-lg-3 d-flex align-items-center justify-content-center">
+                                                            <button type="button"
+                                                                class="btn btn-danger remove-range">Remove</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% }); %>
+                                        </div>
+
+                                        <!-- Add Range Button -->
+                                        <div class="d-flex justify-content-start mt-3">
+                                            <button type="button" class="btn btn-success" id="add-range">+ Add
+                                                Range</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Status Field -->
@@ -71,3 +114,100 @@
         </div> <!-- end card -->
     </div> <!-- end col -->
 </div>
+
+
+<script>
+    // Add new coin rate range fields dynamically
+    document.getElementById("add-range").addEventListener("click", function () {
+        const rangeContainer = document.getElementById("coinRateRanges");
+        const index = rangeContainer.children.length;
+        const rangeRow = `
+            <div class="range-row mb-3 p-3 border rounded shadow-sm">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label for="min_coins_${index}" class="form-label">Min Coins</label>
+                        <input type="number" name="coin_rate_ranges[start][]" class="form-control" required>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="max_coins_${index}" class="form-label">Max Coins</label>
+                        <input type="number" name="coin_rate_ranges[end][]" class="form-control" required>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="rate_${index}" class="form-label">Rate</label>
+                        <input type="number" name="coin_rate_ranges[rate][]" class="form-control" required>
+                    </div>
+                    <div class="col-lg-3 d-flex align-items-center justify-content-center">
+                        <button type="button" class="btn btn-danger remove-range">Remove</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        rangeContainer.insertAdjacentHTML('beforeend', rangeRow);
+    });
+
+    // Remove coin rate range fields dynamically
+    document.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains("remove-range")) {
+            event.target.closest(".range-row").remove();
+        }
+    });
+</script>
+
+<style>
+    .range-row {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .range-row input {
+        font-size: 14px;
+    }
+
+    .range-row label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    #add-range {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .remove-range {
+        font-size: 14px;
+        padding: 5px 10px;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    .remove-range:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .form-control {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .btn-success {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .btn-danger {
+        font-size: 14px;
+    }
+</style>
