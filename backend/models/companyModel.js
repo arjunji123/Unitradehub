@@ -10,7 +10,10 @@ const module_slug = "companies";
 const module_layout = "layouts/main";
 
 const insertSchema = Joi.object({
-  description: Joi.string().required(),
+  user_name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  mobile: Joi.string().required(),
+  password: Joi.string().min(6).required(),
 });
 
 module.exports = {
