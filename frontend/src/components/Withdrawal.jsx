@@ -102,8 +102,15 @@ function Withdrawal() {
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
-  const handleSellClick = (coinRate, company_id) => {
-    setSelectedCoinRate(coinRate); // Set the selected coin rate
+  const handleSellClick = (coinRanges, company_id) => {
+    const { max_coins, min_coins, rate } = coinRanges;
+    if (min_coins > max_coins) {
+      console.log("Error: Minimum coins cannot be greater than maximum coins!");
+    } else {
+      console.log("Processing the sell operation...");
+      // Example API call or further logic
+    }
+    setSelectedCoinRate(coinRanges); // Set the selected coin rate
     setCompany_id(company_id); // Set the selected coin rate
     togglePopup(); // Open the popup
   };
@@ -214,10 +221,10 @@ function Withdrawal() {
 
 
   // Handle Button Click
-  const handleButtonClick = (coinRate, companyId) => {
+  const handleButtonClick = (coinRanges, companyId) => {
     if (userData && userData.referral_count >= 2) {
       // Open popup or perform the Sell action
-      handleSellClick(coinRate, companyId);
+      handleSellClick(coinRanges, companyId);
     } else {
       // Show SweetAlert
       showAlert();
@@ -294,12 +301,34 @@ function Withdrawal() {
                         </div>
                         <div className="text-sm font-medium text-[#5B5A5C]">123 Orders (30D) | 98%</div>
                       </div>
-                      <div className="flex justify-between items-center py-1.5">
+                      {/* <div className="flex justify-between items-center py-1.5">
                         <p className="font-bold flex  font-Inter items-center  ">
                           <BsCurrencyRupee className="" />  <span className="text-[20px] ">{company.coin_rate}</span></p>
                         <div className="text-sm font-medium text-[#5B5A5C]">Online</div>
-                      </div>
-                      <div className="flex justify-between items-start">
+                      </div> */}
+                      {company && company.coin_ranges && company.coin_ranges.length > 0 ? (
+                        company.coin_ranges && company.coin_ranges.map((range , index) => (
+                          <div key={index} className="flex justify-between items-start">
+                          <div className="leading-4 ">
+                            <p className="flex">
+                              <span className="text-xs font-bold text-[#5B5A5C]">Coin Rate:</span>
+                              <span className="text-xs font-medium ml-2 text-[#B8B7BA] flex"> 
+                              <BsCurrencyRupee  size={14}/>  <span >   {range.rate}</span>
+                             </span>
+                            </p>
+                            <p>
+                              <span className="text-xs font-bold text-[#5B5A5C]">Limit</span>
+                              <span className="text-xs font-medium ml-2 text-[#B8B7BA]">{range.min_coins} - {range.max_coins} INR</span>
+                            </p>
+                          </div>
+                          <p className="flex items-start text-green-500 gap-0.5 self-start"> {/* Added self-start */}
+                            <IoMdThumbsUp size={24} className="pt-1" />
+                            <span className="text-sm font-medium leading-loose">100%</span>
+                          </p>
+                        </div>
+                        )) ): null
+                      }
+                      {/* <div className="flex justify-between items-start">
                         <div className="leading-4 ">
                           <p>
                             <span className="text-xs font-bold text-[#5B5A5C]">Quantity</span>
@@ -310,18 +339,18 @@ function Withdrawal() {
                             <span className="text-xs font-medium ml-2 text-[#B8B7BA]">22,000 - 22,000 INR</span>
                           </p>
                         </div>
-                        <p className="flex items-start text-green-500 gap-0.5 self-start"> {/* Added self-start */}
+                        <p className="flex items-start text-green-500 gap-0.5 self-start"> 
                           <IoMdThumbsUp size={24} className="pt-1" />
                           <span className="text-sm font-medium leading-loose">100%</span>
                         </p>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between items-center py-1.5 ">
                         <div className="">
 
                         </div>
                         <button
                           className="leading-none px-3 py-1.5 text-sm rounded-full bg-red-600 flex text-white font-semibold hover:bg-red-500 transition duration-200 ease-in-out"
-                          onClick={() => handleButtonClick(company.coin_rate, company.company_id)}
+                          onClick={() => handleButtonClick(company.coin_ranges, company.company_id)}
                         >Sell
                         </button>
                       </div>
@@ -346,7 +375,7 @@ function Withdrawal() {
         }
         {
           showPopup && <Sell togglePopup={togglePopup} handleSellChange={handleSellChange} handleSellSubmit={handleSellSubmit}
-            coinRate={selectedCoinRate} userData={userData} company_id={company_id} />
+          coinRanges={selectedCoinRate} userData={userData} company_id={company_id} />
         }
         {
           sharePopup && <ShareCoin
