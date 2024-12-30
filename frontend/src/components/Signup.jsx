@@ -1,13 +1,11 @@
-import React, { useState , useEffect} from "react";
-import { Link, useNavigate, useLocation  } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for the eye button
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast notifications
 import "../Styles/LoginDesign.css";
 import ToastNotification from "./Toast";
 import { BACKEND_URL } from '../config';
-import Loader from '../components/Loader';
 // Custom Hook for Referral Code
 
 function Signup() {
@@ -31,48 +29,48 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");// Use location to access the URL parameters
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-useEffect(() => {
-  const getReferralCode = () => {
-    let referralCode = null;
+  useEffect(() => {
+    const getReferralCode = () => {
+      let referralCode = null;
 
-    // Check if we are inside the Telegram Web App
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-      console.log("Inside Telegram Web App");
+      // Check if we are inside the Telegram Web App
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+        console.log("Inside Telegram Web App");
 
-      // Decode initData
-      const initDataDecoded = decodeURIComponent(window.Telegram.WebApp.initData);
-      console.log("Decoded initData:", initDataDecoded);
+        // Decode initData
+        const initDataDecoded = decodeURIComponent(window.Telegram.WebApp.initData);
+        console.log("Decoded initData:", initDataDecoded);
 
-      // Parse initData to extract start_param
-      const urlParams = new URLSearchParams(initDataDecoded);
-      referralCode = urlParams.get("start_param"); // Use 'start_param' instead of 'startapp'
-      console.log("Referral Code from Telegram WebApp:", referralCode);
-    }
+        // Parse initData to extract start_param
+        const urlParams = new URLSearchParams(initDataDecoded);
+        referralCode = urlParams.get("start_param"); // Use 'start_param' instead of 'startapp'
+        console.log("Referral Code from Telegram WebApp:", referralCode);
+      }
 
-    // Fallback to URL parameters if not in WebApp
-    if (!referralCode) {
-      const currentUrlParams = new URLSearchParams(window.location.search);
-      referralCode = currentUrlParams.get("start_param"); // Check for 'start_param' in URL
-      console.log("Referral Code from URL:", referralCode);
-    }
+      // Fallback to URL parameters if not in WebApp
+      if (!referralCode) {
+        const currentUrlParams = new URLSearchParams(window.location.search);
+        referralCode = currentUrlParams.get("start_param"); // Check for 'start_param' in URL
+        console.log("Referral Code from URL:", referralCode);
+      }
 
-    if (referralCode) {
-      setValues((prev) => ({
-        ...prev,
-        referral_by: referralCode,
-      }));
-      console.log("Referral code set to state:", referralCode);
-    } else {
-      console.log("No referral code found");
-    }
-  };
+      if (referralCode) {
+        setValues((prev) => ({
+          ...prev,
+          referral_by: referralCode,
+        }));
+        console.log("Referral code set to state:", referralCode);
+      } else {
+        console.log("No referral code found");
+      }
+    };
 
-  getReferralCode();
-}, [location]); // Run this effect when location changes
+    getReferralCode();
+  }, [location]); // Run this effect when location changes
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -125,10 +123,10 @@ useEffect(() => {
     if (name === "confirmPassword") validateConfirmPassword(value);
   };
 
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Display validation errors if any field is invalid
     if (
       !values.email || errors.email ||
@@ -140,35 +138,35 @@ useEffect(() => {
       setShowToast(true);
       return; // Exit without sending the request
     }
-  
+
     setLoading(true); // Start the loader while sending the request
-  
+
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/api-register`,
         values
       );
-  
+
       console.log("Server Response:", response);
-  
+
       // Assuming user ID is returned in the response
       const userId = response.data.user.id;
       console.log("userId:", userId);
-  
+
       setToastMessage("Registration successful!");
       setShowToast(true);
-  
+
       // Redirect to the Payment page with the generated userId
       setTimeout(() => {
         navigate(`/payment/${userId}`);
       }, 500);
     } catch (err) {
       setLoading(false); // Ensure the loader stops in case of an error
-  
+
       // Check if the error is from the server (err.response exists)
       if (err.response) {
         const errorMessages = err.response.data.error;
-  
+
         if (typeof errorMessages === "string") {
           setToastMessage(errorMessages);
         } else if (Array.isArray(errorMessages) && errorMessages.length > 0) {
@@ -185,13 +183,13 @@ useEffect(() => {
         console.log("Axios Error:", err);
         setToastMessage("An unexpected error occurred. Please try again.");
       }
-  
+
       setShowToast(true); // Show the error toast
     } finally {
       setLoading(false); // Hide the loader after request completes
     }
   };
-  
+
   useEffect(() => {
     const handleResize = () => {
       const appHeight = window.innerHeight;
@@ -214,132 +212,118 @@ useEffect(() => {
   };
 
   return (
-    <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden" >
-    <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
-    <div   
-                  className="w-full max-w-lg bg-black text-white min-h-screen sm:h-auto  shadow-2xl  "
+    <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden">
+      <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
+      <div className="w-full max-w-md bg-black text-white rounded-lg shadow-lg  font-Inter">
 
-    >
+        <div id="content" className="p-6 space-y-6">
+          <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
 
-      <div id="content" className="p-4 sm:p-6 space-y-6 h-full overflow-y-auto touch-auto"  >
-        <h2 className="text-2xl sm:text-4xl font-bold text-center mb-4 sm:mb-6 tracking-tight text-[#eaeaea]">
-          Sign Up
-        </h2>
-  
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 " >
-  
-          {/* Name and Mobile Input */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Name Input */}
             <div className="relative">
+              <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Name</label>
               <input
                 type="text"
                 name="user_name"
-                onFocus={handleFocus} // Add this
+                onFocus={handleFocus}
                 value={values.user_name}
                 onChange={handleInput}
                 required
-                aria-label="Name"
-                className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
-                placeholder="Name"
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Enter your name"
               />
-
             </div>
+
+            {/* Mobile Number Input */}
             <div className="relative">
+              <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Mobile No</label>
               <input
                 type="tel"
                 name="mobile"
                 value={values.mobile}
-                onFocus={handleFocus} // Add this
+                onFocus={handleFocus}
                 onChange={handleInput}
                 onBlur={handleBlur}
                 required
-                aria-label="Mobile No."
-                className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
-                placeholder="Mobile No."
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Enter your mobile number"
               />
-                        {errors.mobile && <span className="error-message text-xs text-red-500">{errors.mobile}</span>}
-
+              {errors.mobile && <span className="text-xs text-red-500">{errors.mobile}</span>}
             </div>
-          </div>
-          
-  
-          {/* Email Input */}
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              value={values.email}
-              onFocus={handleFocus} // Add this
-              onChange={handleInput}
-              onBlur={handleBlur}
-              required
-              aria-label="Email"
-              className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
-              placeholder="Email"
-            />
-                      {errors.email && <span className="error-message text-xs text-red-500">{errors.email}</span>}
 
-          </div>
-  
-          {/* Password and Confirm Password Inputs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {/* Password */}
+            {/* Email Input */}
             <div className="relative">
+              <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={values.email}
+                onFocus={handleFocus}
+                onChange={handleInput}
+                onBlur={handleBlur}
+                required
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Enter your email id"
+              />
+              {errors.email && <span className="text-xs text-red-500">{errors.email}</span>}
+            </div>
+
+            {/* Password Input */}
+            <div className="relative">
+              <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={values.password}
-                onFocus={handleFocus} // Add this
+                onFocus={handleFocus}
                 onChange={handleInput}
                 onBlur={handleBlur}
                 required
-                aria-label="Password"
-                className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
-                placeholder="Password"
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Enter your password"
               />
               <button
                 type="button"
                 aria-label="Toggle Password Visibility"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-[#00c6ff] transition"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition"
               >
                 {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
               </button>
-              {errors.password && <span className="error-message text-xs text-red-500">{errors.password}</span>}
-
+              {errors.password && <span className="text-xs text-red-500">{errors.password}</span>}
             </div>
-  
-            {/* Confirm Password */}
+
+            {/* Confirm Password Input */}
             <div className="relative">
+              <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Confirm Password</label>
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={values.confirmPassword}
-                onFocus={handleFocus} // Add this
+                onFocus={handleFocus}
                 onChange={handleInput}
                 onBlur={handleBlur}
                 required
-                aria-label="Confirm Password"
-                className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
-                placeholder="Confirm Password"
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Enter your confirm password"
               />
               <button
                 type="button"
                 aria-label="Toggle Confirm Password Visibility"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-[#00c6ff] transition"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition"
               >
                 {showConfirmPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
               </button>
               {errors.confirmPassword && (
-            <span className="error-message text-xs text-red-500">{errors.confirmPassword}</span>
-          )}
+                <span className="text-xs text-red-500">{errors.confirmPassword}</span>
+              )}
             </div>
-         
-          </div>
-  
-          {/* UPI ID Input */}
-          <div className="relative">
+  {/* UPI ID Input */}
+  <div className="relative">
+  <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">UPI ID</label>
             <input
               type="text"
               name="upi_id"
@@ -348,19 +332,17 @@ useEffect(() => {
               onChange={handleInput}
               required
               aria-label="UPI ID"
-              className="w-full px-4 py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-400 text-sm sm:text-base "
+              className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
               placeholder="UPI ID"
             />
           </div>
-  
-          {/* Submit Button */}
-          <div className="flex justify-center">
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 sm:py-4 text-sm sm:text-base uppercase font-bold text-black bg-white rounded-lg shadow-md hover:scale-105 hover:shadow-lg transition-transform"
+              className="w-full py-3 bg-[#6339F9] text-white font-bold rounded-full hover:bg-blue-700 transition"
               disabled={loading}
             >
-              {loading ? (
+               {loading ? (
                 <div className="flex justify-center items-center">
                   <div className="spinner"></div>
                 </div>
@@ -368,11 +350,9 @@ useEffect(() => {
                 "Sign Up"
               )}
             </button>
-          </div>
-        </form>
-  
-        {/* Spinner Styles */}
-        <style jsx>{`
+          </form>
+   {/* Spinner Styles */}
+   <style jsx>{`
           .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #000000;
@@ -391,20 +371,34 @@ useEffect(() => {
             }
           }
         `}</style>
-      </div>
-  
-      {/* Footer */}
-      <div className="bg-[#111113] py-4 sm:py-6 text-center">
-        <p className="text-xs sm:text-sm text-[#909090]">
-          Already have an account?
-          <Link to="/login" className="text-white font-semibold hover:underline ml-1">
-            Login
-          </Link>
-        </p>
+          {/* Terms and Privacy */}
+          <div className="flex items-center justify-center mt-4 space-x-2">
+            <input
+              type="checkbox"
+              id="terms"
+              name="terms"
+              required
+              className="w-4 h-4 text-blue-500 bg-[#1f2024] border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="terms" className="text-xs text-gray-400">
+              By clicking 'Sign Up,' you agree to Block View's
+              <a href="#" className="text-blue-500 hover:underline mx-1">Terms of Service</a>
+              and
+              <a href="#" className="text-blue-500 hover:underline mx-1">Privacy Policy</a>.
+            </label>
+          </div>
+
+
+          {/* Login Link */}
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Already have an account?
+            <Link to="/login" className="text-blue-500 hover:underline ml-1">Log in</Link>
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  
+
+
   );
 }
 const styles = {
