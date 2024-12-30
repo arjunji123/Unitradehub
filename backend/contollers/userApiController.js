@@ -1403,8 +1403,7 @@ exports.createSellTransaction = async (req, res, next) => {
       tranction_coin: Joi.number().required(),
       transction_amount: Joi.number().required(),
       status: Joi.string()
-        .valid("unapproved", "approved", "rejected")
-        .required(),
+        .valid("unapproved", "approved", "rejected"),
     });
 
     await schema.validateAsync(req.body, {
