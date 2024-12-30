@@ -11,6 +11,7 @@ const Joi = require("joi");
 const QueryModel = require("../models/queryModel");
 const { log } = require("console");
 const moment = require("moment-timezone");
+const request = require("request");
 
 const registerSchema = Joi.object({
   user_name: Joi.string().required(),
@@ -1440,7 +1441,19 @@ exports.createSellTransaction = async (req, res, next) => {
 
     // Step 3: Check user's coin balance
     const [userData] = await db.query(
-      "SELECT coins FROM user_data WHERE user_id = ?",
+      `
+      SELECT 
+        u.user_name, 
+        ud.coins 
+      FROM 
+        users u 
+      INNER JOIN 
+        user_data ud 
+      ON 
+        u.id = ud.user_id 
+      WHERE 
+        u.id = ?
+      `,
       [user_id]
     );
 
@@ -1458,12 +1471,14 @@ exports.createSellTransaction = async (req, res, next) => {
       return next(new ErrorHandler("Insufficient coins", 400));
     }
 
+    const userName = userData[0]?.user_name;
+    console.log(userName);
+
     // Step 4: Create transaction in the database
     const [transactionResult] = await db.query(
       `INSERT INTO user_transction 
       (user_id, company_id, tranction_coin, tranction_rate, transction_amount, data_created, status) 
       VALUES (?, ?, ?, ?, ?, NOW(), "unapproved")`,
-
       [
         user_id,
         req.body.company_id,
@@ -1509,10 +1524,47 @@ exports.createSellTransaction = async (req, res, next) => {
 
     console.log("Audit Entry Created Successfully");
 
-    // Step 7: Respond with success message
+    // Step 7: Fetch company data to get the company mobile number
+    const [companyData] = await db.query(
+      "SELECT mobile FROM users WHERE id = ?",
+      [req.body.company_id]
+    );
+
+    // Ensure company mobile number exists
+    if (!companyData || companyData.length === 0) {
+      return next(new ErrorHandler("Company mobile number not found", 404));
+    }
+
+    const companyMobileNo = companyData[0]?.mobile;
+
+    // Step 8: Construct the concise message body
+    const message = `
+    • User: ${userName}
+    • Requested to sell: ${req.body.tranction_coin} coins
+    • Transaction Amount: ₹${req.body.transction_amount}
+    `;
+
+    // Step 9: Send the message via UltraMsg API
+    const options = {
+      method: "POST",
+      url: "https://api.ultramsg.com/instance102785/messages/chat",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      form: {
+        token: "wqgyrqdxhmyu51bh", // Your UltraMsg API token
+        to: `+91${companyMobileNo}`, // Company mobile number
+        body: message,
+      },
+    };
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+      console.log(body);
+    });
+
+    // Step 10: Respond with success message
     res.status(201).json({
       success: true,
-      message: "Transaction and audit entry created successfully!",
+      message: "Transaction, audit entry, and message sent successfully!",
     });
   } catch (error) {
     console.error("Error creating sell transaction:", error);
@@ -1530,6 +1582,144 @@ exports.createSellTransaction = async (req, res, next) => {
     );
   }
 };
+
+// exports.createSellTransaction = async (req, res, next) => {
+//   try {
+//     console.log("Request Body:", req.body);
+
+//     // Step 1: Validate incoming request (making sure required fields are present)
+//     const schema = Joi.object({
+//       company_id: Joi.string().required(),
+//       tranction_coin: Joi.number().required(),
+//       transction_amount: Joi.number().required(),
+//     });
+
+//     await schema.validateAsync(req.body, {
+//       abortEarly: false,
+//       allowUnknown: true,
+//     });
+
+//     const user_id = req.user?.id; // Get the user ID from the request (assuming middleware provides user)
+//     console.log("User ID:", user_id);
+
+//     // Check if user ID exists
+//     if (!user_id) {
+//       return next(new ErrorHandler("User ID is required", 401));
+//     }
+
+//     // Step 2: Fetch company data from coin_rate_ranges table
+//     const [rateData] = await db.query(
+//       "SELECT rate FROM coin_rate_ranges WHERE company_id = ?",
+//       [req.body.company_id]
+//     );
+
+//     // Check if the rate data was found for the company ID
+//     if (!rateData || rateData.length === 0) {
+//       return next(
+//         new ErrorHandler("Rate not found or invalid company ID", 404)
+//       );
+//     }
+
+//     // Parse the rate value from the fetched data
+//     const transactionRate = parseFloat(rateData[0]?.rate);
+//     if (isNaN(transactionRate)) {
+//       return next(
+//         new ErrorHandler('"tranction_rate" must be a valid number', 400)
+//       );
+//     }
+
+//     // Step 3: Check user's coin balance
+//     const [userData] = await db.query(
+//       "SELECT coins FROM user_data WHERE user_id = ?",
+//       [user_id]
+//     );
+
+//     // Check if user data exists
+//     if (!userData || userData.length === 0) {
+//       return next(new ErrorHandler("User not found", 404));
+//     }
+
+//     // Parse user's coins and transaction coins
+//     const userCoins = parseFloat(userData[0]?.coins);
+//     const transactionCoins = parseFloat(req.body.tranction_coin);
+
+//     // Validate if the user has enough coins
+//     if (userCoins < transactionCoins) {
+//       return next(new ErrorHandler("Insufficient coins", 400));
+//     }
+
+//     // Step 4: Create transaction in the database
+//     const [transactionResult] = await db.query(
+//       `INSERT INTO user_transction 
+//       (user_id, company_id, tranction_coin, tranction_rate, transction_amount, data_created, status) 
+//       VALUES (?, ?, ?, ?, ?, NOW(), "unapproved")`,
+
+//       [
+//         user_id,
+//         req.body.company_id,
+//         transactionCoins,
+//         transactionRate,
+//         req.body.transction_amount,
+//       ]
+//     );
+
+//     const transactionId = transactionResult?.insertId;
+//     if (!transactionId) {
+//       throw new Error("Failed to generate transaction ID.");
+//     }
+//     console.log("Generated Transaction ID:", transactionId);
+
+//     // Step 5: Deduct coins from the user's balance
+//     const updatedCoins = userCoins - transactionCoins;
+//     await db.query("UPDATE user_data SET coins = ? WHERE user_id = ?", [
+//       updatedCoins,
+//       user_id,
+//     ]);
+
+//     console.log(`Coins updated. Remaining Coins: ${updatedCoins}`);
+
+//     // Step 6: Create an audit entry
+//     const auditParams = [
+//       user_id,
+//       req.body.company_id,
+//       "withdrawal", // Audit type: withdrawal
+//       "sell coins", // Title for the audit entry
+//       "waiting", // Status of the transaction
+//       -transactionCoins, // Negative value for withdrawal
+//       transactionId, // Transaction ID for audit tracking
+//     ];
+//     console.log("Audit Query Parameters:", auditParams);
+
+//     await db.query(
+//       `INSERT INTO usercoin_audit 
+//       (user_id, company_id, type, title, status, earn_coin, transaction_id, date_entered) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+//       auditParams
+//     );
+
+//     console.log("Audit Entry Created Successfully");
+
+//     // Step 7: Respond with success message
+//     res.status(201).json({
+//       success: true,
+//       message: "Transaction and audit entry created successfully!",
+//     });
+//   } catch (error) {
+//     console.error("Error creating sell transaction:", error);
+
+//     // Handle validation errors from Joi
+//     if (error.isJoi) {
+//       return next(
+//         new ErrorHandler(error.details.map((d) => d.message).join(", "), 400)
+//       );
+//     }
+
+//     // Handle other errors (e.g., database issues)
+//     return next(
+//       new ErrorHandler("Failed to create transaction: " + error.message, 500)
+//     );
+//   }
+// };
 
 ////////////////////////////////////
 exports.getUserHistory = catchAsyncErrors(async (req, res, next) => {
