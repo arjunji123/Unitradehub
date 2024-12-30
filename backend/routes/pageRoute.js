@@ -73,7 +73,7 @@ router
 
 /** REST API**/
 
-router.route("/api-" + module_slug + "/:id").get(apiGetSingleRecord);
+router.route("/api-" + module_slug + "/:id").get(isApiAuthenticatedUser, apiGetSingleRecord);
 router
   .route("/api-" + module_slug + "/complete-quest")
   .post(isApiAuthenticatedUser, completeQuest);
