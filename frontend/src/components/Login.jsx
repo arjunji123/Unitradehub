@@ -54,9 +54,9 @@ function Login() {
   }, []);
 
   return (
-    <div className="bg-white flex justify-center items-center min-h-screen ">
+    <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden ">
       <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
-      <div className="w-full max-w-lg bg-black text-white h-screen shadow-2xl overflow-hidden  ">
+      <div className="w-full max-w-lg bg-black text-white h-screen shadow-2xl overflow-hidden  font-Inter ">
         <div className="p-6 sm:p-10  shadow-lg relative ">
           <div className="absolute top-0 left-0 w-full h-1 "></div>
           {/* <div className="flex justify-center py-4 space-x-1">
@@ -69,56 +69,40 @@ function Login() {
               className="w-5 sm:w-6 h-5 sm:h-6 mt-0.5"
             />
           </div> */}
-          <h1 className="mt-4 text-2xl sm:text-3xl font-semibold text-[#e0e0e0] tracking-wide text-center">
-            {firstName}
-          </h1>
-          <p className="text-[#b0b0b0] text-xs sm:text-sm mt-2 text-center">
-            Unitrade smart. Unitrade efficiently.
-          </p>
         </div>
 
         {/* Form Section */}
         <div className="p-6 sm:p-8 space-y-6 ">
-          <h2 className="text-2xl sm:text-4xl font-bold text-center mb-4 sm:mb-6 tracking-tight text-[#eaeaea]">
-            Log In
+          <h2 className="text-2xl font-semibold text-center text-white mb-6">
+          Log in to your account
           </h2>
 
           <form onSubmit={handleLogin}
             className="space-y-4 sm:space-y-6 px-2 sm:px-4" >
             <div className="relative">
+            <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Mobile No</label>
               <input
                 type="number"
                 name="mobile"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
                 required
-                className="w-full px-3 sm:px-4 py-3 sm:py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-500 transition duration-300 ease-in-out text-sm sm:text-base"
-                placeholder="Phone Number"
+                className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
+                placeholder="Mobile Number"
                  autoComplete="mobile"
               />
             </div>
 
-            {/* <div className="relative">
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-3 sm:px-4 py-3 sm:py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-500 transition duration-300 ease-in-out text-sm sm:text-base"
-                placeholder="Password"
-              />
-            </div> */}
 
 <div className="relative">
-      {/* Password Input */}
+<label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Password</label>
       <input
         type={showPassword ? "text" : "password"} // Toggle input type
         name="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full px-3 sm:px-4 py-3 sm:py-3 bg-[#1f2024] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c6ff] placeholder-gray-500 transition duration-300 ease-in-out text-sm sm:text-base"
+        className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
         placeholder="Password"
         autoComplete="current-password"
       />
@@ -135,8 +119,8 @@ function Login() {
     <div className="flex justify-center">
   <button
     type="submit"
-    className={`w-full py-3 sm:py-4 text-sm sm:text-base font-Inter uppercase font-bold text-black bg-white rounded-lg shadow-md transform transition duration-300 ease-in-out ${
-      loading ? "cursor-not-allowed opacity-70" : "hover:scale-105 hover:bg-gray-200 hover:shadow-lg"
+    className={`w-full py-3 bg-[#6339F9] text-white font-bold rounded-full hover:bg-blue-700 transition ${
+      loading ? "cursor-not-allowed opacity-70" : "hover:scale-105 hover:bg-blue-600 hover:shadow-lg"
     }`}
     disabled={loading}
   >
@@ -182,7 +166,7 @@ function Login() {
           <p className="text-xs sm:text-sm text-[#909090]">
             New to Unitrade?
             <Link to="/" className="text-white font-semibold hover:underline ml-1">
-              Create an Account
+              Sign Up
             </Link>
           </p>
         </div>
