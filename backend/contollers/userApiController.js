@@ -1461,7 +1461,7 @@ exports.createSellTransaction = async (req, res, next) => {
     // Step 4: Create transaction in the database
     const [transactionResult] = await db.query(
       `INSERT INTO user_transction 
-      (user_id, company_id, tranction_coin, tranction_rate, transction_amount, date_created) 
+      (user_id, company_id, tranction_coin, tranction_rate, transction_amount, data_created) 
       VALUES (?, ?, ?, ?, ?, NOW())`,
 
       [
