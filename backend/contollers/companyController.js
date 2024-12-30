@@ -809,9 +809,9 @@ exports.getCompanyProfileApi = catchAsyncErrors(async (req, res, next) => {
 
     const { coin_rate = 0, company_coin = 0 } = userData[0]; // Extract and handle null values
 
-    // Fetch coin rate ranges from the 'coin_rate_ranges' table
+    // Fetch coin rate ranges from the 'coin_rate_ranges' table, including the 'id'
     const [coinRanges] = await db.query(
-      "SELECT min_coins, max_coins, rate FROM coin_rate_ranges WHERE company_id = ?",
+      "SELECT id, min_coins, max_coins, rate FROM coin_rate_ranges WHERE company_id = ?",
       [userId]
     );
 
@@ -825,7 +825,7 @@ exports.getCompanyProfileApi = catchAsyncErrors(async (req, res, next) => {
       mobile: user.mobile,
       company_coin, // If company_coin is null, it will be set to 0
       coin_rate, // If coin_rate is null, it will be set to 0
-      coin_ranges: ranges, // Include the coin ranges
+      coin_ranges: ranges, // Include the coin ranges with IDs
     };
 
     // Send the response with the user's profile
@@ -842,110 +842,84 @@ exports.getCompanyProfileApi = catchAsyncErrors(async (req, res, next) => {
 });
 
 ///////////////////////////////////////////
-
-// exports.updateCoinRateApi = catchAsyncErrors(async (req, res, next) => {
-//   const userId = req.user.id; // Get user ID from the request (assumes user authentication middleware is in place)
-//   const { coin_rate } = req.body; // Extract coin_rate from request body
-
-//   // Debugging: Log user ID and coin_rate
-//   console.log(`User ID: ${userId}, New Coin Rate: ${coin_rate}`);
-
-//   // Validate the coin_rate
-//   if (!coin_rate || isNaN(coin_rate) || coin_rate <= 0) {
-//     return next(new ErrorHandler("Invalid coin_rate provided", 400));
-//   }
-
-//   try {
-//     // Check if the user is a company (validate from the `users` table)
-//     const [userDetails] = await db.query(
-//       "SELECT user_type FROM users WHERE id = ?",
-//       [userId]
-//     );
-
-//     if (!userDetails || userDetails.length === 0) {
-//       return next(new ErrorHandler("User not found", 404));
-//     }
-
-//     const { user_type } = userDetails[0];
-
-//     if (user_type !== "company") {
-//       return next(
-//         new ErrorHandler(
-//           "Unauthorized: Only company users can update the coin rate",
-//           403
-//         )
-//       );
-//     }
-
-//     // Update the coin_rate in the company_data table
-//     const [updateResult] = await db.query(
-//       "UPDATE company_data SET coin_rate = ? WHERE company_id = ?",
-//       [coin_rate, userId]
-//     );
-
-//     // Check if the update affected any rows
-//     if (updateResult.affectedRows === 0) {
-//       return next(
-//         new ErrorHandler("No company found with the provided user ID", 404)
-//       );
-//     }
-
-//     // Send a success response back to the client
-//     res.status(200).json({
-//       success: true,
-//       message: "Coin rate updated successfully",
-//       data: {
-//         company_id: userId,
-//         coin_rate,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error updating coin rate:", error); // Log the error for debugging
-//     return next(new ErrorHandler("Database update failed", 500));
-//   }
-// });
 exports.updateCoinRateApi = catchAsyncErrors(async (req, res, next) => {
-  const userId = req.user.id; // Get user ID from the request (assumes user authentication middleware is in place)
-  const { coin_rate, coin_ranges } = req.body; // Extract coin_rate and coin_ranges from request body
+  const userId = req.user.id; // Assuming the user is authenticated and user ID is available in req.user
+  const { coin_ranges = [] } = req.body; // Extract coin_ranges, default to an empty array if not provided
 
-  // Debugging: Log user ID, coin_rate, and coin_ranges
-  console.log(`User ID: ${userId}, New Coin Rate: ${coin_rate}, Coin Ranges: ${JSON.stringify(coin_ranges)}`);
+  // Debug: Log the received body and extracted coin_ranges
+  console.log("DEBUG: Received request body:", req.body);
+  console.log("DEBUG: Extracted coin_ranges:", coin_ranges);
 
-  // Validate the coin_rate
-  if (!coin_rate || isNaN(coin_rate) || coin_rate <= 0) {
-    return next(new ErrorHandler("Invalid coin_rate provided", 400));
-  }
-
-  // Validate the coin_ranges (ensure it's an array and contains valid ranges)
+  // Ensure coin_ranges is a non-empty array
   if (!Array.isArray(coin_ranges) || coin_ranges.length === 0) {
-    return next(new ErrorHandler("Coin ranges should be an array and cannot be empty", 400));
+    console.error("ERROR: coin_ranges should be a non-empty array.");
+    return next(
+      new ErrorHandler("coin_ranges should be a non-empty array", 400)
+    );
   }
 
-  // Ensure each coin range has valid values
+  // Validate each coin range
   for (let range of coin_ranges) {
     const { min_coins, max_coins, rate } = range;
-    if (isNaN(min_coins) || isNaN(max_coins) || isNaN(rate)) {
-      return next(new ErrorHandler("Each coin range must have valid min_coins, max_coins, and rate values", 400));
+
+    const numericRate = parseFloat(rate);
+    if (isNaN(numericRate)) {
+      console.error("ERROR: Invalid numeric rate in range:", range);
+      return next(
+        new ErrorHandler(
+          "Each coin range must have a valid numeric rate value",
+          400
+        )
+      );
     }
-    if (min_coins <= 0 || max_coins <= 0 || rate <= 0 || min_coins > max_coins) {
-      return next(new ErrorHandler("Invalid coin range values (min_coins, max_coins, rate)", 400));
+
+    if (isNaN(min_coins) || isNaN(max_coins)) {
+      console.error("ERROR: Invalid min_coins or max_coins in range:", range);
+      return next(
+        new ErrorHandler(
+          "Each coin range must have valid min_coins, max_coins values",
+          400
+        )
+      );
+    }
+
+    if (
+      min_coins <= 0 ||
+      max_coins <= 0 ||
+      numericRate <= 0 ||
+      min_coins > max_coins
+    ) {
+      console.error(
+        "ERROR: Invalid coin range values (min_coins, max_coins, rate):",
+        range
+      );
+      return next(
+        new ErrorHandler(
+          "Invalid coin range values (min_coins, max_coins, rate)",
+          400
+        )
+      );
     }
   }
 
   try {
-    // Check if the user is a company (validate from the `users` table)
+    // Fetch user details
+    console.log("DEBUG: Fetching user details for userId:", userId);
     const [userDetails] = await db.query(
       "SELECT user_type FROM users WHERE id = ?",
       [userId]
     );
 
     if (!userDetails || userDetails.length === 0) {
+      console.error("ERROR: User not found for userId:", userId);
       return next(new ErrorHandler("User not found", 404));
     }
 
     const { user_type } = userDetails[0];
+    console.log("DEBUG: User type:", user_type);
 
     if (user_type !== "company") {
+      console.error("ERROR: Unauthorized access by userId:", userId);
       return next(
         new ErrorHandler(
           "Unauthorized: Only company users can update the coin rate",
@@ -954,47 +928,60 @@ exports.updateCoinRateApi = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    // Update the coin_rate in the company_data table
-    const [updateResult] = await db.query(
-      "UPDATE company_data SET coin_rate = ? WHERE company_id = ?",
-      [coin_rate, userId]
-    );
-
-    // Check if the update affected any rows
-    if (updateResult.affectedRows === 0) {
-      return next(
-        new ErrorHandler("No company found with the provided user ID", 404)
-      );
-    }
-
-    // Update the coin_rate_ranges in the coin_rate_ranges table
+    // Process each coin range
     for (let range of coin_ranges) {
-      const { min_coins, max_coins, rate } = range;
+      const { id, min_coins, max_coins, rate } = range;
 
-      // Insert or update the coin ranges
-      await db.query(
-        `INSERT INTO coin_rate_ranges (company_id, min_coins, max_coins, rate) 
-         VALUES (?, ?, ?, ?) 
-         ON DUPLICATE KEY UPDATE min_coins = ?, max_coins = ?, rate = ?`,
-        [userId, min_coins, max_coins, rate, min_coins, max_coins, rate]
-      );
+      if (id) {
+        // Debug: Log the update operation
+        console.log(
+          `DEBUG: Updating coin range with id ${id} for userId ${userId}:`,
+          range
+        );
+
+        // Update the existing range
+        await db.query(
+          `UPDATE coin_rate_ranges 
+           SET min_coins = ?, max_coins = ?, rate = ? 
+           WHERE id = ? AND company_id = ?`,
+          [min_coins, max_coins, rate, id, userId]
+        );
+      } else {
+        // Debug: Log the insert operation
+        console.log(
+          `DEBUG: Inserting new coin range for userId ${userId}:`,
+          range
+        );
+
+        // Insert a new coin range
+        await db.query(
+          `INSERT INTO coin_rate_ranges 
+           (company_id, min_coins, max_coins, rate) 
+           VALUES (?, ?, ?, ?)`,
+          [userId, min_coins, max_coins, rate]
+        );
+      }
     }
 
-    // Send a success response back to the client
+    // Success response
+    console.log(
+      "DEBUG: Successfully updated/inserted coin ranges for userId:",
+      userId
+    );
     res.status(200).json({
       success: true,
-      message: "Coin rate and coin ranges updated successfully",
+      message: "Coin ranges updated successfully",
       data: {
         company_id: userId,
-        coin_rate,
         coin_ranges,
       },
     });
   } catch (error) {
-    console.error("Error updating coin rate:", error); // Log the error for debugging
+    console.error("ERROR: Database update failed:", error);
     return next(new ErrorHandler("Database update failed", 500));
   }
 });
+
 
 exports.reqGetAllReqApi = async (req, res, next) => {
   try {
