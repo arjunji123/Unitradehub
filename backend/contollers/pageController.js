@@ -548,45 +548,44 @@ function generateSlug(quest_name) {
 //   }
 // };
 
-
 exports.getQuestHistory = async (req, res) => {
   try {
     const userId = req.user.id; // Assuming the user ID is available in req.user
 
     // Query to fetch quest data with user-specific completion status and additional condition for start_date
     const questHistoryQuery = `
-  SELECT 
-    q.id AS quest_id,
-    q.quest_name,
-    q.quest_type,
-    CASE 
-      WHEN q.activity = 'watch' THEN 'watch'
-      WHEN q.activity = 'follow' THEN 'follow'
-      ELSE 'unknown'
-    END AS activity,
-    q.quest_url,
-    q.date_created,
-    q.start_date,
-    q.end_date,
-    q.description,
-    q.status,
-    q.coin_earn,
-    q.social_media,
-    CASE 
-      WHEN uca.status = 'completed' THEN 'completed'
-      WHEN uca.status = 'waiting' THEN 'waiting'
-      ELSE 'not_completed'
-    END AS completion_status
-  FROM quest q
-  LEFT JOIN usercoin_audit uca 
-    ON q.id = uca.quest_id 
-    AND uca.user_id = ? 
-    AND uca.deleted = 0
-  WHERE q.deleted = 0
-    AND q.end_date >= CURDATE()  -- Ensure the quest end date is not in the past
-    AND DATE(q.start_date) <= CURDATE()  -- Ensure the quest start date is not in the future (strip time for comparison)
-`;
-
+        SELECT 
+        q.id AS quest_id,
+        q.quest_name,
+        q.quest_type,
+         q.screenshot_required,
+        CASE 
+          WHEN q.activity = 'watch' THEN 'watch'
+          WHEN q.activity = 'follow' THEN 'follow'
+          ELSE 'unknown'
+        END AS activity,
+        q.quest_url,
+        q.date_created,
+        q.start_date,
+        q.end_date,
+        q.description,
+        q.status,
+        q.coin_earn,
+        q.social_media,  -- Include social_media field in the query
+        CASE 
+          WHEN uca.status = 'completed' THEN 'completed'
+          WHEN uca.status = 'waiting' THEN 'waiting'
+          ELSE 'not_completed'
+        END AS completion_status
+      FROM quest q
+      LEFT JOIN usercoin_audit uca 
+        ON q.id = uca.quest_id 
+        AND uca.id = ? 
+        AND uca.deleted = 0
+      WHERE q.deleted = 0
+        AND q.end_date >= CURDATE()  -- Ensure the quest end date is not in the past
+        AND q.start_date <= CURDATE()  -- Ensure the quest start date is not in the future
+    `;
 
     // Execute the query to fetch all matching quests
     const [questHistory] = await db.query(questHistoryQuery, [userId]);
@@ -597,13 +596,15 @@ exports.getQuestHistory = async (req, res) => {
       quest_name: quest.quest_name,
       quest_type: quest.quest_type,
       activity: quest.activity,
+      screenshot_required: quest.screenshot_required,
       quest_url: quest.quest_url,
       date_created: moment(quest.date_created).format("MM/DD/YYYY, h:mm:ss A"),
       start_date: moment(quest.start_date).format("MM/DD/YYYY, h:mm:ss A"),
       end_date: moment(quest.end_date).format("MM/DD/YYYY, h:mm:ss A"),
       description: quest.description,
       status: quest.completion_status,
-      image: process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image,
+      image:
+        process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image,
       coin_earn: parseFloat(quest.coin_earn).toFixed(2),
       social_media: quest.social_media, // Include social_media in the response
     }));
