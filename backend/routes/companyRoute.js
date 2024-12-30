@@ -41,6 +41,7 @@ const {
   reqGetAllHistoryApiReqApi,
   reqGetUnapprovedWithDocApi,
   createCompanySellTransaction,
+addCoinRangeApi,
 } = require("../contollers/companyController");
 var upload = multer({ storage: Storage });
 // router.post("/users/update-status", updateUserStatus);
@@ -85,6 +86,10 @@ router
 router
   .route("/api-coinrate-update")
   .put(isApiAuthenticatedUser, updateCoinRateApi);
+
+router
+  .route("/api-addcoin-range")
+  .post(isApiAuthenticatedUser, addCoinRangeApi);
 
 router.route("/api-getall-req").get(isApiAuthenticatedUser, reqGetAllReqApi);
 
