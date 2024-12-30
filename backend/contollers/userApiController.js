@@ -1406,7 +1406,6 @@ const sellTransactionSchema = Joi.object({
 
 
 
-
 exports.createSellTransaction = async (req, res, next) => {
   try {
     console.log("Request Body:", req.body);
@@ -1423,24 +1422,23 @@ exports.createSellTransaction = async (req, res, next) => {
       return next(new ErrorHandler("User ID is required", 401));
     }
 
-    // Step 2: Fetch company data
-    const [companyData] = await db.query(
-      "SELECT * FROM company_data WHERE company_id = ?",
+    // Step 2: Fetch company data from coin_rate_ranges table
+    const [rateData] = await db.query(
+      "SELECT rate FROM coin_rate_ranges WHERE company_id = ?",
       [req.body.company_id]
     );
 
-    if (!companyData || companyData.length === 0) {
+    if (!rateData || rateData.length === 0) {
       return next(
-        new ErrorHandler("Company not found or invalid company ID", 404)
+        new ErrorHandler("Rate not found or invalid company ID", 404)
       );
     }
 
-    const transactionRate = parseFloat(companyData[0]?.coin_rate);
-    if (isNaN(transactionRate)) {
-      return next(
-        new ErrorHandler('"tranction_rate" must be a valid number', 400)
-      );
-    }
+const transactionRate = parseFloat(rateData[0]?.rate);
+if (isNaN(transactionRate)) {
+  return next(new ErrorHandler('"rate" must be a valid number', 400));
+}
+
 
     // Step 3: Check user's coin balance
     const [userData] = await db.query(
