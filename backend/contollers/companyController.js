@@ -162,6 +162,11 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+const coinRateSchema = Joi.object({
+  company_id: Joi.number().integer().required(),
+  coin_rate: Joi.string().required(),
+  description: Joi.string().optional(),
+});
 
 exports.addFrom = catchAsyncErrors(async (req, res, next) => {
   res.render(module_slug + "/add", {
