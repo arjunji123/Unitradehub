@@ -138,7 +138,6 @@
 // }
 
 // export default Home;
-
 import React, { useState, useEffect } from "react";
 import "../Styles/Tasks.css";
 import Footer from "./Footer";
@@ -150,14 +149,16 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import axios from "axios"; // Import axios to make the API call
 import { BACKEND_URL } from "../../src/config";
+import { PencilIcon } from "@heroicons/react/solid"; // Ensure the icon library is installed
 
 function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const apiData = useSelector((state) => state.apiData.data);
   const userData = apiData?.me?.data || null;
-  const companyData = apiData?.data || {}; // Get company data
+  const companyData = apiData?.data || {};
   const [loading, setLoading] = useState(true);
+
   const [editingIndex, setEditingIndex] = useState(null); // Track which range is being edited
   const [editedRange, setEditedRange] = useState({
     min_coins: "",
@@ -165,26 +166,28 @@ function Home() {
     rate: "",
   }); // Store the edited range values
 
+  const [newRange, setNewRange] = useState({
+    min_coins: "",
+    max_coins: "",
+    rate: "",
+  }); // State for new range
+
   useEffect(() => {
-    // Fetch user and coin data on component mount
     const fetchData = async () => {
       try {
         await dispatch(fetchCompanyData());
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false if there's an error
+        setLoading(false);
       }
     };
     fetchData();
   }, [dispatch]);
 
-  // Handle edit button click to enable editing of the range
+  // Handle edit button click
   const handleEditClick = (index, range) => {
-    // Set the index of the coin range being edited
     setEditingIndex(index);
-
-    // Set the edited range with the current values
     setEditedRange({
       min_coins: range.min_coins,
       max_coins: range.max_coins,
@@ -192,24 +195,20 @@ function Home() {
     });
   };
 
-  // Handle input changes for the edited range
-  const handleInputChange = (e) => {
+  const handleInputChange = (e, isEditing = false) => {
     const { name, value } = e.target;
 
-    // Validate input: Ensure that numeric fields are valid numbers
-    if (name === "min_coins" || name === "max_coins" || name === "rate") {
-      // Ensure the value is a valid number
-      if (isNaN(value) || value <= 0) {
-        toast.error("Value must be a valid number greater than zero.");
-        return; // Don't update the state if the value is invalid
-      }
+    if (isEditing) {
+      setEditedRange((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setNewRange((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
     }
-
-    // Update the state with the new input value
-    setEditedRange((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
   };
 
   const handleSubmit = async (index) => {
@@ -242,35 +241,19 @@ function Home() {
       return;
     }
 
-    // Check if userData has coin ranges
-    if (
-      !Array.isArray(userData.coin_ranges) ||
-      userData.coin_ranges.length === 0
-    ) {
-      toast.error("coin_ranges should be a non-empty array.");
-      return;
-    }
-
-    const updatedRange = {
-      ...userData.coin_ranges[index],
-      min_coins: minCoins,
-      max_coins: maxCoins,
-      rate: newRate,
-    };
-
-    const rangeId = updatedRange.id; // Ensure _id exists for the coin range to be updated
-    console.log("Range ID:", rangeId); // Check if rangeId is being set correctly
-
-    if (!rangeId) {
-      toast.error("The coin range ID is missing. Cannot update.");
-      return;
-    }
-
+    // Perform the API call to save the updated range
     try {
       const response = await axios.put(
         `${BACKEND_URL}/api/v1/api-coinrate-update`,
         {
-          coin_ranges: [{ ...updatedRange, id: rangeId }], // Send the ID to identify the range to update
+          coin_ranges: [
+            {
+              ...userData.coin_ranges[index],
+              min_coins: minCoins,
+              max_coins: maxCoins,
+              rate: newRate,
+            },
+          ],
         },
         {
           headers: {
@@ -281,16 +264,78 @@ function Home() {
 
       if (response.data.success) {
         toast.success("Coin range updated successfully!");
-        const updatedCoinRanges = [...userData.coin_ranges];
-        updatedCoinRanges[index] = updatedRange; // Update the local state with the new range
-        dispatch(fetchCompanyData()); // Assuming fetchCompanyData reloads the updated data
-        setEditingIndex(null); // Reset editing index after successful update
+        setEditingIndex(null);
+        dispatch(fetchCompanyData()); // Fetch updated company data
       } else {
         toast.error("Failed to update coin range.");
       }
     } catch (error) {
       console.error("Error updating coin range:", error);
       toast.error("Error updating coin range.");
+    }
+  };
+  const handleAddRange = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.token;
+
+    if (!token) {
+      toast.error("Unauthorized! Please log in again.");
+      return;
+    }
+
+    const { min_coins, max_coins, rate } = newRange;
+
+    const minCoins = parseFloat(min_coins);
+    const maxCoins = parseFloat(max_coins);
+    const newRate = parseFloat(rate);
+
+    if (isNaN(minCoins) || isNaN(maxCoins) || isNaN(newRate)) {
+      toast.error("Invalid coin range values. All fields must be numbers.");
+      return;
+    }
+
+    if (minCoins <= 0 || maxCoins <= 0 || newRate <= 0) {
+      toast.error("Coin values must be greater than zero.");
+      return;
+    }
+
+    if (minCoins > maxCoins) {
+      toast.error("Min coins cannot be greater than max coins.");
+      return;
+    }
+
+    // Prepare the data in the expected format
+    const coinRangeData = {
+      coin_ranges: [
+        {
+          min_coins: minCoins,
+          max_coins: maxCoins,
+          rate: newRate,
+        },
+      ],
+    };
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/v1/api-addcoin-range`,
+        coinRangeData, // Send coinRanges as an array of objects
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("New coin range added successfully!");
+        setNewRange({ min_coins: "", max_coins: "", rate: "" });
+        dispatch(fetchCompanyData());
+      } else {
+        toast.error("Failed to add new coin range.");
+      }
+    } catch (error) {
+      console.error("Error adding coin range:", error);
+      toast.error("Error adding coin range.");
     }
   };
 
@@ -353,7 +398,7 @@ function Home() {
                             type="number"
                             name="min_coins"
                             value={editedRange.min_coins}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange(e, true)}
                             className="bg-gray-700 text-white p-2 rounded"
                             placeholder="Min Coins"
                           />
@@ -361,7 +406,7 @@ function Home() {
                             type="number"
                             name="max_coins"
                             value={editedRange.max_coins}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange(e, true)}
                             className="bg-gray-700 text-white p-2 rounded"
                             placeholder="Max Coins"
                           />
@@ -369,7 +414,7 @@ function Home() {
                             type="number"
                             name="rate"
                             value={editedRange.rate}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange(e, true)}
                             className="bg-gray-700 text-white p-2 rounded"
                             placeholder="Rate (INR)"
                           />
@@ -407,6 +452,47 @@ function Home() {
                 <div>No coin ranges found</div>
               )}
             </div>
+
+            {/* Add New Range */}
+            <div className="mt-8 bg-[#1B1A1A] shadow-xl p-6 rounded-lg">
+              <h3 className="text-lg font-semibold">Add New Coin Range</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <input
+                  type="number"
+                  name="min_coins"
+                  value={newRange.min_coins}
+                  onChange={handleInputChange}
+                  className="bg-gray-700 text-white p-2 rounded"
+                  placeholder="Min Coins"
+                />
+                <input
+                  type="number"
+                  name="max_coins"
+                  value={newRange.max_coins}
+                  onChange={handleInputChange}
+                  className="bg-gray-700 text-white p-2 rounded"
+                  placeholder="Max Coins"
+                />
+                <input
+                  type="number"
+                  name="rate"
+                  value={newRange.rate}
+                  onChange={handleInputChange}
+                  className="bg-gray-700 text-white p-2 rounded"
+                  placeholder="Rate"
+                />
+              </div>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleAddRange}
+                  className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
+                >
+                  Add Range
+                </button>
+              </div>
+              {/* Extra gap added here */}
+              <div className="mt-8" />
+            </div>
           </div>
 
           {/* Footer Section */}
@@ -418,4 +504,3 @@ function Home() {
 }
 
 export default Home;
-
