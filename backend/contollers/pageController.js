@@ -623,7 +623,6 @@ exports.getQuestHistory = async (req, res) => {
     });
   }
 };
-
 exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
   const questId = req.params.id; // Assuming quest ID is passed as a URL parameter
   const userId = req.user.id; // Assuming user ID is available from the request object
@@ -631,11 +630,12 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
   try {
     const [quest_records] = await db.query(
       `
-      SELECT q.quest_name, q.quest_type, q.quest_url, q.date_created, q.description, q.status, q.coin_earn,
+      SELECT q.quest_name, q.quest_type, q.quest_url, q.date_created, q.description, q.status, q.coin_earn, q.image, 
+             q.screenshot_required, -- Added screenshot_required to the query
              COALESCE(u.status, 'not_completed') AS user_status
       FROM quest q
       LEFT JOIN usercoin_audit u ON u.quest_id = q.id AND u.user_id = ?
-      WHERE q.id = ?
+      WHERE q.id = ? 
       LIMIT 1
     `,
       [userId, questId]
@@ -649,8 +649,9 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 
     // Process the image URL
     quest.image =
-      process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image;
+      process.env.BACKEND_URL + "/uploads/" + module_slug + "/" + quest.image;
 
+    // Send the response with the screenshot_required field
     res.status(200).json({
       success: true,
       quest,
@@ -660,6 +661,7 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
+
 
 /////////////////
 // exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
