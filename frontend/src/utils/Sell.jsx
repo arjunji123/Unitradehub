@@ -1,20 +1,27 @@
 import React, {useState, useEffect  } from 'react';
 import { ImCross } from "react-icons/im";
 import { sellCoins } from '../../store/actions/withdrawalActions';
+import { fetchMeData } from '../../store/actions/homeActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 
-function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, userData, company_id}) {
+function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRanges , userData, company_id}) {
   const [loading, setLoading] = useState(false);
     const [rupeeValue, setRupeeValue] = useState(0);
     const upiId = userData?.upi_id; // Non-editable UPI ID
     const totalCoin = userData?.coins
     const companyId = String(company_id); 
     const [coinAmount, setCoinAmount] = useState('');
+    const [selectedRate, setSelectedRate] = useState(""); // State to store the selected rate
     const [error, setError] = useState('');
-  console.log(totalCoin);
+  console.log("totalCoin",totalCoin);
   const dispatch = useDispatch();
 
+  const handleRateChange = (event) => {
+    const selectedRateValue = parseFloat(event.target.value); // Convert to number
+    setSelectedRate(selectedRateValue);
+    console.log("Selected Rate:", selectedRateValue);
+};
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
      // Ensure that the input is a valid positive number (greater than or equal to 0)
@@ -35,10 +42,10 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
     setCoinAmount(inputValue);
   };
 
-    useEffect(() => {
-      const totalRupees = coinAmount * coinRate;
-      setRupeeValue(totalRupees.toFixed(2));
-  }, [coinAmount, coinRate]);
+  useEffect(() => {
+    const totalRupees = coinAmount * selectedRate;
+    setRupeeValue(totalRupees ? totalRupees.toFixed(2) : 0);
+}, [coinAmount, selectedRate]);
      
 
     const handleSubmit = () => {
@@ -46,17 +53,24 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
           setError("Please enter a valid coin amount within your balance.");
           return;
       }
+      if (!selectedRate) {
+        setError("Please select a coin rate.");
+        return;
+    }
+
       setLoading(true);
       // Prepare the API payload
       const payload = {
           upi_id: upiId,
           company_id: companyId,
-          tranction_coin: coinAmount,
-          transction_amount: rupeeValue,
+          tranction_coin: Number(coinAmount),
+          transction_amount: Number(rupeeValue),
+          tranction_rate: Number(selectedRate),
       };
 
       // Dispatch the sellCoins action with the required fields
       dispatch(sellCoins(payload))
+      dispatch(fetchMeData())
           .then(() => togglePopup()) // Close popup on successful action
           .catch((err) => setError("Failed to sell coins. Please try again."));
   };
@@ -77,7 +91,7 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
 
       <input
          type="number"
-        min="0" // Prevent negative numbers
+         min="0" // Prevent negative numbers
          value={coinAmount}
          onChange={handleInputChange}
          placeholder="Enter coin amount"
@@ -85,9 +99,30 @@ function Send({ togglePopup, handleSellChange, handleSellSubmit , coinRate, user
       />
        {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
       {/* <p className="text-sm sm:text-base text-[#B0B0B0] text-center mb-6">Rupee Value: ₹{rupeeValue}</p> */}
-      
+      <div className="flex flex-col items-start">
+      <select
+        id="coinRate"
+        value={selectedRate}
+        onChange={handleRateChange}
+        className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base0"
+      >
+        <option value="" disabled>
+          Choose a rate
+        </option>
+        {coinRanges.map((range, index) => (
+          <option key={index} value={range.rate}>
+            {`Range: ${range.min_coins}-${range.max_coins}, Rate: ${range.rate}`}
+          </option>
+        ))}
+      </select>
+      {/* {selectedRate && (
+        <p className="mt-3 text-gray-600">
+          You selected a rate of: <strong>{selectedRate}</strong>
+        </p>
+      )} */}
+    </div>  
 <div className='flex justify-between items-center w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3  transition duration-300 text-sm sm:text-base'>
-    <div>Coin Rate: ₹{coinRate}</div>
+    <div>Coin Rate: ₹{selectedRate}</div>
    <div>= ₹<span className='' > {rupeeValue}</span></div> 
 </div>
       <input
