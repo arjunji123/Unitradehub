@@ -84,7 +84,7 @@ router
 
 router
   .route("/api-coinrate-update")
-  .post(isApiAuthenticatedUser, updateCoinRateApi);
+  .put(isApiAuthenticatedUser, updateCoinRateApi);
 
 router.route("/api-getall-req").get(isApiAuthenticatedUser, reqGetAllReqApi);
 
