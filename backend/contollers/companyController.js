@@ -65,6 +65,8 @@ exports.allUsers = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.createRecord = catchAsyncErrors(async (req, res, next) => {
+  console.log(req.body);
+
   try {
     // Validate the request body with Joi schema
     await Model.insertSchema.validateAsync(req.body, {
@@ -73,10 +75,7 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
     });
   } catch (error) {
     return next(
-      new ErrorHandler(
-        error.details.map((d) => d.message),
-        400
-      )
+      new ErrorHandler(error.details.map((d) => d.message).join(", "), 400)
     );
   }
 
@@ -94,29 +93,66 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
     password: await bcrypt.hash(req.body.password, 10),
     status: "1",
     date_created: date_created,
-    user_type: "company", // Set user_type to "company"
+    user_type: "company",
     date_modified: date_created,
   };
 
   try {
     // Insert the user data into the database
     const user = await QueryModel.saveData(table_name, insertData, next);
-    console.log(user);
 
-    // Prepare data for company_data table
+    if (!user || !user.id) {
+      throw new Error("Failed to create user.");
+    }
+
+    // Prepare data for the company_data table
     const companyInsertData = {
-      company_id: user.id, // Assuming this is the ID of the newly created user
-      coin_rate: req.body.coin_rate, // From the request body
-      description: req.body.description, // From the request body
+      company_id: user.id,
+      description: req.body.description,
     };
 
-    // Insert company-specific data into company_data table
     await QueryModel.saveData("company_data", companyInsertData, next);
+
+    // Process and insert coin rate ranges into coin_rate_ranges table
+    if (req.body.coin_rate_ranges) {
+      const { start, end, rate } = req.body.coin_rate_ranges;
+
+      if (
+        start &&
+        end &&
+        rate &&
+        start.length === end.length &&
+        start.length === rate.length
+      ) {
+        for (let i = 0; i < start.length; i++) {
+          const rangeData = {
+            company_id: user.id,
+            min_coins: parseFloat(start[i]),
+            max_coins: parseFloat(end[i]),
+            rate: parseFloat(rate[i]),
+          };
+
+          // Insert the range into the coin_rate_ranges table
+          try {
+            await QueryModel.saveData("coin_rate_ranges", rangeData, next);
+            console.log("Inserted range:", rangeData);
+          } catch (err) {
+            console.error("Failed to insert range:", rangeData, err);
+            return next(
+              new ErrorHandler("Failed to insert coin rate range.", 500)
+            );
+          }
+        }
+      } else {
+        console.error("Coin rate ranges are invalid or mismatched.");
+        return next(new ErrorHandler("Invalid coin rate ranges.", 400));
+      }
+    }
 
     // Success response
     req.flash("msg_response", {
       status: 200,
-      message: "Successfully added " + module_single_title,
+      message: `Successfully added ${module_single_title}`,
     });
 
     res.redirect(`/${process.env.ADMIN_PREFIX}/${module_slug}`);
@@ -126,12 +162,6 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Joi schema for validation
-const coinRateSchema = Joi.object({
-  company_id: Joi.number().integer().required(),
-  coin_rate: Joi.string().required(),
-  description: Joi.string().optional(),
-});
 
 exports.addFrom = catchAsyncErrors(async (req, res, next) => {
   res.render(module_slug + "/add", {
