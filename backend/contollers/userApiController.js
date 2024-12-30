@@ -1393,31 +1393,29 @@ const updatedAmount = '+' + String(amount) ;
 
 
 /////////////////////////////////////
-const sellTransactionSchema = Joi.object({
-  company_id: Joi.string().required(), // Company ID to identify the company
-  tranction_coin: Joi.number().required(), // Number of coins being sold, should be positive
-  transctionRate: Joi.number(),
-  transction_amount: Joi.number().required(), // Total transaction amount, should be positive
-  // user_id: Joi.string().required(), // User ID for who is making the transaction
-  // date_created: Joi.date().default(() => new Date()), // Auto-populated date (ensure it's a function)
-  status: Joi.string().valid("approved", "unapproved").default("unapproved"), // Status of the transaction
-});
-/////
-
-
-
 exports.createSellTransaction = async (req, res, next) => {
   try {
     console.log("Request Body:", req.body);
 
-    // Step 1: Validate incoming request
-    await sellTransactionSchema.validateAsync(req.body, {
+    // Step 1: Validate incoming request (making sure required fields are present)
+    const schema = Joi.object({
+      company_id: Joi.string().required(),
+      tranction_coin: Joi.number().required(),
+      transction_amount: Joi.number().required(),
+      status: Joi.string()
+        .valid("unapproved", "approved", "rejected")
+        .required(),
+    });
+
+    await schema.validateAsync(req.body, {
       abortEarly: false,
       allowUnknown: true,
     });
 
-    const user_id = req.user?.id;
+    const user_id = req.user?.id; // Get the user ID from the request (assuming middleware provides user)
     console.log("User ID:", user_id);
+
+    // Check if user ID exists
     if (!user_id) {
       return next(new ErrorHandler("User ID is required", 401));
     }
@@ -1428,17 +1426,20 @@ exports.createSellTransaction = async (req, res, next) => {
       [req.body.company_id]
     );
 
+    // Check if the rate data was found for the company ID
     if (!rateData || rateData.length === 0) {
       return next(
         new ErrorHandler("Rate not found or invalid company ID", 404)
       );
     }
 
-const transactionRate = parseFloat(rateData[0]?.rate);
-if (isNaN(transactionRate)) {
-  return next(new ErrorHandler('"rate" must be a valid number', 400));
-}
-
+    // Parse the rate value from the fetched data
+    const transactionRate = parseFloat(rateData[0]?.rate);
+    if (isNaN(transactionRate)) {
+      return next(
+        new ErrorHandler('"tranction_rate" must be a valid number', 400)
+      );
+    }
 
     // Step 3: Check user's coin balance
     const [userData] = await db.query(
@@ -1446,29 +1447,33 @@ if (isNaN(transactionRate)) {
       [user_id]
     );
 
+    // Check if user data exists
     if (!userData || userData.length === 0) {
       return next(new ErrorHandler("User not found", 404));
     }
 
+    // Parse user's coins and transaction coins
     const userCoins = parseFloat(userData[0]?.coins);
     const transactionCoins = parseFloat(req.body.tranction_coin);
 
+    // Validate if the user has enough coins
     if (userCoins < transactionCoins) {
       return next(new ErrorHandler("Insufficient coins", 400));
     }
 
-    // Step 4: Create transaction
+    // Step 4: Create transaction in the database
     const [transactionResult] = await db.query(
       `INSERT INTO user_transction 
-      (user_id, company_id, tranction_coin, tranction_rate, transction_amount, data_created, status) 
+      (user_id, company_id, tranction_coin, tranction_rate, transction_amount, date_created, status) 
       VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
+
       [
         user_id,
         req.body.company_id,
         transactionCoins,
         transactionRate,
         req.body.transction_amount,
-        "unapproved",
+        req.body.status,
       ]
     );
 
@@ -1478,7 +1483,7 @@ if (isNaN(transactionRate)) {
     }
     console.log("Generated Transaction ID:", transactionId);
 
-    // Step 5: Deduct coins from user's balance
+    // Step 5: Deduct coins from the user's balance
     const updatedCoins = userCoins - transactionCoins;
     await db.query("UPDATE user_data SET coins = ? WHERE user_id = ?", [
       updatedCoins,
@@ -1487,15 +1492,15 @@ if (isNaN(transactionRate)) {
 
     console.log(`Coins updated. Remaining Coins: ${updatedCoins}`);
 
-    // Step 6: Create audit entry
+    // Step 6: Create an audit entry
     const auditParams = [
       user_id,
       req.body.company_id,
-      "withdrawal",
-      "sell coins",
-      "waiting",
-      -transactionCoins,
-      transactionId,
+      "withdrawal", // Audit type: withdrawal
+      "sell coins", // Title for the audit entry
+      "waiting", // Status of the transaction
+      -transactionCoins, // Negative value for withdrawal
+      transactionId, // Transaction ID for audit tracking
     ];
     console.log("Audit Query Parameters:", auditParams);
 
@@ -1508,7 +1513,7 @@ if (isNaN(transactionRate)) {
 
     console.log("Audit Entry Created Successfully");
 
-    // Step 7: Respond with success
+    // Step 7: Respond with success message
     res.status(201).json({
       success: true,
       message: "Transaction and audit entry created successfully!",
@@ -1523,7 +1528,7 @@ if (isNaN(transactionRate)) {
       );
     }
 
-    // Handle other errors
+    // Handle other errors (e.g., database issues)
     return next(
       new ErrorHandler("Failed to create transaction: " + error.message, 500)
     );
