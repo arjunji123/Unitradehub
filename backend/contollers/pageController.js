@@ -24,7 +24,6 @@ exports.addFrom = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
 exports.createRecord = async (req, res, next) => {
   try {
     // Validate input data
@@ -58,6 +57,9 @@ exports.createRecord = async (req, res, next) => {
     allowedAttributes: {},
   });
 
+  // Handle the screenshot_required field (default to 0 if not provided)
+  const screenshotRequired = req.body.screenshot_required === '1' ? 1 : 0;
+
   const insertData = {
     quest_name: req.body.quest_name,
     quest_type: req.body.quest_type === "banner" ? "banner" : "non-banner",
@@ -70,7 +72,8 @@ exports.createRecord = async (req, res, next) => {
     status: req.body.status,
     coin_earn: req.body.coin_earn,
     end_date: req.body.end_date,
-    social_media: req.body.social_media || null,  // Ensure this field is handled
+    social_media: req.body.social_media || null, // Ensure this field is handled
+    screenshot_required: screenshotRequired, // Include screenshot_required field
   };
 
   console.log("Data to be inserted:", insertData); // Log the data to be inserted
