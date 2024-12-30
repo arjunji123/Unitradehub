@@ -982,7 +982,93 @@ exports.updateCoinRateApi = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+exports.addCoinRangeApi = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.user.id; // Extract user ID from the authenticated user
+  const { coin_ranges = [] } = req.body; // Extract coin ranges from the request body (default to empty array)
 
+  console.log("DEBUG: Received request body:", req.body);
+
+  // Validate that coin_ranges is a non-empty array
+  if (!Array.isArray(coin_ranges) || coin_ranges.length === 0) {
+    return next(new ErrorHandler("coin_ranges should be a non-empty array", 400));
+  }
+
+  // Validate each range
+  for (const range of coin_ranges) {
+    const { min_coins, max_coins, rate } = range;
+
+    const numericRate = parseFloat(rate);
+    if (
+      isNaN(min_coins) || 
+      isNaN(max_coins) || 
+      isNaN(numericRate) || 
+      min_coins <= 0 || 
+      max_coins <= 0 || 
+      numericRate <= 0 || 
+      min_coins > max_coins
+    ) {
+      return next(
+        new ErrorHandler(
+          "Invalid coin range values: Each range must have valid positive min_coins, max_coins, and rate, and min_coins should not exceed max_coins.",
+          400
+        )
+      );
+    }
+  }
+
+  try {
+    // Fetch user details to verify authorization
+    const [userDetails] = await db.query(
+      "SELECT user_type FROM users WHERE id = ?",
+      [userId]
+    );
+
+    if (!userDetails || userDetails.length === 0) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    const { user_type } = userDetails[0];
+    if (user_type !== "company") {
+      return next(new ErrorHandler("Unauthorized: Only company users can add coin ranges", 403));
+    }
+
+    // Insert each coin range into the database
+    const insertedRanges = [];
+    for (const range of coin_ranges) {
+      const { min_coins, max_coins, rate } = range;
+
+      const [result] = await db.query(
+        `
+        INSERT INTO coin_rate_ranges 
+        (company_id, min_coins, max_coins, rate) 
+        VALUES (?, ?, ?, ?)
+        `,
+        [userId, min_coins, max_coins, rate]
+      );
+
+      // Add the inserted range with its ID to the response data
+      insertedRanges.push({
+        id: result.insertId,
+        min_coins,
+        max_coins,
+        rate,
+      });
+    }
+
+    // Send success response
+    res.status(201).json({
+      success: true,
+      message: "Coin ranges added successfully",
+      data: {
+        company_id: userId,
+        coin_ranges: insertedRanges,
+      },
+    });
+  } catch (error) {
+    console.error("ERROR: Failed to add coin ranges:", error);
+    return next(new ErrorHandler("Database insert failed", 500));
+  }
+});
 exports.reqGetAllReqApi = async (req, res, next) => {
   try {
     // Extract user_id from the request (e.g., from query params or session)
