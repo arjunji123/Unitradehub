@@ -1395,11 +1395,9 @@ const updatedAmount = '+' + String(amount) ;
 /////////////////////////////////////
 const sellTransactionSchema = Joi.object({
   company_id: Joi.string().required(), // Company ID to identify the company
-  tranction_coin: Joi.number().positive().required(), // Number of coins being sold, should be positive
-  transctionRate: Joi.number()
-    .positive()
-    .error(new Error('"tranction_rate" must be a valid positive number')),
-  transction_amount: Joi.number().positive().required(), // Total transaction amount, should be positive
+  tranction_coin: Joi.number().required(), // Number of coins being sold, should be positive
+  transctionRate: Joi.number(),
+  transction_amount: Joi.number().required(), // Total transaction amount, should be positive
   // user_id: Joi.string().required(), // User ID for who is making the transaction
   // date_created: Joi.date().default(() => new Date()), // Auto-populated date (ensure it's a function)
   status: Joi.string().valid("approved", "unapproved").default("unapproved"), // Status of the transaction
