@@ -22,6 +22,6 @@ export const sellCoins = (transactionData) => async (dispatch) => {
         type: SELL_COINS_FAILURE,
         payload: error.message,
       });
-      toast.error("Failed Transaction!");
+      toast.error(error.message);
     }
   };
