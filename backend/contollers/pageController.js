@@ -580,11 +580,11 @@ exports.getQuestHistory = async (req, res) => {
       FROM quest q
       LEFT JOIN usercoin_audit uca 
         ON q.id = uca.quest_id 
-        AND uca.id = ? 
-        AND uca.deleted = 0
-      WHERE q.deleted = 0
-        AND q.end_date >= CURDATE()  -- Ensure the quest end date is not in the past
-        AND q.start_date <= CURDATE()  -- Ensure the quest start date is not in the future
+        AND uca.user_id = ? 
+    AND uca.deleted = 0
+  WHERE q.deleted = 0
+    AND q.end_date >= CURDATE() 
+    AND DATE(q.start_date) <= CURDATE()  
     `;
 
     // Execute the query to fetch all matching quests
