@@ -117,7 +117,7 @@ function Home() {
       ) : (
         <div className="w-full bg-black text-white min-h-screen overflow-y-scroll flex flex-col max-w-lg relative">
           {/* Header Section */}
-          <div className="flex justify-between items-center p-4">
+          <div className="flex justify-between items-center px-4 py-2">
             <div className="relative">
               {/* Menu Icon Button */}
               <button onClick={toggleMenu} className="h-6 w-6 text-gray-400">
