@@ -94,7 +94,7 @@ function Payment() {
   
         setTimeout(() => {
           setLoading(false); // Hide loader after success
-          navigate("/login");
+          navigate("/confirm");
         }, 2000);
       } catch (err) {
         console.error("Error uploading screenshot:", err); // Log detailed error for debugging
