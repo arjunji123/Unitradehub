@@ -28,6 +28,20 @@ function Payment() {
   const [transaction_id, setTransactionId] = useState(''); // State for transaction ID
   const [utr_no, setUtrNo] = useState(''); // State for UTR No
  const [showLink, setShowLink] = useState(false);
+const handleRedirect = () => {
+  const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+
+  // Check if the user is on iOS (iPhone/iPad)
+  const isIos = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+  if (isIos) {
+    // For iPhone, fallback to the App Store if Google Pay is not installed
+    window.location.href = "https://apps.apple.com/in/app/google-pay/id691797987"; // Google Pay App Store link
+  } else {
+    // For Android, the deep link works
+    window.location.href = "intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end";
+  }
+};
 
   const handleImageClick = () => {
     setShowLink(true);
@@ -196,6 +210,7 @@ function Payment() {
       href="intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end" 
       target="_blank" 
       rel="noopener noreferrer"
+      onClick={() => handleRedirect()}
     >
       <img 
         src={apiSettings?.qr_code || ""} 
@@ -209,6 +224,7 @@ function Payment() {
     </div>
   )}
 </div>
+
 
 
 
