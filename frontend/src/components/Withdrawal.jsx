@@ -30,6 +30,18 @@ function Withdrawal() {
   const [sharePopup, setSharePopup] = useState(false);
   const [selectedCoinRate, setSelectedCoinRate] = useState(null);
   const [company_id, setCompany_id] = useState(null);
+    const [expandedCompanyId, setExpandedCompanyId] = useState(null); // State to track the expanded company
+
+  // Toggle function to expand/collapse a row
+  const toggleExpandRow = (companyId) => {
+    // If the clicked row is already expanded, collapse it (set null)
+    if (expandedCompanyId === companyId) {
+      setExpandedCompanyId(null);
+    } else {
+      // Otherwise, expand the clicked row
+      setExpandedCompanyId(companyId);
+    }
+  };
   const toggleSharePopup = () => {
     setSharePopup(!sharePopup);
     setSendData({ amount: '', recipientReferralCode: '' });
@@ -165,7 +177,7 @@ function Withdrawal() {
 
     try {
       await dispatch(shareCoins(sendData));
-     dispatch(fetchMeData());
+      dispatch(fetchMeData());
     } catch (error) {
       toast.error(error);
     } finally {
@@ -290,8 +302,8 @@ function Withdrawal() {
               {/* Co-Companies List */}
               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
-                  apiCompanies.data && apiCompanies.data.map((company, index) => (
-                    <div key={index} className="py-2">
+                  apiCompanies.data.map((company) => (
+                    <div key={company.company_id} className="py-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <div className="w-5 h-5 bg-sky-400 rounded-full flex items-center justify-center">
@@ -299,68 +311,47 @@ function Withdrawal() {
                           </div>
                           <span className="text-sm font-medium capitalize">{company.company_name}</span>
                         </div>
-                        <div className="text-sm font-medium text-[#5B5A5C]">123 Orders (30D) | 98%</div>
                       </div>
-                      {/* <div className="flex justify-between items-center py-1.5">
-                        <p className="font-bold flex  font-Inter items-center  ">
-                          <BsCurrencyRupee className="" />  <span className="text-[20px] ">{company.coin_rate}</span></p>
-                        <div className="text-sm font-medium text-[#5B5A5C]">Online</div>
-                      </div> */}
-                      {company && company.coin_ranges && company.coin_ranges.length > 0 ? (
-                        company.coin_ranges && company.coin_ranges.map((range , index) => (
-                          <div key={index} className="flex justify-between items-start">
-                          <div className="leading-4 ">
-                            <p className="flex">
-                              <span className="text-xs font-bold text-[#5B5A5C]">Coin Rate:</span>
-                              <span className="text-xs font-medium ml-2 text-[#B8B7BA] flex"> 
-                              <BsCurrencyRupee  size={14}/>  <span >   {range.rate}</span>
-                             </span>
-                            </p>
-                            <p>
-                              <span className="text-xs font-bold text-[#5B5A5C]">Limit</span>
-                              <span className="text-xs font-medium ml-2 text-[#B8B7BA]">{range.min_coins} - {range.max_coins} INR</span>
-                            </p>
+
+                      {/* Toggle button to expand/collapse */}
+                      <button
+                        onClick={() => toggleExpandRow(company.company_id)}
+                        className="text-xs font-medium text-blue-500 hover:underline"
+                      >
+                        {expandedCompanyId === company.company_id ? 'Show Less' : 'Show More'}
+                      </button>
+
+                      {/* Show coin ranges only if this company is expanded */}
+                      {expandedCompanyId === company.company_id && company.coin_ranges && company.coin_ranges.length > 0 ? (
+                        company.coin_ranges.map((range, index) => (
+                          <div key={index} className="flex justify-between items-start mb-1">
+                            <div className="leading-4">
+                              <p>
+                                <span className="text-xs font-bold text-[#5B5A5C]">Coin</span>
+                                <span className="text-xs font-medium ml-2 text-[#B8B7BA]">
+                                  {range.min_coins} - {range.max_coins} : Rate {range.rate}
+                                </span>
+                              </p>
+                            </div>
                           </div>
-                          <p className="flex items-start text-green-500 gap-0.5 self-start"> {/* Added self-start */}
-                            <IoMdThumbsUp size={24} className="pt-1" />
-                            <span className="text-sm font-medium leading-loose">100%</span>
-                          </p>
-                        </div>
-                        )) ): null
-                      }
-                      {/* <div className="flex justify-between items-start">
-                        <div className="leading-4 ">
-                          <p>
-                            <span className="text-xs font-bold text-[#5B5A5C]">Quantity</span>
-                            <span className="text-xs font-medium ml-2 text-[#B8B7BA]">300 USDT</span>
-                          </p>
-                          <p>
-                            <span className="text-xs font-bold text-[#5B5A5C]">Limit</span>
-                            <span className="text-xs font-medium ml-2 text-[#B8B7BA]">22,000 - 22,000 INR</span>
-                          </p>
-                        </div>
-                        <p className="flex items-start text-green-500 gap-0.5 self-start"> 
-                          <IoMdThumbsUp size={24} className="pt-1" />
-                          <span className="text-sm font-medium leading-loose">100%</span>
-                        </p>
-                      </div> */}
-                      <div className="flex justify-between items-center py-1.5 ">
-                        <div className="">
+                        ))
+                      ) :""}
 
-                        </div>
-                        <button
-                          className="leading-none px-3 py-1.5 text-sm rounded-full bg-red-600 flex text-white font-semibold hover:bg-red-500 transition duration-200 ease-in-out"
-                          onClick={() => handleButtonClick(company.coin_ranges, company.company_id)}
-                        >Sell
-                        </button>
-                      </div>
+<div className="flex justify-between items-center py-1.5 ">
+                <div className="">
 
-
+                </div>
+                <button
+                  className="leading-none px-3 py-1.5 text-sm rounded-full bg-red-600 flex text-white font-semibold hover:bg-red-500 transition duration-200 ease-in-out"
+                  onClick={() => handleButtonClick(company.coin_ranges, company.company_id)}
+                >Sell
+                </button>
+              </div>
                     </div>
-
-                  )
-
-                  )) : ""}
+                  ))
+                ) : (
+                  <p>No companies found</p>
+                )}
               </div>
             </div>
 
@@ -375,7 +366,7 @@ function Withdrawal() {
         }
         {
           showPopup && <Sell togglePopup={togglePopup} handleSellChange={handleSellChange} handleSellSubmit={handleSellSubmit}
-          coinRanges={selectedCoinRate} userData={userData} company_id={company_id} />
+            coinRanges={selectedCoinRate} userData={userData} company_id={company_id} />
         }
         {
           sharePopup && <ShareCoin
