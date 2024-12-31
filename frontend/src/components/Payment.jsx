@@ -171,10 +171,29 @@ function Payment() {
               </div>
             )}
           </div> */}
-<div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
+{/* <div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
   {qrCodeUrl ? (
     <a 
       href="upi://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR" 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      <img 
+        src={apiSettings?.qr_code || ""} 
+        alt="QR Code" 
+        className="object-contain w-full h-full rounded-md shadow-lg cursor-pointer" 
+      />
+    </a>
+  ) : (
+    <div className="w-full h-full bg-black rounded-md flex items-center justify-center">
+      <span className="text-white text-sm">No QR Code Available</span>
+    </div>
+  )}
+</div> */}
+<div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
+  {qrCodeUrl ? (
+    <a 
+      href="intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end" 
       target="_blank" 
       rel="noopener noreferrer"
     >
