@@ -6,6 +6,7 @@ import { loadUserFromLocalStorage } from "../store/actions/authActions";
 import desktopImage from './images/desktop3.png'; // Import the image
 
 // Component Imports
+import Confirm from "./components/Confirm";
 import Friend from "./components/Friend";
 import Home from "./components/Home";
 import Tasks from "./components/Tasks";
@@ -172,6 +173,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/payment/:id" element={<Payment />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
+                <Route path="/confirm" element={<Confirm />} />
               </Route>
 
               {/* Private Routes */}
