@@ -115,7 +115,7 @@ function Home() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="w-full bg-black text-white min-h-screen overflow-scroll flex flex-col max-w-lg relative">
+        <div className="w-full bg-black text-white min-h-screen overflow-y-scroll flex flex-col max-w-lg relative">
           {/* Header Section */}
           <div className="flex justify-between items-center p-4">
             <div className="relative">
@@ -156,7 +156,7 @@ function Home() {
             background: 'rgba(99, 57, 249, 0.25',
             filter: 'blur(100px)',
           }}>
-            <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
+            <img src="src/assets/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
           </div>
           {/* User Info Section */}
           <div className="flex flex-col items-center  space-y-2">
@@ -202,7 +202,7 @@ function Home() {
             background: 'rgba(99, 57, 249, 0.25)',
             filter: 'blur(100px)',
           }}>
-            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+            <img src="src/assets/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
           </div>
           {/* Wallet Section */}
           <div className="mt-auto px-3 py-4 mb-10">
@@ -226,7 +226,7 @@ function Home() {
                 {/* Illustration Section */}
                 <div className="relative">
                   <img
-                    src="src/images/money-transfer-e4 2.png"
+                    src="src/assets/images/money-transfer-e4 2.png"
                     alt="Wallet Illustration"
                     className="w-20 h-20 md:w-24 md:h-24 transform scale-x-[-1]"
                   />
