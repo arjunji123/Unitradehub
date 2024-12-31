@@ -20,7 +20,7 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
   };
   
   return (
-    <div className="fixed inset-0 flex items-end justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={toggleSharePopup}>
+    <div className="fixed inset-x-0 top-0 flex justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={toggleSharePopup}>
     <div className="bg-[#1B1A1A] p-4 sm:p-6 rounded-t-3xl shadow-xl w-full max-w-lg relative" onClick={(e) => e.stopPropagation()}>
         <button
             onClick={toggleSharePopup}
