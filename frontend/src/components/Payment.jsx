@@ -27,6 +27,11 @@ function Payment() {
   const [showPopup, setShowPopup] = useState(false);
   const [transaction_id, setTransactionId] = useState(''); // State for transaction ID
   const [utr_no, setUtrNo] = useState(''); // State for UTR No
+ const [showLink, setShowLink] = useState(false);
+
+  const handleImageClick = () => {
+    setShowLink(true);
+  };
   useEffect(() => {
     // Initialize Telegram WebApp
     const tg = window.Telegram.WebApp;
@@ -156,7 +161,7 @@ function Payment() {
         {/* QR Code Section */}
         <div className="flex flex-col items-center space-y-2">
           <h4 className="text-xs font-semibold text-white">Scan to Pay</h4>
-          <div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
+{/*           <div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
             {qrCodeUrl ? (
               // <img src={qrCodeUrl} alt="QR Code" className="object-contain w-full h-full rounded-md shadow-lg" />
               <img src={apiSettings?.qr_code || ""} alt="QR Code" className="object-contain w-full h-full rounded-md shadow-lg" />
@@ -165,7 +170,28 @@ function Payment() {
                 <span className="text-white text-sm">No QR Code Available</span>
               </div>
             )}
-          </div>
+          </div> */}
+
+<div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
+  {qrCodeUrl ? (
+    <a 
+      href="upi://pay?pa=singhnarukaarjun@okicici&pn=YourName&am=300&cu=INR" 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      <img 
+        src={apiSettings?.qr_code || ""} 
+        alt="QR Code" 
+        className="object-contain w-full h-full rounded-md shadow-lg cursor-pointer" 
+      />
+    </a>
+  ) : (
+    <div className="w-full h-full bg-black rounded-md flex items-center justify-center">
+      <span className="text-white text-sm">No QR Code Available</span>
+    </div>
+  )}
+</div>
+
         </div>
   
         {/* Upload Section */}
