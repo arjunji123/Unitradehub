@@ -163,34 +163,37 @@ const localStorage = new LocalStorage("./scratch");
 
 exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
   // Fetch transaction data with related user info
-  const [transactions] = await db.query(
-    `SELECT 
-        ut.id, -- Include the 'id' field (unique transaction identifier)
-        ut.user_id,
-        ut.company_id,
-        ut.tranction_coin,
-        ut.tranction_rate,
-        ut.transction_amount,
-        ut.trans_doc,
-        DATE_FORMAT(ut.data_created, "%d-%m-%Y %H:%i:%s") AS data_created,
-        ut.status,
-        u.user_name,
-        ud.upi_id -- Added field from user_data table
-     FROM user_transction ut
-     JOIN users u ON ut.user_id = u.id
-     LEFT JOIN user_data ud ON u.id = ud.user_id`
-  );
-  
-  console.log("transactions:", transactions); // Log for debugging
+  const [transactions] = await db.query(`
+    SELECT 
+        ut.id AS transaction_id,              -- Transaction ID
+        ut.user_id AS user_id,                -- User ID
+        ut.company_id AS company_id,          -- Company ID (maps to users table)
+        ut.tranction_coin AS transaction_coin, -- Transaction Coin
+        ut.tranction_rate AS transaction_rate, -- Transaction Rate
+        ut.transction_amount AS transaction_amount, -- Transaction Amount
+        ut.trans_doc AS transaction_document, -- Transaction Document
+        DATE_FORMAT(ut.data_created, "%d-%m-%Y %H:%i:%s") AS created_date, -- Created Date
+        ut.status AS transaction_status,      -- Transaction Status
+        u.user_name AS user_name,             -- User's Name (from users table)
+        ud.upi_id AS upi_id,                  -- UPI ID (from user_data)
+        c.user_name AS company_name           -- Company's Name (from users table)
+    FROM user_transction ut
+    JOIN users u ON ut.user_id = u.id         -- Join to get user info
+    LEFT JOIN user_data ud ON u.id = ud.user_id -- Join to get user_data (optional)
+    JOIN users c ON ut.company_id = c.id      -- Join to get company name from company_id
+  `);
 
   res.render("transactions/index", {
     layout: "layouts/main",
-    title: "User Transactions", 
+    title: "User Transactions",
     transactions, // Pass transactions array to the frontend
   });
 });
+
+
 exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.body; // Use `id` instead of `transaction_id`
+  console.log("id:", id);
 
   // Validate the input
   if (!id) {
@@ -212,15 +215,24 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       [id]
     );
 
+    // Log the transaction details for debugging
+    console.log("Transaction Details:", transactionDetails);
+
     if (!transactionDetails || transactionDetails.length === 0) {
       console.log(`Error: No pending transaction found for ID: ${id}`);
       throw new Error("No pending transaction found for the provided ID");
     }
 
-    const { company_id, tranction_coin } = transactionDetails;
+    // Ensure the data is extracted correctly
+    const { company_id, tranction_coin } = transactionDetails[0]; // Access the first result if the query returns an array
 
-    // Log transaction details
-    console.log("Transaction Details:", { company_id, tranction_coin });
+    // Log extracted values
+    console.log(
+      "Extracted Data - Company ID:",
+      company_id,
+      "Transaction Coin:",
+      tranction_coin
+    );
 
     // Check if tranction_coin is null, set it to 0 if necessary
     if (tranction_coin === null) {
@@ -258,7 +270,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
       throw new Error("Failed to update the audit entry");
     }
 
-    // Check if company_id exists in company_data table
+    // Step 4: Check if company_id exists in company_data table
     const [companyData] = await connection.query(
       `SELECT 1 FROM company_data WHERE company_id = ?`,
       [company_id]
@@ -268,11 +280,13 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     console.log("Company Data Check:", companyData);
 
     if (companyData.length === 0) {
-      console.log(`Error: Company ID ${company_id} does not exist in company_data table`);
+      console.log(
+        `Error: Company ID ${company_id} does not exist in company_data table`
+      );
       throw new Error("Company ID does not exist in company_data table");
     }
 
-    // Step 4: Update the company's coin balance by adding the transaction_coin
+    // Step 5: Update the company's coin balance by adding the transaction_coin
     const [companyCoinUpdateResult] = await connection.query(
       `UPDATE company_data 
        SET company_coin = COALESCE(company_coin, 0) + ? 
@@ -296,22 +310,30 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
     console.log("Transaction approved successfully");
     res.json({
       success: true,
-      message: "Transaction approved, audit updated, and company coins added successfully!",
+      message:
+        "Transaction approved, audit updated, and company coins added successfully!",
     });
   } catch (error) {
     // Rollback the transaction in case of an error
     await connection.rollback();
 
     // Log the error for debugging
-    console.error("Error approving transaction:", { message: error.message, stack: error.stack });
+    console.error("Error approving transaction:", {
+      message: error.message,
+      stack: error.stack,
+    });
 
     // Send an error response
-    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   } finally {
     // Release the connection
     connection.release();
   }
 });
+
 
 // exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 //   const { id } = req.body; // Use `id` instead of `transaction_id`
