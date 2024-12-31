@@ -28,18 +28,27 @@ function Payment() {
   const [transaction_id, setTransactionId] = useState(''); // State for transaction ID
   const [utr_no, setUtrNo] = useState(''); // State for UTR No
  const [showLink, setShowLink] = useState(false);
-const handleRedirect = () => {
+const handlePaymentRedirect = () => {
   const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
 
-  // Check if the user is on iOS (iPhone/iPad)
+  // Detect if the user is on iOS
   const isIos = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
+  const upiUrl = "upi://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR"; // UPI link
+  const googlePayAppStoreLink = "https://apps.apple.com/in/app/google-pay/id691797987"; // Google Pay App Store link
+  const googlePayIntentLink = "intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end"; // Google Pay Intent link for Android
+
   if (isIos) {
-    // For iPhone, fallback to the App Store if Google Pay is not installed
-    window.location.href = "https://apps.apple.com/in/app/google-pay/id691797987"; // Google Pay App Store link
+    // For iOS, attempt to use UPI link and fall back to App Store if it doesn't open
+    window.location.href = upiUrl;
+
+    // Timeout to redirect to App Store if the user isn't redirected within a certain time frame
+    setTimeout(() => {
+      window.location.href = googlePayAppStoreLink;
+    }, 500); // 500ms delay to handle iOS fallback
   } else {
-    // For Android, the deep link works
-    window.location.href = "intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end";
+    // For Android, use the Intent URL for Google Pay
+    window.location.href = googlePayIntentLink;
   }
 };
 
@@ -207,10 +216,8 @@ const handleRedirect = () => {
 <div className="bg-white p-3 rounded-lg shadow-md w-48 h-48 flex items-center justify-center">
   {qrCodeUrl ? (
     <a 
-      href="intent://pay?pa=singhnarukaarjun@okicici&pn=ArjunSingh&am=300&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      onClick={() => handleRedirect()}
+      href="#"
+      onClick={() => handlePaymentRedirect()}
     >
       <img 
         src={apiSettings?.qr_code || ""} 
@@ -224,6 +231,7 @@ const handleRedirect = () => {
     </div>
   )}
 </div>
+
 
 
 
