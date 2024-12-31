@@ -81,7 +81,7 @@ function Confirm() {
       <div className="container">
         <img
           className={`image ${animate ? 'animate' : ''}`}
-          src="src/assets/images/sad-face-b 1.png"
+          src="src/images/sad-face-b 1.pngg"
           alt="Sad Face"
         />
         <div className="message">You successfully created an account</div>
