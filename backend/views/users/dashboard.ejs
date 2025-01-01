@@ -245,6 +245,174 @@
         </a>
     </div><!-- end col -->
 </div>
+
+<div class="row" style="width: 1700px;">
+
+    <div class="col-xl-6 col-md-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h4 class="header-title">Admin Coin Revenue Progress</h4>
+                <canvas id="modernBarChart" height="100"></canvas>
+                <p class="mt-3">
+                    Target Coins: <strong>
+                        <%= finalValue %>
+                    </strong><br />
+                    Current Progress: <strong>
+                        <%= totalMultiplier %>
+                    </strong> Coins<br />
+                    <!-- Display Progress Percentage in HTML -->
+                <p>Progress: <strong>
+                        <%= ((totalMultiplier / finalValue) * 100).toFixed(4) %>
+                    </strong>%</p>
+
+                <!-- You can place this inside your HTML structure where you want to display the progress -->
+
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+</div>
 <!-- ============================================================== -->
 <!-- End Page Content here -->
 <!-- ============================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Values from the backend
+        const finalValue = <%= finalValue %>;  // Replace with server-side value
+        const totalMultiplier = <%= totalMultiplier %>;  // Replace with server-side value
+
+        // Debugging: Log values to ensure they are coming through correctly
+        console.log("finalValue:", finalValue);
+        console.log("totalMultiplier:", totalMultiplier);
+
+        // Check if finalValue and totalMultiplier are valid numbers
+        if (isNaN(finalValue) || isNaN(totalMultiplier)) {
+            console.error("Invalid value for finalValue or totalMultiplier.");
+            return;
+        }
+
+        // Calculate the percentage of target achieved
+        const progressPercentage = (totalMultiplier / finalValue) * 100;
+
+        // Log the calculated progress percentage
+        console.log("Calculated Progress Percentage:", progressPercentage);
+
+        // Ensure a minimum percentage to avoid showing 0%
+        const safeProgressPercentage = Math.max(progressPercentage, 0.1);  // Prevent 0% from showing
+        const displayMultiplier = Math.max(totalMultiplier, 0.1);  // Display a small value if necessary
+
+        console.log("Safe Progress Percentage:", safeProgressPercentage);
+
+        // Chart.js Configuration
+        const ctx = document.getElementById('modernBarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Revenue Progress'],  // Label for the X-axis
+                datasets: [
+                    {
+                        label: `Achieved Revenue (${safeProgressPercentage.toFixed(2)}%)`,  // Show percentage in label
+                        data: [displayMultiplier],  // Progress bar data
+                        backgroundColor: 'rgba(0, 204, 255, 0.6)',  // Light blue for progress
+                        borderColor: 'rgba(0, 204, 255, 1)',
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Target Revenue (Full Bar)',
+                        data: [finalValue - totalMultiplier],  // Remaining coins to reach target
+                        backgroundColor: 'rgba(255, 99, 132, 0.3)',  // Light red for remaining
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const percentage = (context.raw / finalValue) * 100;
+                                return `${context.dataset.label}: ${context.raw} coins (${percentage.toFixed(2)}%)`;
+                            },
+                        },
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: true,  // Stack the bars to show target vs progress
+                        title: {
+                            display: true,
+                            text: 'Revenue Progress',
+                            font: {
+                                size: 14,
+                            },
+                            color: '#666',
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: finalValue > 0 ? finalValue : 1,  // Dynamic Y-axis max value based on target
+                        title: {
+                            display: true,
+                            text: 'Coins (Revenue)',
+                            font: {
+                                size: 14,
+                            },
+                            color: '#666',
+                        },
+                    },
+                },
+            },
+        });
+    });
+</script>
+
+
+
+
+
+<style>
+    .progress-bar-container {
+        width: 100%;
+        height: 30px;
+        background-color: rgba(54, 162, 235, 0.2);
+        border: 1px solid rgba(54, 162, 235, 1);
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-filled {
+        height: 100%;
+        background-color: rgba(255, 99, 132, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        white-space: nowrap;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 5px 0 0 5px;
+    }
+
+    .progress-text {
+        position: absolute;
+        right: 10px;
+        color: black;
+        font-size: 12px;
+    }
+</style>
