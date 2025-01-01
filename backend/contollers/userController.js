@@ -478,8 +478,42 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
      FROM usercoin_audit
      WHERE status = "waiting" AND type = "quest"`
   );
+
+  const questCoinEarnResult = await db.query(`
+    SELECT 
+      SUM(coin_earn) AS total_coin_earn
+    FROM quest
+  `);
+
+  // Starting value
+  const baseValue = 6291450000;
+
+  // If no coin_earn found, set it to 0
+  const totalCoinEarn = questCoinEarnResult[0][0].total_coin_earn || 0;
+  const totalStatsResult = await db.query(`
+    SELECT 
+        COUNT(*) AS total_users
+      FROM users
+      WHERE status = 1
+        AND user_type = 'user'
+        AND id != 2
+    `);
+
+  // Fetch the sum of pending_coins from usercoin_audit where type is 'quest' or 'referral'
+  const totalPendingCoinsResult = await db.query(`
+      SELECT 
+        SUM(pending_coin) AS total_pending_coins
+      FROM usercoin_audit
+      WHERE type IN ('quest')
+    `);
+
+  const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
+  const totalPendingCoins =
+    totalPendingCoinsResult[0][0].total_pending_coins || 0;
+  const totalMultiplier = totalUsers * 6000 + totalPendingCoins;
+
+  const finalValue = baseValue + totalCoinEarn;
   // Extract the counts from the results
-  const totalUsers = totalUsersResult[0].count;
   const totalQuests = totalQuestsResult[0].count;
   const totalCompanies = totalCompaniesResult[0].count;
   const pendingUsers = pendingUsersResult[0].count;
@@ -497,9 +531,10 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
     pendingUsers,
     pendingCompany,
     questApproval,
+    finalValue,
+    totalMultiplier,
   });
 });
-
 
 
 exports.allUsers = catchAsyncErrors(async (req, res, next) => {
