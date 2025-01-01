@@ -1917,7 +1917,6 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-
 exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
   try {
     // Fetch total users count with status = 1 from the users table
@@ -1990,5 +1989,6 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
+
 
 
