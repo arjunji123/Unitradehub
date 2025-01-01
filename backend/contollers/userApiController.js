@@ -1917,6 +1917,79 @@ exports.approveUserTransaction = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+// exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
+//   try {
+//     // Fetch total users count with status = 1 from the users table
+//     const totalStatsResult = await db.query(`
+//     SELECT 
+//         COUNT(*) AS total_users
+//       FROM users
+//       WHERE status = 1
+//         AND user_type = 'user'
+//         AND id != 2
+//     `);
+
+//     // Fetch the sum of pending_coins from usercoin_audit where type is 'quest' or 'referral'
+//     const totalPendingCoinsResult = await db.query(`
+//       SELECT 
+//         SUM(pending_coin) AS total_pending_coins
+//       FROM usercoin_audit
+//       WHERE type IN ('quest')
+//     `);
+
+//     // Fetch monthly users count with status = 1 from the users table (last month)
+//     const monthlyStatsResult = await db.query(`
+//   SELECT 
+//         COUNT(*) AS monthly_users
+//       FROM users
+//       WHERE status = 1
+//         AND user_type = 'user'
+//         AND id != 2
+//         AND date_created >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+//     `);
+
+//     // Fetch the sum of pending_coins from usercoin_audit for the past month where type is 'quest' or 'referral'
+//     const monthlyPendingCoinsResult = await db.query(`
+//       SELECT 
+//         SUM(pending_coin) AS monthly_pending_coins
+//       FROM usercoin_audit
+//       WHERE type IN ('quest')
+//       AND date_entered >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+//     `);
+
+//     // Parse total stats
+//     const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
+//     const totalPendingCoins =
+//       totalPendingCoinsResult[0][0].total_pending_coins || 0;
+//     const totalMultiplier = totalUsers * 6000 + totalPendingCoins;
+
+//     // Parse monthly stats
+//     const monthlyUsers = monthlyStatsResult[0][0].monthly_users - 1; // Subtract 2 from the monthly users count
+//     const monthlyPendingCoins =
+//       monthlyPendingCoinsResult[0][0].monthly_pending_coins || 0;
+//     const monthlyMultiplier = monthlyUsers * 6000 + monthlyPendingCoins;
+
+//     // Send both stats in the response
+//     res.status(200).json({
+//       success: true,
+//       message: "User stats fetched successfully.",
+//       data: {
+//         total: {
+//           users: totalUsers,
+//           multiplier: totalMultiplier,
+//         },
+//         monthly: {
+//           users: monthlyUsers,
+//           multiplier: monthlyMultiplier,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user stats:", error);
+//     return next(new ErrorHandler("Database query failed", 500));
+//   }
+// });
+
 exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
   try {
     // Fetch total users count with status = 1 from the users table
@@ -1957,6 +2030,20 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
       AND date_entered >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
     `);
 
+    const questCoinEarnResult = await db.query(`
+      SELECT 
+        SUM(coin_earn) AS total_coin_earn
+      FROM quest
+    `);
+
+    // Starting value
+    const baseValue = 6291450000;
+
+    // If no coin_earn found, set it to 0
+    const totalCoinEarn = questCoinEarnResult[0][0].total_coin_earn || 0;
+
+    // Add the total coin_earn from quests to the base value
+    const finalValue = baseValue + totalCoinEarn;
     // Parse total stats
     const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
     const totalPendingCoins =
@@ -1982,6 +2069,7 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
           users: monthlyUsers,
           multiplier: monthlyMultiplier,
         },
+        final_value: finalValue,
       },
     });
   } catch (error) {
@@ -1989,6 +2077,7 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
+
 
 
 
