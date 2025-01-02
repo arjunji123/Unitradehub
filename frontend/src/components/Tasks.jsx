@@ -601,7 +601,6 @@ function Tasks() {
           </div>
 
       )}
-        <div>
 
       {showPopup && (
         <Follow
@@ -613,7 +612,8 @@ function Tasks() {
           questId={activeQuestId}
         />
       )}
-    </div>
+ <Footer />
+
    </div>
   );
 };
