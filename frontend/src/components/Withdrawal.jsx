@@ -87,6 +87,16 @@ function Withdrawal() {
     };
     fetchData();
   }, [dispatch]);
+useEffect(() => {
+    // Prevent drag gestures
+    const preventDrag = (e) => e.preventDefault();
+
+    document.addEventListener("dragstart", preventDrag);
+
+    return () => {
+      document.removeEventListener("dragstart", preventDrag);
+    };
+  }, []);
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
