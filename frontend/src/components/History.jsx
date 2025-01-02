@@ -119,7 +119,9 @@ console.log('withdrawal', withdrawal)
   };
   
   return (
-    <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
+    // <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
+          <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
+
       {loading ? (
         <Loader />
       ) : (
