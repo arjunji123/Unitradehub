@@ -33,9 +33,11 @@ console.log('withdrawal', withdrawal)
     fetchData();
   }, [dispatch]);
 
+import { useEffect } from 'react';
+
 useEffect(() => {
-  // Select the specific div using its id 'no-drag'
- const targetDiv1 = document.getElementById('no-drag-1'); 
+  // Select the specific divs by their ids 'no-drag-1' and 'no-drag-2'
+  const targetDiv1 = document.getElementById('no-drag-1'); 
   const targetDiv2 = document.getElementById('no-drag-2'); 
 
   // Prevent drag events on the specific div
@@ -48,22 +50,35 @@ useEffect(() => {
     e.preventDefault(); // Prevent any touch gesture (drag) on the target div
   };
 
-  if (targetDiv) {
-    // Add event listeners to prevent drag and touch events
-    targetDiv.addEventListener("dragstart", preventDrag);
-    // targetDiv.addEventListener("touchstart", preventTouch, { passive: false });
-    targetDiv.addEventListener("touchmove", preventTouch, { passive: false });
+  // Add event listeners to prevent drag and touch events for both divs
+  if (targetDiv1) {
+    targetDiv1.addEventListener("dragstart", preventDrag);
+    // targetDiv1.addEventListener("touchstart", preventTouch, { passive: false });
+    targetDiv1.addEventListener("touchmove", preventTouch, { passive: false });
+  }
+
+  if (targetDiv2) {
+    targetDiv2.addEventListener("dragstart", preventDrag);
+    // targetDiv2.addEventListener("touchstart", preventTouch, { passive: false });
+    targetDiv2.addEventListener("touchmove", preventTouch, { passive: false });
   }
 
   // Cleanup: Remove event listeners when the component unmounts or re-renders
   return () => {
-    if (targetDiv) {
-      targetDiv.removeEventListener("dragstart", preventDrag);
-      // targetDiv.removeEventListener("touchstart", preventTouch);
-      targetDiv.removeEventListener("touchmove", preventTouch);
+    if (targetDiv1) {
+      targetDiv1.removeEventListener("dragstart", preventDrag);
+      // targetDiv1.removeEventListener("touchstart", preventTouch);
+      targetDiv1.removeEventListener("touchmove", preventTouch);
+    }
+
+    if (targetDiv2) {
+      targetDiv2.removeEventListener("dragstart", preventDrag);
+      // targetDiv2.removeEventListener("touchstart", preventTouch);
+      targetDiv2.removeEventListener("touchmove", preventTouch);
     }
   };
 }, []); // Empty dependency array, runs once when the component mounts
+
 
 
   // Group transactions by date
