@@ -15,6 +15,21 @@ import "react-toastify/dist/ReactToastify.css"; // Import the toastify CSS
 import axios from "axios";
 
 function Tasks() {
+ const spinnerStyle = {
+    border: '4px solid #f3f3f3',  // Light background
+    borderTop: '4px solid #000000',  // Black color
+    borderRadius: '50%',
+    width: '20px',
+    height: '20px',
+    animation: 'spin 1s linear infinite',
+  };
+
+  const keyframesStyle = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
   const dispatch = useDispatch();
   const questHistory = useSelector((state) => state.apiData.data);
   const quest = questHistory?.quest?.quests
