@@ -347,7 +347,7 @@ function Login() {
         {/* Footer Section */}
         <div className="bg-[#111113] py-4 sm:py-6 text-center rounded-b-2xl">
           <p className="text-xs sm:text-sm text-[#909090]">
-           Hiiiiiiiiiiiiiiiiiiiiiiiiii
+            New to Unitrade?
             <Link to="/" className="text-white font-semibold hover:underline ml-1">
               Sign Up
             </Link>
