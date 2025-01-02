@@ -586,7 +586,8 @@ function Tasks() {
   </div>
 </div>
 
-<style jsx>{`
+{/* CSS for Custom Spinner */}
+<style>
   .spinner {
     border: 4px solid #f3f3f3; /* Light background */
     border-top: 4px solid #000000; /* Black color */
@@ -600,7 +601,7 @@ function Tasks() {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-`}</style>
+</style>
 
 <Footer />
 
@@ -615,7 +616,8 @@ function Tasks() {
   />
 )}
 
-</div>
+
+
 
   );
 }
