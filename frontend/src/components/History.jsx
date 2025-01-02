@@ -135,7 +135,7 @@ console.log('withdrawal', withdrawal)
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
+          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-hidden">
             <button
               className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
                 activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
