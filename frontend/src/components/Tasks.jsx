@@ -458,10 +458,9 @@ function Tasks() {
   //     />
   //   )}
   // </div>
-  <div className="w-full bg-black text-white flex flex-col max-w-lg min-h-screen sm:mx-auto font-Inter">
+<div className="w-full bg-black text-white flex flex-col max-w-lg h-screen sm:mx-auto font-Inter">
   <div className="flex-grow overflow-y-auto">
     <div className="px-2 py-6 h-full z-10">
-      {/* <Logo /> */}
       <p className="text-left mt-6 text-lg font-extrabold font-Inter ml-2">EARN</p>
 
       {bannerQuests && bannerQuests.length > 0 && (
@@ -486,7 +485,6 @@ function Tasks() {
             rows.map((row, index) => (
               <div key={index} className="flex items-center justify-between bg-black py-2 px-4 font-Inter">
                 <div className="flex items-center">
-                  {/* <img className="w-8 h-8 mr-4" src={row.icon} alt="" /> */}
                   {row.icon}
                   <div>
                     <h3 className="text-sm capitalize text-white font-bold">{row.title}</h3>
@@ -519,7 +517,7 @@ function Tasks() {
                       >
                         {loadingState[row.taskKey] ? (
                           <div className="flex justify-center items-center">
-                            <div className="spinner"></div> {/* Custom spinner */}
+                            <div className="spinner"></div>
                           </div>
                         ) : (
                           "Verify"
@@ -537,10 +535,9 @@ function Tasks() {
           {socials &&
             socials.map((social, index) => (
               <div key={index}>
-                <div className="flex items-center justify-between bg-black py-2 px-4 rounded-lg shadow-lg ">
+                <div className="flex items-center justify-between bg-black py-2 px-4 rounded-lg shadow-lg">
                   <div className="flex items-center">
                     {social.icon}
-                    {/* <img className="w-8 h-8 mr-4" src={social.icon} alt="" /> */}
                     <div>
                       <h3 className="text-sm capitalize text-white font-bold font-Inter">{social.title}</h3>
                       <p className="text-xs capitalize text-white font-semibold font-Inter">+ {parseInt(social.coin)} Coin</p>
@@ -558,6 +555,7 @@ function Tasks() {
                       <span>Follow</span>
                     </a>
                   )}
+
                   {social.status === "not_completed" && followed[social.taskKey] && (
                     <button
                       onClick={() => togglePopup(social.taskKey, social.questId)}
@@ -566,11 +564,13 @@ function Tasks() {
                       Verify
                     </button>
                   )}
+
                   {social.status === "waiting" && (
                     <p className="bg-[#282828] text-[#aaa3a3] w-20 flex justify-center py-2 rounded-full text-sm font-bold" aria-disabled>
                       <span>Waiting</span>
                     </p>
                   )}
+
                   {social.status === "completed" && (
                     <p className="bg-[#282828] text-white w-20 flex justify-center py-2 rounded-full text-xs font-bold">
                       <FaRegCheckCircle size={20} className="text-[#606060]" />
@@ -584,36 +584,38 @@ function Tasks() {
       </div>
     </div>
   </div>
+</div>
 
-  {/* CSS for Custom Spinner */}
-  <style jsx>{`
-    .spinner {
-      border: 4px solid #f3f3f3; /* Light background */
-      border-top: 4px solid #000000; /* Black color */
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-    }
+{/* CSS for Custom Spinner */}
+<style jsx>{`
+  .spinner {
+    border: 4px solid #f3f3f3; /* Light background */
+    border-top: 4px solid #000000; /* Black color */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  `}</style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`}</style>
 
-  <Footer />
+<Footer />
 
-  {showPopup && (
-    <Follow
-      togglePopup={() => togglePopup(null, null)}
-      handleSubmit={handleSubmit}
-      handleFileChange={handleFileChange}
-      isUploading={isUploading}
-      task={activeTaskKey}
-      questId={activeQuestId}
-    />
-  )}
+{showPopup && (
+  <Follow
+    togglePopup={() => togglePopup(null, null)}
+    handleSubmit={handleSubmit}
+    handleFileChange={handleFileChange}
+    isUploading={isUploading}
+    task={activeTaskKey}
+    questId={activeQuestId}
+  />
+)}
+
 </div>
 
   );
