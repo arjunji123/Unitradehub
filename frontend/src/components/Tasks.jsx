@@ -53,19 +53,17 @@ function Tasks() {
 
     fetchData();
   }, [dispatch]);
- useEffect(() => {
-    // Disable drag and touch gestures
+useEffect(() => {
+    // Prevent drag gestures
     const preventDrag = (e) => e.preventDefault();
-    const preventTouch = (e) => e.preventDefault();
 
     document.addEventListener("dragstart", preventDrag);
-    document.addEventListener("touchmove", preventTouch, { passive: false });
 
     return () => {
       document.removeEventListener("dragstart", preventDrag);
-      document.removeEventListener("touchmove", preventTouch);
     };
   }, []);
+
   const bannerQuests = quest && quest.filter(quest => quest.quest_type === "banner");
   const nonBannerQuests = quest && quest.filter(quest => quest.quest_type === "non-banner");
   
