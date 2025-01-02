@@ -119,71 +119,41 @@ console.log('withdrawal', withdrawal)
   };
   
   return (
-    // // <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
-    //       <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
-
-    //   {loading ? (
-    //     <Loader />
-    //   ) : (
-    //     // <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
-    //     <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
-
-    //       <div className="flex items-center justify-between py-4">
-    //         <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
-    //           <FaChevronLeft />
-    //         </button>
-    //       </div>
-
-    //       {/* Tab Navigation */}
-    //       <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-hidden">
-    //         <button
-    //           className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
-    //             activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
-    //           }`}
-    //           onClick={() => handleTabSwitch("History")}
-    //         >
-    //           History
-    //         </button>
-    //         <button
-    //           className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
-    //             activeTab === "Withdrawal" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
-    //           }`}
-    //           onClick={() => handleTabSwitch("Withdrawal")}
-    //         >
-    //           Withdrawal
-    //         </button>
-    //       </div>
+    // <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
           <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
 
-  {loading ? (
-    <Loader />
-  ) : (
-    <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
+      {loading ? (
+        <Loader />
+      ) : (
+        // <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
+      <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
 
-      <div className="flex items-center justify-between py-4">
-        <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
-          <FaChevronLeft />
-        </button>
-      </div>
+          <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
+            <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
+              <FaChevronLeft />
+            </button>
+          </div>
 
-      <div className="flex items-center bg-[#1C1C1E] justify-start rounded-xl overflow-x-auto scroll-smooth hide-scrollbar">
-        <button
-          className={`py-2.5 px-8 text-center font-medium transition-all duration-200 ${
-            activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
-          }`}
-          onClick={() => handleTabSwitch("History")}
-        >
-          History
-        </button>
-        <button
-          className={`py-2.5 px-8 text-center font-medium transition-all duration-200 ${
-            activeTab === "Withdrawal" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
-          }`}
-          onClick={() => handleTabSwitch("Withdrawal")}
-        >
-          Withdrawal
-        </button>
-</div>
+          {/* Tab Navigation */}
+          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-hidden">
+            <button
+              className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
+                activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
+              }`}
+              onClick={() => handleTabSwitch("History")}
+            >
+              History
+            </button>
+            <button
+              className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
+                activeTab === "Withdrawal" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
+              }`}
+              onClick={() => handleTabSwitch("Withdrawal")}
+            >
+              Withdrawal
+            </button>
+          </div>
+    
 
      
           <div id="content" className="flex-grow py-4 h-[400px] overflow-y-auto hide-scrollbar" style={styles.content}>
