@@ -126,7 +126,6 @@ console.log('withdrawal', withdrawal)
         <Loader />
       ) : (
         // <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
-          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
         <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
 
           <div className="flex items-center justify-between py-4">
