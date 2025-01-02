@@ -32,27 +32,27 @@ console.log('withdrawal', withdrawal)
     };
     fetchData();
   }, [dispatch]);
+
 useEffect(() => {
-  // Prevent default for drag and touch events that interfere with gestures
+  // Prevent default for drag events
   const preventDrag = (e) => {
-    if (e.type === "dragstart") {
-      e.preventDefault();
-    }
+    e.preventDefault();
   };
 
+  // Prevent touch events that interfere with dragging but allow scrolling
   const preventTouch = (e) => {
-    // Only prevent touchmove if it's not scrolling
-    if (e.touches.length > 1 || (e.target && e.target.closest('.no-scroll'))) {
-      e.preventDefault(); // Prevent pinch-zoom and other gestures
+    // Allow scrolling only if it's a vertical scroll (touchmove)
+    if (e.cancelable) {
+      e.preventDefault(); // Prevent any touch gesture like dragging, etc.
     }
   };
 
-  // Disable drag and touch gestures, but allow scrolling
-  document.addEventListener("dragstart", preventDrag);
+  // Add event listeners to prevent drag and touch gestures
+  document.addEventListener("dragstart", preventDrag, false);
   document.addEventListener("touchmove", preventTouch, { passive: false });
 
   return () => {
-    document.removeEventListener("dragstart", preventDrag);
+    document.removeEventListener("dragstart", preventDrag, false);
     document.removeEventListener("touchmove", preventTouch);
   };
 }, []);
