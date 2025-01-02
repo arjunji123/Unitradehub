@@ -480,6 +480,8 @@ function Tasks() {
               <h1 className="text-center text-2xl text-white shadow-lg font-bold font-Inter mt-4">COIN QUESTS</h1>
 
               <div className="h-fit mb-8">
+                  <div className="mt-4">
+
                 {rows && rows.map((row, index) => (
                   <div key={index} className="flex items-center justify-between bg-black py-2 px-4 font-Inter">
                     <div className="flex items-center">
@@ -515,7 +517,7 @@ function Tasks() {
                           >
                             {loadingState[row.taskKey] ? (
                               <div className="flex justify-center items-center">
-                                <div className="spinner"></div>
+                                      <div style={spinnerStyle}></div> 
                               </div>
                             ) : (
                               "Verify"
@@ -581,6 +583,8 @@ function Tasks() {
             </div>
           </div>
         </div>
+          </div>
+
       )}
 
       {showPopup && (
@@ -594,6 +598,7 @@ function Tasks() {
         />
       )}
     </div>
+      <style>{keyframesStyle}</style>
   );
 };
 
