@@ -163,9 +163,9 @@ useEffect(() => {
       {loading ? (
         <Loader />
       ) : (
-        <div id = "no-drag-1" className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
+        <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
 
-          <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
+          <div id = "no-drag-1" className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
               <FaChevronLeft />
             </button>
