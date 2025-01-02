@@ -601,6 +601,7 @@ function Tasks() {
           </div>
 
       )}
+        <div>
 
       {showPopup && (
         <Follow
@@ -613,6 +614,7 @@ function Tasks() {
         />
       )}
     </div>
+   </div>
       <style>{keyframesStyle}</style>
   );
 };
