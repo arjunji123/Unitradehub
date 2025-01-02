@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { IoHome, IoLogOutOutline } from "react-icons/io5";
 import { TbUsersGroup } from "react-icons/tb";
-import earn from '../images/earn.png'; // Ensure the path is correct
 import { logout } from "../../store/actions/authActions"
 import { useDispatch } from 'react-redux'; // Import useDispatch
 
@@ -49,7 +48,7 @@ function Footer() {
           handlePageChange('home', '/home');
         }}
       >
-         <img src='src\assets\icon\1.png' alt="Earn" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'home' ? 'opacity-100' : 'opacity-50'}`} />
+         <img src='src\assets\icon\home.png' alt="Earn" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'home' ? 'opacity-100' : 'opacity-50'}`} />
         {/* <IoHome size={24} className={`transition-opacity duration-200 ${activePage === 'home' ? 'opacity-100' : 'opacity-50'}`} /> */}
         <span className={`text-[10px] mt-1 ${activePage === 'home' ? 'font-bold' : 'opacity-50'}`}>Home</span>
       </Link>
@@ -63,7 +62,7 @@ function Footer() {
           handlePageChange('tasks', '/tasks');
         }}
       >
-        <img src='src\assets\icon\2.png' alt="tasks" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'tasks' ? 'opacity-100' : 'opacity-50'}`} />
+        <img src='src\assets\icon\account_balance_wallet.png' alt="tasks" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'tasks' ? 'opacity-100' : 'opacity-50'}`} />
         {/* <img src={earn} alt="Earn" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'tasks' ? 'opacity-100' : 'opacity-50'}`} /> */}
         <span className={`text-xs mt-1 ${activePage === 'tasks' ? 'font-bold' : 'opacity-50'}`}>Earn</span>
       </Link>
@@ -77,7 +76,7 @@ function Footer() {
           handlePageChange('friend', '/friend');
         }}
       >
-         <img src='src\assets\icon\3.png' alt="friend" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'friend' ? 'opacity-100' : 'opacity-50'}`} />
+         <img src='src\assets\icon\frens.png' alt="friend" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'friend' ? 'opacity-100' : 'opacity-50'}`} />
         {/* <TbUsersGroup size={24} className={`transition-opacity duration-200 ${activePage === 'friend' ? 'opacity-100' : 'opacity-50'}`} /> */}
         <span className={`text-xs mt-1 ${activePage === 'friend' ? 'font-bold' : 'opacity-50'}`}>Friends</span>
       </Link>
@@ -91,13 +90,13 @@ function Footer() {
           handlePageChange('withdrawal', '/withdrawal');
         }}
       >
-            <img src='src\assets\icon\4.png' alt="withdrawal" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'withdrawal' ? 'opacity-100' : 'opacity-50'}`} />
+            <img src='src\assets\icon\toll.png' alt="withdrawal" className={`w-6 h-6 transition-opacity duration-200 ${activePage === 'withdrawal' ? 'opacity-100' : 'opacity-50'}`} />
         {/* <img
           src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQ6nn3a5smm55h4gH0ppipz_I-UqR8e_dMoH1yE-SYZnx_DB-95"
           alt="Wallet"
           className={`w-7 h-7 transition-opacity duration-200 ${activePage === 'withdrawal' ? 'opacity-100' : 'opacity-50'}`}
         /> */}
-        <span className={`text-xs mt-1 ${activePage === 'withdrawal' ? 'font-bold' : 'opacity-50'}`}>Wallet</span>
+        <span className={`text-xs mt-1 ${activePage === 'withdrawal' ? 'font-bold' : 'opacity-50'}`}>Transactions</span>
       </Link>
     </div>
   {/* <div className="text-center text-white w-1/5">
