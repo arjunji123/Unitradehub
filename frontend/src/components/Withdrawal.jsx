@@ -272,7 +272,7 @@ useEffect(() => {
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 overflow-hidden">
 
-          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-hidden">
+          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
 
             <div className="flex-grow relative z-0   top-10">
               {/* <Logo /> */}
@@ -315,7 +315,7 @@ useEffect(() => {
 
               {/* Co-Companies List */}
 {/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar"> */}
-  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto">
+  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
