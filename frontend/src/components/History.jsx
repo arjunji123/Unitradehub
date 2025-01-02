@@ -32,16 +32,26 @@ console.log('withdrawal', withdrawal)
     };
     fetchData();
   }, [dispatch]);
+
 useEffect(() => {
-    // Disable drag and touch gestures
-    const preventDrag = (e) => e.preventDefault();
+  // Select the specific div using a class or ID
+  const targetDiv = document.querySelector('.no-drag'); // Example with class 'no-drag'
 
-    document.addEventListener("dragstart", preventDrag);
+  // Prevent drag events on the specific div
+  const preventDrag = (e) => {
+    e.preventDefault();
+  };
 
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
+  // Prevent touchmove events on the specific div
+  const preventTouch = (e) => {
+    e.preventDefault(); // Prevent any touch gesture (drag) on the target div
+  };
+
+  if (targetDiv) {
+    // Add event listeners only to the specific div
+    targetDiv.addEventListener("dragstart", preventDrag);
+    targetDiv.addEventListener("touchmove", preventTouch, { passive: false });
+  }
 
   // Group transactions by date
   const groupByDate = (data) =>
@@ -135,7 +145,7 @@ useEffect(() => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
+          <div id = "no-drag" className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
             <button
               className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
                 activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
