@@ -153,7 +153,7 @@ console.log('withdrawal', withdrawal)
     //           Withdrawal
     //         </button>
     //       </div>
-<div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
+          <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
 
   {loading ? (
     <Loader />
