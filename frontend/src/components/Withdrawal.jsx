@@ -86,8 +86,9 @@ function Withdrawal() {
     };
     fetchData();
   }, [dispatch]);
- useEffect(() => {
-    // Disable drag and touch gestures
+
+useEffect(() => {
+    // Prevent drag gestures
     const preventDrag = (e) => e.preventDefault();
 
     document.addEventListener("dragstart", preventDrag);
@@ -96,6 +97,7 @@ function Withdrawal() {
       document.removeEventListener("dragstart", preventDrag);
     };
   }, []);
+
   const handleIconClick = (index) => {
     setActiveIndex(index);
     // Close all pop-ups when clicking a different icon
