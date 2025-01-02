@@ -427,7 +427,7 @@ function Tasks() {
         </div>
       </div>
     </div>
-         }
+         )
        <style jsx>{`
         .spinner {
           border: 4px solid #f3f3f3; /* Light background */
