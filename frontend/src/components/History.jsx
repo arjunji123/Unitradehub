@@ -166,7 +166,6 @@ console.log('withdrawal', withdrawal)
         </button>
       </div>
 
-      {/* Tab Navigation */}
       <div className="flex items-center bg-[#1C1C1E] justify-start rounded-xl overflow-x-auto scroll-smooth hide-scrollbar">
         <button
           className={`py-2.5 px-8 text-center font-medium transition-all duration-200 ${
@@ -184,12 +183,9 @@ console.log('withdrawal', withdrawal)
         >
           Withdrawal
         </button>
-      </div>
-    </div>
-  )}
 </div>
 
-          {/* Content */}
+     
           <div id="content" className="flex-grow py-4 h-[400px] overflow-y-auto hide-scrollbar" style={styles.content}>
             {activeTab === "History" && (
               <>
