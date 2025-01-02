@@ -32,7 +32,19 @@ console.log('withdrawal', withdrawal)
     };
     fetchData();
   }, [dispatch]);
+ useEffect(() => {
+    // Disable drag and touch gestures
+    const preventDrag = (e) => e.preventDefault();
+    const preventTouch = (e) => e.preventDefault();
 
+    document.addEventListener("dragstart", preventDrag);
+    document.addEventListener("touchmove", preventTouch, { passive: false });
+
+    return () => {
+      document.removeEventListener("dragstart", preventDrag);
+      document.removeEventListener("touchmove", preventTouch);
+    };
+  }, []);
   // Group transactions by date
   const groupByDate = (data) =>
     data.reduce((acc, item) => {
@@ -109,17 +121,6 @@ console.log('withdrawal', withdrawal)
     });
   };
   
-useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
-
-    document.addEventListener("dragstart", preventDrag);
-
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
-
   return (
     <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
       {loading ? (
