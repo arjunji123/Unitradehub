@@ -35,7 +35,8 @@ console.log('withdrawal', withdrawal)
 
 useEffect(() => {
   // Select the specific div using its id 'no-drag'
-  const targetDiv = document.getElementById('no-drag'); // Target div by ID
+ const targetDiv1 = document.getElementById('no-drag-1'); 
+  const targetDiv2 = document.getElementById('no-drag-2'); 
 
   // Prevent drag events on the specific div
   const preventDrag = (e) => {
@@ -148,7 +149,7 @@ useEffect(() => {
       {loading ? (
         <Loader />
       ) : (
-        <div id = "no-drag" className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
+        <div id = "no-drag-1" className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
 
           <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
@@ -157,7 +158,7 @@ useEffect(() => {
           </div>
 
           {/* Tab Navigation */}
-          <div id = "no-drag" className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
+          <div id = "no-drag-2" className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
             <button
               className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
                 activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
