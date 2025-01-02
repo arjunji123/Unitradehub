@@ -33,13 +33,14 @@ console.log('withdrawal', withdrawal)
     fetchData();
   }, [dispatch]);
 
+
 useEffect(() => {
   // Select the specific div using a class or ID
   const targetDiv = document.querySelector('.no-drag'); // Example with class 'no-drag'
 
   // Prevent drag events on the specific div
   const preventDrag = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent dragging
   };
 
   // Prevent touchmove events on the specific div
@@ -52,6 +53,15 @@ useEffect(() => {
     targetDiv.addEventListener("dragstart", preventDrag);
     targetDiv.addEventListener("touchmove", preventTouch, { passive: false });
   }
+
+  // Cleanup: Remove event listeners when the component unmounts or re-renders
+  return () => {
+    if (targetDiv) {
+      targetDiv.removeEventListener("dragstart", preventDrag);
+      targetDiv.removeEventListener("touchmove", preventTouch);
+    }
+  };
+}, []);
 
   // Group transactions by date
   const groupByDate = (data) =>
