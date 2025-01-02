@@ -38,6 +38,7 @@ function Tasks() {
   const handleFileChange = (e) => {
     setScreenshot(e.target.files[0]); // Capture screenshot
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,7 +53,6 @@ function Tasks() {
     };
 
     fetchData();
-    tg.disableClosingConfirmation();
 
   }, [dispatch]);
 
