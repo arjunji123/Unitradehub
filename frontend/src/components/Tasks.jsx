@@ -13,6 +13,7 @@ import { BACKEND_URL } from "../config";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the toastify CSS
 import axios from "axios";
+import Header from "./Header";
 
 function Tasks() {
   const dispatch = useDispatch();
@@ -38,7 +39,6 @@ function Tasks() {
   const handleFileChange = (e) => {
     setScreenshot(e.target.files[0]); // Capture screenshot
   };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,20 +53,7 @@ function Tasks() {
     };
 
     fetchData();
-
   }, [dispatch]);
-
-// useEffect(() => {
-//     // Prevent drag gestures
-//     const preventDrag = (e) => e.preventDefault();
-
-//     document.addEventListener("dragstart", preventDrag);
-
-//     return () => {
-//       document.removeEventListener("dragstart", preventDrag);
-//     };
-//   }, []);
-
   const bannerQuests = quest && quest.filter(quest => quest.quest_type === "banner");
   const nonBannerQuests = quest && quest.filter(quest => quest.quest_type === "non-banner");
   
@@ -225,58 +212,77 @@ function Tasks() {
       [task]: Date.now(),
     });
   };
-  const handleSubmit = async (task, questId) => {
-
+  const handleSubmit = async (task, questId, screenshotRequired) => {
     // Basic validations
-    if (!screenshot) {
+    if (screenshotRequired === 1 && !screenshot) {
       toast('Please upload a screenshot!');
       return;
     }
-
+  
     if (!questId) {
       toast('Quest ID is required!');
       return;
     }
-
+  
     if (!task) {
       toast('Task ID is required!');
       return;
     }
-
+  
     try {
       setIsUploading(true);
-
+  
       // Retrieve the token from localStorage
       const tokenData = localStorage.getItem("user");
       if (!tokenData) {
         throw new Error("No token data found in localStorage");
       }
-
+  
       const parsedTokenData = JSON.parse(tokenData);
       const token = parsedTokenData.token;
-
+  
       if (!token) {
         throw new Error("Token not found");
       }
-
-      // 1. Upload the screenshot
-      const formData = new FormData();
-      formData.append('screenshot', screenshot);
-
-      await axios.post(
-        `${BACKEND_URL}/api/v1/upload-quest-screenshot/${questId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Pass the token here
-          },
-        }
-      );
-      dispatch(fetchQuestHistory());
-      setFollowed(true);
-      setShowPopup(false); // Close the pop-up
-      toast("Follow Task Completed!");
-
+  
+      // If screenshot is required (screenshot_required === 1), upload the screenshot
+      if (screenshotRequired === 1) {
+        const formData = new FormData();
+        formData.append('screenshot', screenshot);
+  
+        await axios.post(
+          `${BACKEND_URL}/api/v1/upload-quest-screenshot/${questId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass the token here
+            },
+          }
+        );
+      }
+  
+      // Call the complete quest API after screenshot upload or if screenshot is not required
+      const response = await fetch(`${BACKEND_URL}/api/v1/api-quests/complete-quest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quest_id: questId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+  
+      // Simulate a delay after the request completes
+      setTimeout(() => {
+        setLoadingState(prevState => ({ ...prevState, [task]: false })); // End loading after delay
+        dispatch(fetchQuestHistory());
+        setHasWatched(prev => ({ ...prev, [task]: true }));
+        toast("Task Completed!");
+      }, 1500); // Delay of 1.5 seconds (adjust as needed)
+  
     } catch (error) {
       console.error("Error completing follow quest:", error);
       toast.error("Error completing follow quest: " + error.message);
@@ -284,6 +290,7 @@ function Tasks() {
       setIsUploading(false); // Set uploading state to false
     }
   };
+  
 
 
   return (
@@ -299,8 +306,22 @@ function Tasks() {
     />
    {loading ? (
         <SkeletonLoader /> 
-      ) : (
+      ) :
+
     <div className="w-full bg-black text-white  flex flex-col max-w-lg h-screen sm:mx-auto  font-Inter  ">
+         {/* Header Section */}
+         <Header/>
+         <div style={{
+            position: 'absolute',
+            width: '239px',
+            height: '239px',
+            left: '160px',
+            top: '116px',
+            background: 'rgba(99, 57, 249, 0.25',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
       <div className="flex-grow overflow-y-auto">
         <div className="px-2 py-6 h-full z-10">
           {/* <Logo /> */}
@@ -426,8 +447,21 @@ function Tasks() {
           </div>
         </div>
       </div>
+      <div style={{
+            position: 'absolute',
+            width: '243px',
+            height: '243px',
+            left: '-91px',
+            top: '423px',
+            background: 'rgba(99, 57, 249, 0.25)',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
     </div>
-      )}
+    
+         }
+       {/* CSS for Custom Spinner */}
        <style jsx>{`
         .spinner {
           border: 4px solid #f3f3f3; /* Light background */
@@ -456,9 +490,8 @@ function Tasks() {
       />
     )}
   </div>
-
+  
   );
-};
+}
 
 export default Tasks;
-
