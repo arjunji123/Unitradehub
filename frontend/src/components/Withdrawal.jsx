@@ -271,7 +271,7 @@ useEffect(() => {
           <Loader />
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
- <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
+ <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
                {/* Header Section */}
          <Header/>
          <div style={{
