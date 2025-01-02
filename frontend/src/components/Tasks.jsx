@@ -53,17 +53,34 @@ function Tasks() {
 
     fetchData();
   }, [dispatch]);
-useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
 
-    document.addEventListener("dragstart", preventDrag);
+// useEffect(() => {
+//     // Prevent drag gestures
+//     const preventDrag = (e) => e.preventDefault();
+
+//     document.addEventListener("dragstart", preventDrag);
+
+//     return () => {
+//       document.removeEventListener("dragstart", preventDrag);
+//     };
+//   }, []);
+ useEffect(() => {
+    const container = containerRef.current;
+
+    // Allow scroll only on the specific container
+    const handleTouchMove = (e) => {
+      if (container && !container.contains(e.target)) {
+        // Prevent scrolling outside the container
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
-      document.removeEventListener("dragstart", preventDrag);
+      document.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
-
   const bannerQuests = quest && quest.filter(quest => quest.quest_type === "banner");
   const nonBannerQuests = quest && quest.filter(quest => quest.quest_type === "non-banner");
   
