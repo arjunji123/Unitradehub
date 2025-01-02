@@ -315,7 +315,7 @@ useEffect(() => {
 
               {/* Co-Companies List */}
 {/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar"> */}
-  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
+  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
