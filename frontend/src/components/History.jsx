@@ -35,48 +35,32 @@ console.log('withdrawal', withdrawal)
 
 
 useEffect(() => {
-  // Select the specific divs by their ids 'no-drag-1' and 'no-drag-2'
-  const targetDiv1 = document.getElementById('no-drag-1'); 
-  const targetDiv2 = document.getElementById('no-drag-2'); 
+  // Select the specific div using a class or ID
+  const targetDiv = document.querySelector('.no-drag'); // Example with class 'no-drag'
 
   // Prevent drag events on the specific div
   const preventDrag = (e) => {
-    e.preventDefault(); // Prevent dragging
+    e.preventDefault();
   };
 
-  // Prevent touch events (touchstart and touchmove) on the specific div
+  // Prevent touchmove events on the specific div
   const preventTouch = (e) => {
     e.preventDefault(); // Prevent any touch gesture (drag) on the target div
   };
 
-  // Add event listeners to prevent drag and touch events for both divs
-  if (targetDiv1) {
-    targetDiv1.addEventListener("dragstart", preventDrag);
-    targetDiv1.addEventListener("touchstart", preventTouch, { passive: false });
-    targetDiv1.addEventListener("touchmove", preventTouch, { passive: false });
+  if (targetDiv) {
+    // Add event listeners only to the specific div
+    targetDiv.addEventListener("dragstart", preventDrag);
+    targetDiv.addEventListener("touchmove", preventTouch, { passive: false });
   }
 
-  if (targetDiv2) {
-    targetDiv2.addEventListener("dragstart", preventDrag);
-    targetDiv2.addEventListener("touchstart", preventTouch, { passive: false });
-    targetDiv2.addEventListener("touchmove", preventTouch, { passive: false });
-  }
-
-  // Cleanup: Remove event listeners when the component unmounts or re-renders
   return () => {
-    if (targetDiv1) {
-      targetDiv1.removeEventListener("dragstart", preventDrag);
-      targetDiv1.removeEventListener("touchstart", preventTouch);
-      targetDiv1.removeEventListener("touchmove", preventTouch);
-    }
-
-    if (targetDiv2) {
-      targetDiv2.removeEventListener("dragstart", preventDrag);
-      targetDiv2.removeEventListener("touchstart", preventTouch);
-      targetDiv2.removeEventListener("touchmove", preventTouch);
+    if (targetDiv) {
+      targetDiv.removeEventListener("dragstart", preventDrag);
+      targetDiv.removeEventListener("touchmove", preventTouch);
     }
   };
-}, []); // Empty dependency array, runs once when the component mounts
+}, []);
 
 
 
@@ -165,14 +149,14 @@ useEffect(() => {
       ) : (
         <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
 
-          <div id = "no-drag-2" className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
+          <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
               <FaChevronLeft />
             </button>
           </div>
 
           {/* Tab Navigation */}
-          <div id = "no-drag-2" className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
+          <div id = "no-drag" className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
             <button
               className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
                 activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
