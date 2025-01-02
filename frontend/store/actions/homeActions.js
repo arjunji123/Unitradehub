@@ -58,6 +58,10 @@ export const FETCH_WITHDRAWAL_REQUEST = 'FETCH_WITHDRAWAL_REQUEST';
 export const SET_WITHDRAWAL_DATA  = 'SET_WITHDRAWAL_DATA';
 export const FETCH_WITHDRAWAL_FAILURE = 'FETCH_WITHDRAWAL_FAILURE';
 
+export const FETCH_STATS_REQUEST = 'FETCH_STATS_REQUEST';
+export const SET_STATS_DATA  = 'SET_STATS_DATA';
+export const FETCH_STATS_FAILURE = 'FETCH_STATS_FAILURE';
+
 export const TRANSFER_COINS_REQUEST = "TRANSFER_COINS_REQUEST";
 export const TRANSFER_COINS_SUCCESS = "TRANSFER_COINS_SUCCESS";
 export const TRANSFER_COINS_FAILURE = "TRANSFER_COINS_FAILURE";
@@ -185,6 +189,21 @@ export const fetchWithdrawal = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: FETCH_WITHDRAWAL_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+export const fetchStats = () => async (dispatch) => {
+  dispatch({type: FETCH_STATS_REQUEST});
+  
+  try {
+    const data = await fetcherGet(`${BACKEND_URL}/api/v1/stats-data`);
+    console.log('API Response:', data); // Debugging
+    dispatch({ type: SET_STATS_DATA,   payload: data || [] });
+  } catch (error) {
+    dispatch({
+      type: FETCH_STATS_FAILURE,
       payload: error.message,
     });
   }
