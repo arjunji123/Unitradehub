@@ -125,7 +125,7 @@ console.log('withdrawal', withdrawal)
       {loading ? (
         <Loader />
       ) : (
- <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
+        <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
 
           <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
@@ -134,7 +134,7 @@ console.log('withdrawal', withdrawal)
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-hidden">
+          <div className="flex items-center bg-[#1C1C1E] justify-between rounded-xl hide-scrollbar overflow-y-auto">
             <button
               className={`flex-1 py-2.5 text-center font-medium transition-all duration-200 ${
                 activeTab === "History" ? "bg-[#282828] rounded-xl text-white" : "text-gray-100"
