@@ -125,7 +125,7 @@ console.log('withdrawal', withdrawal)
       {loading ? (
         <Loader />
       ) : (
-        <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
+ <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
 
           <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
