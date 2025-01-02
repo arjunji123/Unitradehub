@@ -50,7 +50,7 @@ useEffect(() => {
   if (targetDiv) {
     // Add event listeners to prevent drag and touch events
     targetDiv.addEventListener("dragstart", preventDrag);
-    targetDiv.addEventListener("touchstart", preventTouch, { passive: false });
+    // targetDiv.addEventListener("touchstart", preventTouch, { passive: false });
     targetDiv.addEventListener("touchmove", preventTouch, { passive: false });
   }
 
@@ -58,7 +58,7 @@ useEffect(() => {
   return () => {
     if (targetDiv) {
       targetDiv.removeEventListener("dragstart", preventDrag);
-      targetDiv.removeEventListener("touchstart", preventTouch);
+      // targetDiv.removeEventListener("touchstart", preventTouch);
       targetDiv.removeEventListener("touchmove", preventTouch);
     }
   };
