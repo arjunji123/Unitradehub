@@ -272,7 +272,7 @@ useEffect(() => {
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 overflow-hidden">
 
-          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
+          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-hidden">
 
             <div className="flex-grow relative z-0   top-10">
               {/* <Logo /> */}
