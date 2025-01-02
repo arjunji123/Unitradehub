@@ -32,31 +32,16 @@ console.log('withdrawal', withdrawal)
     };
     fetchData();
   }, [dispatch]);
-
 useEffect(() => {
-  // Prevent default for drag events
-  const preventDrag = (e) => {
-    e.preventDefault();
-  };
+    // Disable drag and touch gestures
+    const preventDrag = (e) => e.preventDefault();
 
-  // Prevent touch events that interfere with dragging but allow scrolling
-  const preventTouch = (e) => {
-    // Allow scrolling only if it's a vertical scroll (touchmove)
-    if (e.cancelable) {
-      e.preventDefault(); // Prevent any touch gesture like dragging, etc.
-    }
-  };
+    document.addEventListener("dragstart", preventDrag);
 
-  // Add event listeners to prevent drag and touch gestures
-  document.addEventListener("dragstart", preventDrag, false);
-  document.addEventListener("touchmove", preventTouch, { passive: false });
-
-  return () => {
-    document.removeEventListener("dragstart", preventDrag, false);
-    document.removeEventListener("touchmove", preventTouch);
-  };
-}, []);
-
+    return () => {
+      document.removeEventListener("dragstart", preventDrag);
+    };
+  }, []);
 
   // Group transactions by date
   const groupByDate = (data) =>
