@@ -52,13 +52,13 @@ useEffect(() => {
   // Add event listeners to prevent drag and touch events for both divs
   if (targetDiv1) {
     targetDiv1.addEventListener("dragstart", preventDrag);
-    // targetDiv1.addEventListener("touchstart", preventTouch, { passive: false });
+    targetDiv1.addEventListener("touchstart", preventTouch, { passive: false });
     targetDiv1.addEventListener("touchmove", preventTouch, { passive: false });
   }
 
   if (targetDiv2) {
     targetDiv2.addEventListener("dragstart", preventDrag);
-    // targetDiv2.addEventListener("touchstart", preventTouch, { passive: false });
+    targetDiv2.addEventListener("touchstart", preventTouch, { passive: false });
     targetDiv2.addEventListener("touchmove", preventTouch, { passive: false });
   }
 
@@ -66,13 +66,13 @@ useEffect(() => {
   return () => {
     if (targetDiv1) {
       targetDiv1.removeEventListener("dragstart", preventDrag);
-      // targetDiv1.removeEventListener("touchstart", preventTouch);
+      targetDiv1.removeEventListener("touchstart", preventTouch);
       targetDiv1.removeEventListener("touchmove", preventTouch);
     }
 
     if (targetDiv2) {
       targetDiv2.removeEventListener("dragstart", preventDrag);
-      // targetDiv2.removeEventListener("touchstart", preventTouch);
+      targetDiv2.removeEventListener("touchstart", preventTouch);
       targetDiv2.removeEventListener("touchmove", preventTouch);
     }
   };
@@ -165,7 +165,7 @@ useEffect(() => {
       ) : (
         <div className="bg-black text-white w-full max-w-lg flex flex-col px-4 overflow-hidden">
 
-          <div className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
+          <div id = "no-drag-2" className="flex items-center justify-between py-4 hide-scrollbar overflow-y-auto">
             <button onClick={() => navigate(-1)} className="text-2xl text-white cursor-pointer">
               <FaChevronLeft />
             </button>
