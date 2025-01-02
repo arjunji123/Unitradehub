@@ -108,6 +108,17 @@ console.log('withdrawal', withdrawal)
       }
     });
   };
+  
+useEffect(() => {
+    // Prevent drag gestures
+    const preventDrag = (e) => e.preventDefault();
+
+    document.addEventListener("dragstart", preventDrag);
+
+    return () => {
+      document.removeEventListener("dragstart", preventDrag);
+    };
+  }, []);
 
   return (
     <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
