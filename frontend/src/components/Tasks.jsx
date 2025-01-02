@@ -615,7 +615,6 @@ function Tasks() {
       )}
     </div>
    </div>
-      <style>{keyframesStyle}</style>
   );
 };
 
