@@ -32,7 +32,6 @@ console.log('withdrawal', withdrawal)
     };
     fetchData();
   }, [dispatch]);
-import { useEffect } from 'react';
 
 useEffect(() => {
   // Select the specific div using its id 'no-drag'
