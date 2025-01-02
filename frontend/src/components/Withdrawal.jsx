@@ -16,6 +16,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Loader from '../components/Loader';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Header from "./Header";
 
 function Withdrawal() {
   const MySwal = withReactContent(Swal);
@@ -86,17 +87,6 @@ function Withdrawal() {
     };
     fetchData();
   }, [dispatch]);
-
-useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
-
-    document.addEventListener("dragstart", preventDrag);
-
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
@@ -270,11 +260,32 @@ useEffect(() => {
         {loading ? (
           <Loader />
         ) :
-          // <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 overflow-hidden">
-
-          <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
-
-            <div className="flex-grow relative z-0   top-10">
+          <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
+               {/* Header Section */}
+         <Header/>
+         <div style={{
+            position: 'absolute',
+            width: '239px',
+            height: '239px',
+            left: '160px',
+            top: '116px',
+            background: 'rgba(99, 57, 249, 0.25',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
+          <div style={{
+            position: 'absolute',
+            width: '243px',
+            height: '243px',
+            left: '-91px',
+            top: '423px',
+            background: 'rgba(99, 57, 249, 0.25)',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
+            <div className="flex-grow relative z-0  px-4 top-10">
               {/* <Logo /> */}
 
               <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mt-3 mb-4">
@@ -314,8 +325,7 @@ useEffect(() => {
               <hr className="border-gray-300 mb-4 w-full mx-auto" />
 
               {/* Co-Companies List */}
-{/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar"> */}
-  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
+              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
@@ -370,7 +380,17 @@ useEffect(() => {
               </div>
             </div>
 
-
+            {/* <div style={{
+            position: 'absolute',
+            width: '243px',
+            height: '243px',
+            left: '-91px',
+            top: '423px',
+            background: 'rgba(99, 57, 249, 0.25)',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div> */}
           </div>
         }
         <Footer />
