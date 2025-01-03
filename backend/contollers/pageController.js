@@ -1131,7 +1131,9 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     console.log("Updated pending_coin for user:", updatedPendingCoin);
 
     let responseMessage = `AQuest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
-
+    if (activity === "follow") {
+      responseMessage = "Quest completed successfully. Approve by admin.";
+    }
 
     // Respond with success
     res.status(200).json({
