@@ -226,9 +226,7 @@ function Signup() {
   return (
     // <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden">
    <div
-      className="bg-black flex justify-center items-center overflow-auto"
-      style={{ minHeight: `${viewportHeight}px` }} // Dynamic height
-    >
+      className="bg-black flex justify-center items-center overflow-auto">
       <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
       <div className="w-full max-w-md bg-black text-white rounded-lg shadow-lg  font-Inter">
 
