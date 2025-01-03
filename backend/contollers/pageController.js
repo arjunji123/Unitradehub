@@ -1033,13 +1033,13 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     let status = "completed"; // Default status for non-follow activity
 
     // Check if the activity is "follow" (activity = 2)
-    if (activity === "follow") {
-      // If activity is "follow"
-      pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
-      // status = "not_completed"; // Set status to "not completed" for "follow"
-      status = "waiting"; // Set status to "not completed" for "follow"
+    // if (activity === "follow") {
+    //   // If activity is "follow"
+    //   pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
+    //   // status = "not_completed"; // Set status to "not completed" for "follow"
+    //   status = "waiting"; // Set status to "not completed" for "follow"
 
-    }
+    // }
 
     // Log the value of pendingCoinValue and status for debugging purposes
     console.log("Pending Coin Value Set To:", pendingCoinValue);
@@ -1096,7 +1096,8 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     // Calculate the new pending_coin value only if activity is not "follow"
     let newPendingCoin = currentPendingCoin;
 
-    if (activity !== "follow") {
+    // if (activity !== "follow") {
+    if (activity !== "other") {
       newPendingCoin = currentPendingCoin + coinEarnValue;
       console.log("New pending_coin value:", newPendingCoin);
 
