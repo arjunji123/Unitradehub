@@ -224,9 +224,12 @@ function Signup() {
   return (
     <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden">
       <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
-      <div className="w-full max-w-md bg-black text-white rounded-lg shadow-lg  font-Inter">
+{/*       <div className="w-full max-w-md bg-black text-white rounded-lg shadow-lg  font-Inter">
 
-        <div id="content" className="p-6 space-y-6">
+        <div id="content" className="p-6 space-y-6"> */}
+
+ <div className="w-full max-w-md bg-black text-white rounded-lg shadow-lg font-Inter">
+      <div id="content" className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-20px)]">
           <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
