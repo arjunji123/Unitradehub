@@ -4,8 +4,10 @@ import { IoMenu, IoLogOutOutline } from "react-icons/io5";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { logout } from "../../store/actions/authActions";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 function Header() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
       // State to manage whether the menu is open or closed
       const [isMenuOpen, setIsMenuOpen] = useState(false);
