@@ -223,16 +223,16 @@ function Signup() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
- useEffect(() => {
-    // Disable drag and touch gestures
-    const preventDrag = (e) => e.preventDefault();
+ // useEffect(() => {
+ //    // Disable drag and touch gestures
+ //    const preventDrag = (e) => e.preventDefault();
 
-    document.addEventListener("dragstart", preventDrag);
+ //    document.addEventListener("dragstart", preventDrag);
 
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
+ //    return () => {
+ //      document.removeEventListener("dragstart", preventDrag);
+ //    };
+ //  }, []);
 
   const handleFocus = (e) => {
     const inputElement = e.target;
