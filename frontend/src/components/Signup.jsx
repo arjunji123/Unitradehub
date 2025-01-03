@@ -239,20 +239,20 @@ function Signup() {
    //        <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
 
    //        <form onSubmit={handleSubmit} className="space-y-4">
-<div className="bg-black flex justify-center items-center h-screen overflow-hidden">
-  <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
-  <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col h-full overflow-hidden">
-    <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto">
-      <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+   <div className="bg-black flex justify-center items-center h-screen overflow-hidden">
+      <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
+      <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col h-full overflow-hidden">
+        <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto">
+          <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Input */}
             <div className="relative">
               <label className="absolute -top-2 left-3 text-xs text-gray-400 bg-black px-1">Name</label>
               <input
                 type="text"
                 name="user_name"
-                onFocus={handleFocus}
-                value={values.user_name}
+{/*                 onFocus={handleFocus}
+                value={values.user_name} */}
                 onChange={handleInput}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -267,8 +267,8 @@ function Signup() {
                 type="tel"
                 name="mobile"
                 value={values.mobile}
-                onFocus={handleFocus}
-                onChange={handleInput}
+{/*                 onFocus={handleFocus}
+                onChange={handleInput} */}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -284,8 +284,8 @@ function Signup() {
                 type="email"
                 name="email"
                 value={values.email}
-                onFocus={handleFocus}
-                onChange={handleInput}
+{/*                 onFocus={handleFocus}
+                onChange={handleInput} */}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -301,8 +301,8 @@ function Signup() {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={values.password}
-                onFocus={handleFocus}
-                onChange={handleInput}
+{/*                 onFocus={handleFocus}
+                onChange={handleInput} */}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -326,8 +326,8 @@ function Signup() {
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={values.confirmPassword}
-                onFocus={handleFocus}
-                onChange={handleInput}
+{/*                 onFocus={handleFocus}
+                onChange={handleInput} */}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -352,7 +352,7 @@ function Signup() {
               type="text"
               name="upi_id"
               value={values.upi_id}
-              onFocus={handleFocus} // Add this
+{/*               onFocus={handleFocus}  */}
               onChange={handleInput}
               required
               aria-label="UPI ID"
