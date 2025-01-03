@@ -9,14 +9,23 @@ import { BACKEND_URL } from '../config';
 // Custom Hook for Referral Code
 
 function Signup() {
- const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-    };
-    window.addEventListener("resize", handleResize);
-   return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+useEffect(() => {
+  const handleResize = () => {
+    setViewportHeight(window.innerHeight);
+  };
+
+  // Add event listener when the component mounts
+  window.addEventListener("resize", handleResize);
+
+  // Set the initial viewport height
+  handleResize();
+
+  // Cleanup function to remove the event listener when the component unmounts
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     user_name: "",
