@@ -9,23 +9,6 @@ import { BACKEND_URL } from '../config';
 // Custom Hook for Referral Code
 
 function Signup() {
-useEffect(() => {
-  const handleResize = () => {
-    setViewportHeight(window.innerHeight);
-  };
-
-  // Add event listener when the component mounts
-  window.addEventListener("resize", handleResize);
-
-  // Set the initial viewport height
-  handleResize();
-
-  // Cleanup function to remove the event listener when the component unmounts
-  return () => {
-    window.removeEventListener("resize", handleResize);
-  };
-}, []);
-
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     user_name: "",
@@ -50,6 +33,7 @@ useEffect(() => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");// Use location to access the URL parameters
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+
   useEffect(() => {
     const getReferralCode = () => {
       let referralCode = null;
@@ -207,19 +191,36 @@ useEffect(() => {
     }
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      const appHeight = window.innerHeight;
-      document.documentElement.style.setProperty("--app-height", `${appHeight}px`);
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const appHeight = window.innerHeight;
+  //     document.documentElement.style.setProperty("--app-height", `${appHeight}px`);
+  //   };
 
-    handleResize(); // Set on component mount
-    window.addEventListener("resize", handleResize); // Update on resize
+  //   handleResize(); // Set on component mount
+  //   window.addEventListener("resize", handleResize); // Update on resize
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
+useEffect(() => {
+  const handleResize = () => {
+    setViewportHeight(window.innerHeight);
+  };
+
+  // Add event listener when the component mounts
+  window.addEventListener("resize", handleResize);
+
+  // Set the initial viewport height
+  handleResize();
+
+  // Cleanup function to remove the event listener when the component unmounts
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+
  useEffect(() => {
     // Disable drag and touch gestures
     const preventDrag = (e) => e.preventDefault();
