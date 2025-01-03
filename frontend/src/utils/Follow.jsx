@@ -1,9 +1,9 @@
 import React from 'react';
 import { ImCross } from "react-icons/im";
 
-function Follow({togglePopup, handleFileChange, handleSubmit, isUploading,  task, questId}) {
+function Follow({togglePopup, handleFileChange, handleSubmit, isUploading,  task, questId, screenshotRequired}) {
     return (
-        <div className="fixed inset-0 flex items-end justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={togglePopup}>
+        <div className="fixed inset-x-0 top-0 flex  justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={togglePopup}>
             <div className="bg-[#1B1A1A] p-4 sm:p-6 rounded-t-3xl shadow-xl min-w-[420px] max-w-lg relative" onClick={(e) => e.stopPropagation()}>
                 <button onClick={togglePopup} className="absolute top-5 right-5 text-gray-400 hover:text-gray-200 focus:outline-none transition duration-300">
                     <ImCross size={20} />
@@ -24,7 +24,7 @@ function Follow({togglePopup, handleFileChange, handleSubmit, isUploading,  task
 
                 <div className="flex justify-center items-center mb-2">
                     <button className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg"
-                  onClick={() => handleSubmit(task, questId)} 
+                  onClick={() => handleSubmit(task, questId, screenshotRequired)} 
                       disabled={isUploading}>
                         {isUploading ? 'Uploading...' : 'Submit'}
                     </button>
