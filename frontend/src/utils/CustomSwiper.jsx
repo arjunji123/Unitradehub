@@ -6,7 +6,7 @@ import { useState } from "react";
 const CustomSwiper = ({
   banners,
   followed,
-  togglePopup,
+  togglePopup, handleSubmit,
   isVideoWatched,
   handleWatchButtonClick,
   handleCheckButtonClick,
@@ -161,7 +161,7 @@ const CustomSwiper = ({
                           </a>
                         )}
 
-                        {banner.activity === "follow" && followed[taskKey] && (
+                        {/* {banner.activity === "follow" && followed[taskKey] && (
                           <button
                             onClick={() =>
                               handleButtonClick(
@@ -179,9 +179,31 @@ const CustomSwiper = ({
                           >
                             Verify
                           </button>
-                        )}
+                        )} */}
+
+{banner.activity === "follow" && followed[taskKey] && (
+  <button
+    onClick={() => {
+      if (banner.screenshot_required === 0) {
+        // Directly call the API if no screenshot is required
+        handleSubmit(taskKey, banner.quest_id, 0);
+      } else {
+        // Open the popup if a screenshot is required
+        handleButtonClick(taskKey, togglePopup, taskKey, banner.quest_id);
+      }
+    }}
+    className={`bg-gray-900 text-white w-20 flex justify-center py-1.5 rounded-full text-sm font-bold ${
+      isRequestInProgress[taskKey] ? "opacity-75 cursor-wait" : ""
+    }`}
+  >
+    Verify
+  </button>
+)}
                       </>
                     )}
+
+
+
                   </div>
                 </div>
               </SwiperSlide>
