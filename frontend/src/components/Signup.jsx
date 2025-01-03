@@ -299,8 +299,7 @@ function Signup() {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={values.password}
-{/*                 onFocus={handleFocus}
-                onChange={handleInput} */}
+                onChange={handleInput}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -324,8 +323,7 @@ function Signup() {
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={values.confirmPassword}
-{/*                 onFocus={handleFocus}
-                onChange={handleInput} */}
+                onChange={handleInput}
                 onBlur={handleBlur}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
@@ -350,7 +348,6 @@ function Signup() {
               type="text"
               name="upi_id"
               value={values.upi_id}
-{/*               onFocus={handleFocus}  */}
               onChange={handleInput}
               required
               aria-label="UPI ID"
