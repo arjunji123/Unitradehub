@@ -191,37 +191,20 @@ function Signup() {
     }
   };
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const appHeight = window.innerHeight;
-  //     document.documentElement.style.setProperty("--app-height", `${appHeight}px`);
-  //   };
-
-  //   handleResize(); // Set on component mount
-  //   window.addEventListener("resize", handleResize); // Update on resize
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
-   useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
-      // Adjust the body's height when the keyboard opens
-      document.body.style.height = window.innerHeight + 'px';
-      document.body.style.overflowY = 'auto'; // Enable scroll when keyboard is open
+      const appHeight = window.innerHeight;
+      document.documentElement.style.setProperty("--app-height", `${appHeight}px`);
     };
 
-    // Add event listener when the component mounts
-    window.addEventListener('resize', handleResize);
+    handleResize(); // Set on component mount
+    window.addEventListener("resize", handleResize); // Update on resize
 
-    // Set the initial viewport height when the component mounts
-    handleResize();
-
-    // Cleanup function to remove the event listener when the component unmounts
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
+
  // useEffect(() => {
  //    // Disable drag and touch gestures
  //    const preventDrag = (e) => e.preventDefault();
@@ -440,8 +423,8 @@ function Signup() {
 }
 const styles = {
   content: {
-    height: '100%', // Full viewport height
-    overflowY: 'auto', // Enable vertical scrolling
+    // height: '100%', // Full viewport height
+    // overflowY: 'auto', // Enable vertical scrolling
     WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
   },
 };
