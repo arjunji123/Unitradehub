@@ -204,12 +204,11 @@ function Signup() {
   //     window.removeEventListener("resize", handleResize);
   //   };
   // }, []);
-  useEffect(() => {
-    // Handle keyboard opening and closing for mobile devices
+   useEffect(() => {
     const handleResize = () => {
-      // Adjust the body's height for scroll when keyboard opens
+      // Adjust the body's height when the keyboard opens
       document.body.style.height = window.innerHeight + 'px';
-      document.body.style.overflowY = 'auto'; // Allow scrolling when keyboard is open
+      document.body.style.overflowY = 'auto'; // Enable scroll when keyboard is open
     };
 
     // Add event listener when the component mounts
