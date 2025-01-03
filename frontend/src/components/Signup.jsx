@@ -440,7 +440,7 @@ function Signup() {
 }
 const styles = {
   content: {
-    // height: '100%', // Full viewport height
+    height: '100%', // Full viewport height
     // overflowY: 'auto', // Enable vertical scrolling
     WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
   },
