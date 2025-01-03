@@ -794,9 +794,7 @@ exports.uploadQuestScreenshotApi = catchAsyncErrors(async (req, res, next) => {
     await db.query("COMMIT");
 
     let responseMessage = `Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
-    if (activity === "follow") {
-      responseMessage = "Quest completed successfully. Approve by admin.";
-    }
+
 
     // Final response
     res.status(200).json({
