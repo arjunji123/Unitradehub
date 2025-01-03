@@ -1130,6 +1130,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     const updatedPendingCoin = updatedPendingCoinResult[0]?.pending_coin || 0;
     console.log("Updated pending_coin for user:", updatedPendingCoin);
 
+    let responseMessage = `AQuest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
 
 
     // Respond with success
