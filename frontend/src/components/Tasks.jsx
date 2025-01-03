@@ -31,10 +31,12 @@ function Tasks() {
   const [screenshot, setScreenshot] = useState(null);
   const [activeTaskKey, setActiveTaskKey] = useState(null);
   const [activeQuestId, setActiveQuestId] = useState(null);
-  const togglePopup = (taskKey, questId) => {
+  const [activeScreenshot, setActiveScreenshot] = useState(null);
+  const togglePopup = (taskKey, questId, screenshotRequired) => {
     setShowPopup(!showPopup);
     setActiveTaskKey(taskKey);
     setActiveQuestId(questId);
+    setActiveScreenshot(screenshotRequired)
   };
   const handleFileChange = (e) => {
     setScreenshot(e.target.files[0]); // Capture screenshot
@@ -214,56 +216,81 @@ function Tasks() {
     });
   };
   const handleSubmit = async (task, questId, screenshotRequired) => {
-    // Basic validations
-    if (screenshotRequired === 1 && !screenshot) {
-      toast('Please upload a screenshot!');
-      return;
-    }
-
-    if (!questId) {
-      toast('Quest ID is required!');
-      return;
-    }
-
-    if (!task) {
-      toast('Task ID is required!');
-      return;
-    }
-
+    console.log('screenshotRequired', screenshotRequired); // For debugging
+  
     try {
+      // Basic validations
+      if (screenshotRequired === 1 && !screenshot) {
+        toast('Please upload a screenshot!');
+        return;
+      }
+  
+      if (!questId) {
+        toast('Quest ID is required!');
+        return;
+      }
+  
+      if (!task) {
+        toast('Task ID is required!');
+        return;
+      }
+  
       setIsUploading(true);
-
+  
       // Retrieve the token from localStorage
       const tokenData = localStorage.getItem("user");
       if (!tokenData) {
         throw new Error("No token data found in localStorage");
       }
-
+  
       const parsedTokenData = JSON.parse(tokenData);
       const token = parsedTokenData.token;
-
+  
       if (!token) {
         throw new Error("Token not found");
       }
-
-      // Check if screenshot is required
+  
+      // **Screenshot Upload Flow (Only when screenshotRequired === 1)**
       if (screenshotRequired === 1) {
+        // Check if the screenshot is provided
+        if (!screenshot) {
+          toast('Please upload a screenshot!');
+          return;
+        }
+  
         const formData = new FormData();
         formData.append('screenshot', screenshot);
-
-        await axios.post(
+  
+        // Upload screenshot (this will be the only API call when screenshotRequired === 1)
+        const uploadResponse = await axios.post(
           `${BACKEND_URL}/api/v1/upload-quest-screenshot/${questId}`,
           formData,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pass the token here
+              Authorization: `Bearer ${token}`,
             },
           }
         );
+  
+        // If upload failed, stop further processing
+        if (uploadResponse.status !== 200) {
+          throw new Error('Failed to upload screenshot');
+        }
+  
+        toast("Screenshot Uploaded Successfully!");
+  
+        // Dispatch the fetchQuestHistory to update the quest history after successful screenshot upload
+        dispatch(fetchQuestHistory());
+  
+        // Close the popup here after success
+        closePopup(); // Make sure this function is defined to hide your popup
+  
+        return;
       }
-
-      // Call the complete quest API after screenshot upload or if screenshot is not required
-      const response = await fetch(`${BACKEND_URL}/api/v1/api-quests/complete-quest`, {
+  
+      // **No screenshot required flow (screenshotRequired === 0)**
+      // Call complete-quest API directly if no screenshot is required
+      const completeResponse = await fetch(`${BACKEND_URL}/api/v1/api-quests/complete-quest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -271,19 +298,20 @@ function Tasks() {
         },
         body: JSON.stringify({ quest_id: questId }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+  
+      if (!completeResponse.ok) {
+        throw new Error(`Error completing quest: ${completeResponse.status} ${completeResponse.statusText}`);
       }
-
+  
+      toast("Task Completed!");
+  
       // Simulate a delay after the request completes
       setTimeout(() => {
-        setLoadingState(prevState => ({ ...prevState, [task]: false })); // End loading after delay
-        dispatch(fetchQuestHistory());
-        setHasWatched(prev => ({ ...prev, [task]: true }));
-        toast("Task Completed!");
+        setLoadingState((prevState) => ({ ...prevState, [task]: false })); // End loading after delay
+        dispatch(fetchQuestHistory()); // Fetch updated quest history
+        setHasWatched((prev) => ({ ...prev, [task]: true }));
       }, 1500); // Delay of 1.5 seconds (adjust as needed)
-
+  
     } catch (error) {
       console.error("Error completing follow quest:", error);
       toast.error("Error completing follow quest: " + error.message);
@@ -291,9 +319,16 @@ function Tasks() {
       setIsUploading(false); // Set uploading state to false
     }
   };
-
-
-
+  
+  // Function to close the popup
+  const closePopup = () => {
+    // Assuming you have a state variable like `showPopup` that controls the visibility of the popup
+    setShowPopup(false); // This will close the popup
+  };
+  
+  
+  
+  
 
   return (
     <div className="bg-white flex justify-center min-h-screen font-Inter ">
@@ -432,7 +467,7 @@ function Tasks() {
                                   handleSubmit(social.taskKey, social.questId, social.screenshotRequired);
                                 } else {
                                   // Open the popup if a screenshot is required
-                                  togglePopup(social.taskKey, social.questId);
+                                  togglePopup(social.taskKey, social.questId, social.screenshotRequired);
                                 }
                               }}
                               className="bg-[#282828] text-white w-20 flex justify-center py-2 rounded-full text-sm font-bold"
@@ -499,6 +534,7 @@ function Tasks() {
           isUploading={isUploading}
           task={activeTaskKey}
           questId={activeQuestId}
+          screenshotRequired={activeScreenshot}
         />
       )}
     </div>
