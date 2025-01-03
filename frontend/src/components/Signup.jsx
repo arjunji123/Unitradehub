@@ -372,7 +372,7 @@ function Signup() {
             </button>
           </form>
    {/* Spinner Styles */}
-   <style jsx>{`
+{/*    <style jsx>{`
           .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #000000;
@@ -390,7 +390,34 @@ function Signup() {
               transform: rotate(360deg);
             }
           }
-        `}</style>
+        `}</style> */}
+<style jsx>{`
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #000000;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`}</style>
           {/* Terms and Privacy */}
           <div className="flex items-center justify-center mt-4 space-x-2">
             <input
