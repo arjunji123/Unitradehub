@@ -1036,7 +1036,9 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     if (activity === "follow") {
       // If activity is "follow"
       pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
-      status = "not_completed"; // Set status to "not completed" for "follow"
+      // status = "not_completed"; // Set status to "not completed" for "follow"
+      status = "waiting"; // Set status to "not completed" for "follow"
+
     }
 
     // Log the value of pendingCoinValue and status for debugging purposes
