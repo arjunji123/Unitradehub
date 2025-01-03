@@ -1029,29 +1029,29 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     }
 
     // Determine pending_coin based on activity type
-    let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
-    let status = "completed"; // Default status for non-follow activity
+    // let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
+    // let status = "completed"; // Default status for non-follow activity
 
-    // Check if the activity is "follow" (activity = 2)
-    // if (activity === "follow") {
-    //   // If activity is "follow"
-    //   pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
-    //   // status = "not_completed"; // Set status to "not completed" for "follow"
-    //   status = "waiting"; // Set status to "not completed" for "follow"
+    // // Check if the activity is "follow" (activity = 2)
+    // // if (activity === "follow") {
+    // //   // If activity is "follow"
+    // //   pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
+    // //   // status = "not_completed"; // Set status to "not completed" for "follow"
+    // //   status = "waiting"; // Set status to "not completed" for "follow"
 
+    // // }
+
+    // // Log the value of pendingCoinValue and status for debugging purposes
+    // console.log("Pending Coin Value Set To:", pendingCoinValue);
+    // console.log("Status Set To:", status);
+
+    // // Check if the value is correctly set to 0 when activity is follow
+    // if (activity === 2 && pendingCoinValue !== 0) {
+    //   console.error(
+    //     "Unexpected pendingCoinValue when activity is 'follow':",
+    //     pendingCoinValue
+    //   );
     // }
-
-    // Log the value of pendingCoinValue and status for debugging purposes
-    console.log("Pending Coin Value Set To:", pendingCoinValue);
-    console.log("Status Set To:", status);
-
-    // Check if the value is correctly set to 0 when activity is follow
-    if (activity === 2 && pendingCoinValue !== 0) {
-      console.error(
-        "Unexpected pendingCoinValue when activity is 'follow':",
-        pendingCoinValue
-      );
-    }
 
     await db.query("START TRANSACTION");
     const date_created = new Date()
@@ -1068,7 +1068,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       type: "quest",
       title: "quest",
       description: "quest",
-      status: status, // Use the dynamically set status
+      status: "completed", // Use the dynamically set status
       date_entered: date_created,
     };
     console.log("Insert data for usercoin_audit:", insertAuditData);
@@ -1096,13 +1096,8 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     // Calculate the new pending_coin value only if activity is not "follow"
     let newPendingCoin = currentPendingCoin;
 
-    // if (activity !== "follow") {
-    if (activity !== "other") {
-      newPendingCoin = currentPendingCoin + coinEarnValue;
-      console.log("New pending_coin value:", newPendingCoin);
 
-      // Update the pending_coin in user_data with the new value
-      const updateUserDataQuery = `
+    const updateUserDataQuery = `
     UPDATE user_data
     SET pending_coin = ?
     WHERE user_id = ?
@@ -1151,7 +1146,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
         coin_earn: coinEarnValue,
         title: "quest",
         description: "quest",
-        status: status, // Return the status in the response
+        status: "completed", // Return the status in the response
         date_entered: new Date(),
       },
     });
