@@ -88,9 +88,14 @@ function Signup() {
       email: emailRegex.test(email) ? "" : "Invalid email address.",
     }));
   }
- const handleFocus = () => {
-    // Scroll the page when input is focused
-    window.scrollTo(0, document.body.scrollHeight); 
+  const handleFocus = () => {
+    // Delay scrolling to give time for the keyboard to pop up
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight, // Scroll to bottom of the page
+        behavior: 'smooth', // Smooth scrolling
+      });
+    }, 200); // Delay time to ensure the keyboard appears before scrolling
   };
 
   const validateMobile = (mobile) => {
