@@ -251,8 +251,8 @@ function Signup() {
               <input
                 type="text"
                 name="user_name"
-{/*                 onFocus={handleFocus}
-                value={values.user_name} */}
+{/*                 onFocus={handleFocus} */}
+                value={values.user_name}
                 onChange={handleInput}
                 required
                 className="w-full px-4 py-3 bg-black border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500 text-sm"
