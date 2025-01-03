@@ -404,7 +404,9 @@ function Signup() {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
-
+  .input-container {
+    min-height: 100vh; /* Makes sure the container takes full viewport height */
+  }
   .spinner {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #000000;
