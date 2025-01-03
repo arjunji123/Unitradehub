@@ -238,7 +238,7 @@ function Signup() {
 <div className="bg-black flex justify-center items-center h-screen overflow-hidden">
   <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
   <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col h-full overflow-hidden">
-    <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto hide-scrollbar">
+    <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto">
       <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Input */}
@@ -392,6 +392,7 @@ function Signup() {
           }
         `}</style> */}
 <style jsx>{`
+  /* Hides scrollbar but keeps scroll functionality */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
