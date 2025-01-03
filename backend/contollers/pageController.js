@@ -1096,8 +1096,12 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     // Calculate the new pending_coin value only if activity is not "follow"
     let newPendingCoin = currentPendingCoin;
 
+    if (activity !== "follow") {
+      newPendingCoin = currentPendingCoin + coinEarnValue;
+      console.log("New pending_coin value:", newPendingCoin);
 
-    const updateUserDataQuery = `
+      // Update the pending_coin in user_data with the new value
+      const updateUserDataQuery = `
     UPDATE user_data
     SET pending_coin = ?
     WHERE user_id = ?
