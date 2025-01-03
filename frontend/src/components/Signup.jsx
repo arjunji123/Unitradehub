@@ -88,6 +88,10 @@ function Signup() {
       email: emailRegex.test(email) ? "" : "Invalid email address.",
     }));
   }
+ const handleFocus = () => {
+    // Scroll the page when input is focused
+    window.scrollTo(0, document.body.scrollHeight); 
+  };
 
   const validateMobile = (mobile) => {
     const mobileRegex = /^[0-9]{10}$/;
@@ -216,12 +220,7 @@ function Signup() {
  //    };
  //  }, []);
 
-  const handleFocus = (e) => {
-    const inputElement = e.target;
-    setTimeout(() => {
-      inputElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 300); // Delay to allow keyboard to open
-  };
+
 
   return (
     // <div className="bg-black flex justify-center items-center min-h-screen overflow-hidden">
