@@ -1029,29 +1029,27 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     }
 
     // Determine pending_coin based on activity type
-    // let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
-    // let status = "completed"; // Default status for non-follow activity
+    let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
+    let status = "completed"; // Default status for non-follow activity
 
-    // // Check if the activity is "follow" (activity = 2)
-    // // if (activity === "follow") {
-    // //   // If activity is "follow"
-    // //   pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
-    // //   // status = "not_completed"; // Set status to "not completed" for "follow"
-    // //   status = "waiting"; // Set status to "not completed" for "follow"
+    // Check if the activity is "follow" (activity = 2)
+    if (activity === "follow") {
+      // If activity is "follow"
+      pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
+      status = "not_completed"; // Set status to "not completed" for "follow"
+    }
 
-    // // }
+    // Log the value of pendingCoinValue and status for debugging purposes
+    console.log("Pending Coin Value Set To:", pendingCoinValue);
+    console.log("Status Set To:", status);
 
-    // // Log the value of pendingCoinValue and status for debugging purposes
-    // console.log("Pending Coin Value Set To:", pendingCoinValue);
-    // console.log("Status Set To:", status);
-
-    // // Check if the value is correctly set to 0 when activity is follow
-    // if (activity === 2 && pendingCoinValue !== 0) {
-    //   console.error(
-    //     "Unexpected pendingCoinValue when activity is 'follow':",
-    //     pendingCoinValue
-    //   );
-    // }
+    // Check if the value is correctly set to 0 when activity is follow
+    if (activity === 2 && pendingCoinValue !== 0) {
+      console.error(
+        "Unexpected pendingCoinValue when activity is 'follow':",
+        pendingCoinValue
+      );
+    }
 
     await db.query("START TRANSACTION");
     const date_created = new Date()
@@ -1068,7 +1066,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       type: "quest",
       title: "quest",
       description: "quest",
-      status: "completed", // Use the dynamically set status
+      status: status, // Use the dynamically set status
       date_entered: date_created,
     };
     console.log("Insert data for usercoin_audit:", insertAuditData);
@@ -1134,7 +1132,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     const updatedPendingCoin = updatedPendingCoinResult[0]?.pending_coin || 0;
     console.log("Updated pending_coin for user:", updatedPendingCoin);
 
-    let responseMessage = `AQuest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
+    let responseMessage = `Addwedd Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
     if (activity === "follow") {
       responseMessage = "Quest completed successfully. Approve by admin.";
     }
@@ -1150,7 +1148,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
         coin_earn: coinEarnValue,
         title: "quest",
         description: "quest",
-        status: "completed", // Return the status in the response
+        status: status, // Return the status in the response
         date_entered: new Date(),
       },
     });
