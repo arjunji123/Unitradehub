@@ -665,38 +665,57 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 
 
 /////////////////
-// exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
-//   // Get the user_id from the logged-in user's session
-//   const user_id = req.user.id;
 
-//   // Get the quest_id from the request body
+// exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
+//   const user_id = req.user.id;
 //   const { quest_id } = req.body;
 
 //   console.log("Received request to complete quest:", { user_id, quest_id });
 
-//   // Validate input to ensure quest_id is provided
 //   if (!quest_id) {
 //     console.log("Validation failed: Missing quest_id");
 //     return next(new ErrorHandler("Quest ID is required", 400));
 //   }
 
 //   try {
-//     // Fetch the quest details from the quest table to get the coin_earn value
+//     // Check if the quest is already completed
+//     const [completedQuestCheck] = await db.query(
+//       "SELECT id FROM usercoin_audit WHERE user_id = ? AND quest_id = ? AND status = 'completed'",
+//       [user_id, quest_id]
+//     );
+
+//     if (completedQuestCheck.length > 0) {
+//       console.log("Quest already completed by user:", { user_id, quest_id });
+//       return res.status(200).json({
+//         success: false,
+//         message: "Quest already completed.",
+//       });
+//     }
+
+//     // Fetch quest details, including activity type, coin_earn value, and quest_name
 //     const [questResult] = await db.query(
-//       "SELECT id, coin_earn FROM quest WHERE id = ?",
+//       "SELECT id, coin_earn, activity, quest_name FROM quest WHERE id = ?",
 //       [quest_id]
 //     );
 
-//     // Check if the quest exists in the database
 //     if (questResult.length === 0) {
 //       console.log("Quest not found for quest_id:", quest_id);
 //       return next(new ErrorHandler("Quest not found", 404));
 //     }
 
-//     const { id: fetchedQuestId, coin_earn: coinEarn } = questResult[0];
-//     console.log("Quest ID and Coin Earn:", { fetchedQuestId, coinEarn });
+//     const {
+//       id: fetchedQuestId,
+//       coin_earn: coinEarn,
+//       activity,
+//       quest_name: fetchedQuestName,
+//     } = questResult[0];
+//     console.log("Quest ID, Coin Earn, Activity, Quest Name:", {
+//       fetchedQuestId,
+//       coinEarn,
+//       activity,
+//       fetchedQuestName,
+//     });
 
-//     // Convert coinEarn to an integer
 //     const coinEarnValue = Math.floor(parseFloat(coinEarn));
 //     if (isNaN(coinEarnValue) || coinEarnValue < 0) {
 //       console.error(
@@ -705,21 +724,45 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 //       return next(new ErrorHandler("Invalid coin earn value", 400));
 //     }
 
-//     // Begin a transaction
+//     // Determine pending_coin based on activity type
+//     let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
+//     let status = "completed"; // Default status for non-follow activity
+
+//     // Check if the activity is "follow" (activity = 2)
+//     if (activity === "follow") {
+//       // If activity is "follow"
+//       pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
+//       status = "not_completed"; // Set status to "not completed" for "follow"
+//     }
+
+//     // Log the value of pendingCoinValue and status for debugging purposes
+//     console.log("Pending Coin Value Set To:", pendingCoinValue);
+//     console.log("Status Set To:", status);
+
+//     // Check if the value is correctly set to 0 when activity is follow
+//     if (activity === 2 && pendingCoinValue !== 0) {
+//       console.error(
+//         "Unexpected pendingCoinValue when activity is 'follow':",
+//         pendingCoinValue
+//       );
+//     }
+
 //     await db.query("START TRANSACTION");
 //     const date_created = new Date()
 //       .toISOString()
 //       .slice(0, 19)
 //       .replace("T", " ");
 
-//     // Insert into usercoin_audit
+//     // Insert into usercoin_audit with the determined pending_coin value and status
 //     const insertAuditData = {
 //       user_id,
 //       quest_id: fetchedQuestId,
-//       pending_coin: coinEarnValue,
+//       pending_coin: pendingCoinValue, // Either coinEarnValue or 0 based on activity
 //       coin_operation: "cr",
 //       type: "quest",
-//       status: "completed",
+//       title: "quest",
+//       description: "quest",
+//       status: status, // Use the dynamically set status
 //       date_entered: date_created,
 //     };
 //     console.log("Insert data for usercoin_audit:", insertAuditData);
@@ -728,6 +771,7 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 //       "INSERT INTO usercoin_audit SET ?",
 //       insertAuditData
 //     );
+
 //     if (insertAuditResult.affectedRows === 0) {
 //       await db.query("ROLLBACK");
 //       console.error("Failed to insert into usercoin_audit");
@@ -743,125 +787,64 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 //     const currentPendingCoin = currentCoinResult[0]?.pending_coin || 0;
 //     console.log("Current pending_coin for user:", currentPendingCoin);
 
-//     // Calculate the new pending_coin value
-//     const newPendingCoin = currentPendingCoin + coinEarnValue;
-//     console.log("New pending_coin value:", newPendingCoin);
+//     // Calculate the new pending_coin value only if activity is not "follow"
+//     let newPendingCoin = currentPendingCoin;
 
-//     // Update the pending_coin in user_data with the new value
-//     const updateUserDataQuery = `
-//       UPDATE user_data
-//       SET pending_coin = ?
-//       WHERE user_id = ?
-//     `;
-//     const [updateUserResult] = await db.query(updateUserDataQuery, [
-//       newPendingCoin,
-//       user_id,
-//     ]);
-//     if (updateUserResult.affectedRows === 0) {
-//       await db.query("ROLLBACK");
-//       console.error("Failed to update pending_coin in user_data");
-//       return next(new ErrorHandler("Failed to update pending_coin", 500));
+//     if (activity !== "follow") {
+//       newPendingCoin = currentPendingCoin + coinEarnValue;
+//       console.log("New pending_coin value:", newPendingCoin);
+
+//       // Update the pending_coin in user_data with the new value
+//       const updateUserDataQuery = `
+//     UPDATE user_data
+//     SET pending_coin = ?
+//     WHERE user_id = ?
+//   `;
+
+//       const [updateUserResult] = await db.query(updateUserDataQuery, [
+//         newPendingCoin,
+//         user_id,
+//       ]);
+
+//       if (updateUserResult.affectedRows === 0) {
+//         await db.query("ROLLBACK");
+//         console.error("Failed to update pending_coin in user_data");
+//         return next(new ErrorHandler("Failed to update pending_coin", 500));
+//       }
+//       console.log("Pending_coin updated successfully for user.");
+//     } else {
+//       console.log("Activity is 'follow'; skipping pending_coin update.");
 //     }
 
 //     // Commit the transaction
 //     await db.query("COMMIT");
 
-//     // Fetch the updated pending_coin value
+//     // Fetch the updated pending_coin value (even if it wasn't updated)
 //     const [updatedPendingCoinResult] = await db.query(
 //       "SELECT pending_coin FROM user_data WHERE user_id = ?",
 //       [user_id]
 //     );
+
 //     const updatedPendingCoin = updatedPendingCoinResult[0]?.pending_coin || 0;
 //     console.log("Updated pending_coin for user:", updatedPendingCoin);
+
+//     let responseMessage = `Addwedd Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
+//     if (activity === "follow") {
+//       responseMessage = "Quest completed successfully. Approve by admin.";
+//     }
 
 //     // Respond with success
 //     res.status(200).json({
 //       success: true,
-//       message: `Quest completed successfully. ${coinEarnValue} coins added to the pending coins.`,
+//       message: responseMessage,
 //       data: {
 //         user_id,
 //         quest_id: fetchedQuestId,
+//         quest_name: fetchedQuestName, // Return the quest name in the response
 //         coin_earn: coinEarnValue,
-//         status: "completed",
-//         date_entered: new Date(),
-//         updated_pending_coin: updatedPendingCoin,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error during quest completion:", error);
-//     await db.query("ROLLBACK");
-//     return next(new ErrorHandler("Database query failed", 500));
-//   }
-// });
-
-
-// exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
-//   const user_id = req.user.id;
-//   const { quest_id } = req.body;
-
-//   console.log("Received request to complete quest:", { user_id, quest_id });
-
-//   if (!quest_id) {
-//     console.log("Validation failed: Missing quest_id");
-//     return next(new ErrorHandler("Quest ID is required", 400));
-//   }
-
-//   try {
-//     const [questResult] = await db.query(
-//       "SELECT id, coin_earn FROM quest WHERE id = ?",
-//       [quest_id]
-//     );
-
-//     if (questResult.length === 0) {
-//       console.log("Quest not found for quest_id:", quest_id);
-//       return next(new ErrorHandler("Quest not found", 404));
-//     }
-
-//     const { id: fetchedQuestId, coin_earn: coinEarn } = questResult[0];
-//     console.log("Quest ID and Coin Earn:", { fetchedQuestId, coinEarn });
-
-//     const coinEarnValue = Math.floor(parseFloat(coinEarn));
-//     if (isNaN(coinEarnValue) || coinEarnValue < 0) {
-//       console.error("Coin earn value is NaN or negative, cannot update user_data");
-//       return next(new ErrorHandler("Invalid coin earn value", 400));
-//     }
-
-//     await db.query("START TRANSACTION");
-//     const date_created = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-//     // Insert into usercoin_audit without updating pending_coin in user_data
-//     const insertAuditData = {
-//       user_id,
-//       quest_id: fetchedQuestId,
-//       pending_coin: 0, // Set to 0 since we do not want to add any coins to pending_coin
-//       coin_operation: "cr",
-//       type: "quest",
-//       status: "completed",
-//       date_entered: date_created,
-//     };
-//     console.log("Insert data for usercoin_audit:", insertAuditData);
-
-//     const [insertAuditResult] = await db.query(
-//       "INSERT INTO usercoin_audit SET ?",
-//       insertAuditData
-//     );
-//     if (insertAuditResult.affectedRows === 0) {
-//       await db.query("ROLLBACK");
-//       console.error("Failed to insert into usercoin_audit");
-//       return next(new ErrorHandler("Failed to complete quest", 500));
-//     }
-
-//     // Commit the transaction without updating user_data
-//     await db.query("COMMIT");
-
-//     res.status(200).json({
-//       success: true,
-//       message: `Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`,
-//       data: {
-//         user_id,
-//         quest_id: fetchedQuestId,
-//         coin_earn: coinEarnValue,
-//         status: "completed",
+//         title: "quest",
+//         description: "quest",
+//         status: status, // Return the status in the response
 //         date_entered: new Date(),
 //       },
 //     });
@@ -872,104 +855,6 @@ exports.apiGetSingleRecord = catchAsyncErrors(async (req, res, next) => {
 //   }
 // });
 
-// exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
-//   const user_id = req.user.id;
-//   const { quest_id } = req.body;
-
-//   console.log("Received request to complete quest:", { user_id, quest_id });
-
-//   if (!quest_id) {
-//     console.log("Validation failed: Missing quest_id");
-//     return next(new ErrorHandler("Quest ID is required", 400));
-//   }
-
-//   try {
-//     // Fetch quest details, including activity type, coin_earn value, and quest_name
-//     const [questResult] = await db.query(
-//       "SELECT id, coin_earn, activity, quest_name FROM quest WHERE id = ?",
-//       [quest_id]
-//     );
-
-//     if (questResult.length === 0) {
-//       console.log("Quest not found for quest_id:", quest_id);
-//       return next(new ErrorHandler("Quest not found", 404));
-//     }
-
-//     const { id: fetchedQuestId, coin_earn: coinEarn, activity, quest_name: fetchedQuestName } = questResult[0];
-//     console.log("Quest ID, Coin Earn, Activity, Quest Name:", { fetchedQuestId, coinEarn, activity, fetchedQuestName });
-
-//     const coinEarnValue = Math.floor(parseFloat(coinEarn));
-//     if (isNaN(coinEarnValue) || coinEarnValue < 0) {
-//       console.error("Coin earn value is NaN or negative, cannot update user_data");
-//       return next(new ErrorHandler("Invalid coin earn value", 400));
-//     }
-
-//     // Determine pending_coin based on activity type
-//     let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
-//     let status = "completed";  // Default status for non-follow activity
-
-//     // Check if the activity is "follow" (activity = 2)
-//     if (activity === "follow") {  // If activity is "follow"
-//       pendingCoinValue = 0;  // Set pending_coin to 0 for "follow"
-//       status = "not completed";  // Set status to "not completed" for "follow"
-//     }
-
-//     // Log the value of pendingCoinValue and status for debugging purposes
-//     console.log("Pending Coin Value Set To:", pendingCoinValue);
-//     console.log("Status Set To:", status);
-
-//     // Check if the value is correctly set to 0 when activity is follow
-//     if (activity === 2 && pendingCoinValue !== 0) {
-//       console.error("Unexpected pendingCoinValue when activity is 'follow':", pendingCoinValue);
-//     }
-
-//     await db.query("START TRANSACTION");
-//     const date_created = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-//     // Insert into usercoin_audit with the determined pending_coin value and status
-//     const insertAuditData = {
-//       user_id,
-//       quest_id: fetchedQuestId,
-//       pending_coin: pendingCoinValue, // Either coinEarnValue or 0 based on activity
-//       coin_operation: "cr",
-//       type: "quest",
-//       status: status,  // Use the dynamically set status
-//       date_entered: date_created,
-//     };
-//     console.log("Insert data for usercoin_audit:", insertAuditData);
-
-//     const [insertAuditResult] = await db.query(
-//       "INSERT INTO usercoin_audit SET ?",
-//       insertAuditData
-//     );
-
-//     if (insertAuditResult.affectedRows === 0) {
-//       await db.query("ROLLBACK");
-//       console.error("Failed to insert into usercoin_audit");
-//       return next(new ErrorHandler("Failed to complete quest", 500));
-//     }
-
-//     // Commit the transaction
-//     await db.query("COMMIT");
-
-//     res.status(200).json({
-//       success: true,
-//       message: `Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`,
-//       data: {
-//         user_id,
-//         quest_id: fetchedQuestId,
-//         quest_name: fetchedQuestName,  // Return the quest name in the response
-//         coin_earn: coinEarnValue,
-//         status: status,  // Return the status in the response
-//         date_entered: new Date(),
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error during quest completion:", error);
-//     await db.query("ROLLBACK");
-//     return next(new ErrorHandler("Database query failed", 500));
-//   }
-// });
 exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
   const user_id = req.user.id;
   const { quest_id } = req.body;
@@ -1028,28 +913,20 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("Invalid coin earn value", 400));
     }
 
-    // Determine pending_coin based on activity type
-    let pendingCoinValue = coinEarnValue; // Default value for non-follow activity
-    let status = "completed"; // Default status for non-follow activity
+    // Default values for "watch"
+    let pendingCoinValue = coinEarnValue;
+    let status = "completed";
+    let responseMessage = `Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
 
-    // Check if the activity is "follow" (activity = 2)
     if (activity === "follow") {
-      // If activity is "follow"
-      pendingCoinValue = 0; // Set pending_coin to 0 for "follow"
-      status = "not_completed"; // Set status to "not completed" for "follow"
+      // Conditions for "follow"
+      pendingCoinValue = 0;
+      status = "not_completed";
+      responseMessage = "Quest completed successfully. Approve by admin.";
     }
 
-    // Log the value of pendingCoinValue and status for debugging purposes
     console.log("Pending Coin Value Set To:", pendingCoinValue);
     console.log("Status Set To:", status);
-
-    // Check if the value is correctly set to 0 when activity is follow
-    if (activity === 2 && pendingCoinValue !== 0) {
-      console.error(
-        "Unexpected pendingCoinValue when activity is 'follow':",
-        pendingCoinValue
-      );
-    }
 
     await db.query("START TRANSACTION");
     const date_created = new Date()
@@ -1057,16 +934,16 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       .slice(0, 19)
       .replace("T", " ");
 
-    // Insert into usercoin_audit with the determined pending_coin value and status
+    // Insert into usercoin_audit
     const insertAuditData = {
       user_id,
       quest_id: fetchedQuestId,
-      pending_coin: pendingCoinValue, // Either coinEarnValue or 0 based on activity
+      pending_coin: pendingCoinValue,
       coin_operation: "cr",
       type: "quest",
       title: "quest",
       description: "quest",
-      status: status, // Use the dynamically set status
+      status: status,
       date_entered: date_created,
     };
     console.log("Insert data for usercoin_audit:", insertAuditData);
@@ -1082,28 +959,23 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("Failed to complete quest", 500));
     }
 
-    // Fetch the current pending_coin from user_data
-    const [currentCoinResult] = await db.query(
-      "SELECT pending_coin FROM user_data WHERE user_id = ?",
-      [user_id]
-    );
-
-    const currentPendingCoin = currentCoinResult[0]?.pending_coin || 0;
-    console.log("Current pending_coin for user:", currentPendingCoin);
-
-    // Calculate the new pending_coin value only if activity is not "follow"
-    let newPendingCoin = currentPendingCoin;
-
+    // Handle "watch" activity updates for pending_coin
     if (activity !== "follow") {
-      newPendingCoin = currentPendingCoin + coinEarnValue;
-      console.log("New pending_coin value:", newPendingCoin);
+      const [currentCoinResult] = await db.query(
+        "SELECT pending_coin FROM user_data WHERE user_id = ?",
+        [user_id]
+      );
 
-      // Update the pending_coin in user_data with the new value
+      const currentPendingCoin = currentCoinResult[0]?.pending_coin || 0;
+      console.log("Current pending_coin for user:", currentPendingCoin);
+
+      const newPendingCoin = currentPendingCoin + coinEarnValue;
+
       const updateUserDataQuery = `
-    UPDATE user_data
-    SET pending_coin = ?
-    WHERE user_id = ?
-  `;
+        UPDATE user_data
+        SET pending_coin = ?
+        WHERE user_id = ?
+      `;
 
       const [updateUserResult] = await db.query(updateUserDataQuery, [
         newPendingCoin,
@@ -1123,7 +995,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     // Commit the transaction
     await db.query("COMMIT");
 
-    // Fetch the updated pending_coin value (even if it wasn't updated)
+    // Fetch the updated pending_coin value
     const [updatedPendingCoinResult] = await db.query(
       "SELECT pending_coin FROM user_data WHERE user_id = ?",
       [user_id]
@@ -1132,11 +1004,6 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     const updatedPendingCoin = updatedPendingCoinResult[0]?.pending_coin || 0;
     console.log("Updated pending_coin for user:", updatedPendingCoin);
 
-    let responseMessage = `Addwedd Quest completed successfully. ${coinEarnValue} coins recorded in audit log.`;
-    if (activity === "follow") {
-      responseMessage = "Quest completed successfully. Approve by admin.";
-    }
-
     // Respond with success
     res.status(200).json({
       success: true,
@@ -1144,11 +1011,11 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       data: {
         user_id,
         quest_id: fetchedQuestId,
-        quest_name: fetchedQuestName, // Return the quest name in the response
+        quest_name: fetchedQuestName,
         coin_earn: coinEarnValue,
         title: "quest",
         description: "quest",
-        status: status, // Return the status in the response
+        status: status,
         date_entered: new Date(),
       },
     });
@@ -1158,7 +1025,6 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Database query failed", 500));
   }
 });
-
 
 ////////////////////////////////////////////
 exports.getUserPendingCoins = catchAsyncErrors(async (req, res, next) => {
