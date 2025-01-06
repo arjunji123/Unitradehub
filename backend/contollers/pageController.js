@@ -67,7 +67,7 @@ exports.createRecord = async (req, res, next) => {
     quest_url: req.body.quest_url,
     date_created: date_created,
     start_date: req.body.start_date,
-    image: body.image,
+    // image: body.image,
     description: sanitizedDescription,
     status: req.body.status,
     coin_earn: req.body.coin_earn,
@@ -171,7 +171,6 @@ exports.updateRecord = catchAsyncErrors(async (req, res, next) => {
     end_date: req.body.end_date, // New field for end date
     date_created: date_created,
     image: req.body.image,
-
     description: sanitizedDescription,
     coin_earn: req.body.coin_earn,
     social_media: req.body.social_media, // Ensure this field is handled
