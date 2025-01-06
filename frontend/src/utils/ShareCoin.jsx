@@ -7,6 +7,12 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
   const [error, setError] = useState(''); // State for error message
   const handleAmountChange = (e) => {
     const inputValue = e.target.value;
+    const validValue = inputValue.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    
+ // If the value contains decimals or negative signs, prevent the change
+ if (validValue !== inputValue) {
+  e.target.value = validValue; // Update input value with valid input
+}
 
     // Validate the input value against totalCoin
     if (Number(inputValue) > totalCoin) {
@@ -60,7 +66,7 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
                 className="w-full uppercase p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
             />
             <input
-                 type="number"
+                  type="text" // Set type to text to handle custom validation
                     name="amount"
                     value={sendData.amount}
                     onChange={handleAmountChange}
