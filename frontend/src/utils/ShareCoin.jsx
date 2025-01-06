@@ -3,8 +3,8 @@ import { ImCross } from "react-icons/im";
 
 function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , sendData, loading, userData }) {
   const totalCoin = userData?.coins || 0; // Ensure totalCoin has a default value
+  const refferalCode = userData?.referral_code || "";
   const [error, setError] = useState(''); // State for error message
-
   const handleAmountChange = (e) => {
     const inputValue = e.target.value;
 
@@ -13,6 +13,19 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
       setError(`You have only ${totalCoin} coins available.`);
     } else {
       setError(''); // Clear error if input is valid
+    }
+
+    // Pass the value to the parent handler
+    handleSendInputChange(e);
+  };
+  const handleReferralCodeChange = (e) => {
+    const inputReferralCode = e.target.value;
+
+    // Validate if the entered referral code is the same as the logged-in user's referral code
+    if (inputReferralCode === refferalCode) {
+      setError("You cannot use your own referral code.");
+    } else {
+      setError(''); // Clear error if the referral code is different
     }
 
     // Pass the value to the parent handler
@@ -42,12 +55,12 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
                 type="text"
                 name="recipientReferralCode"
                 value={sendData.recipientReferralCode}
-                onChange={handleSendInputChange}
+                onChange={handleReferralCodeChange}
                 placeholder="Referral Code"
                 className="w-full uppercase p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
             />
             <input
-                 type="text"
+                 type="number"
                     name="amount"
                     value={sendData.amount}
                     onChange={handleAmountChange}
@@ -57,7 +70,7 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
    {/* Error Message */}
    {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         <div className="flex justify-center items-center">
-            <button onClick={handleSendMoney} className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg"  disabled={loading} >
+            <button onClick={handleSendMoney} className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg"     disabled={loading || error !== ''} >
             {loading ? (
               <div className="flex justify-center items-center">
                 <div className="spinner"></div> {/* Custom spinner */}
