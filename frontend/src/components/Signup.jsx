@@ -32,7 +32,7 @@ function Signup() {
   const location = useLocation();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");// Use location to access the URL parameters
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isChecked, setIsChecked] = useState(false); // State for terms checkbox
 
   useEffect(() => {
     const getReferralCode = () => {
@@ -136,7 +136,12 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  // Check if terms and conditions are accepted
+  if (!isChecked) {
+    setToastMessage("Please agree to the Terms and Conditions.");
+    setShowToast(true);
+    return;
+  }
     // Display validation errors if any field is invalid
     if (
       !values.email || errors.email ||
@@ -360,6 +365,24 @@ function Signup() {
               placeholder="UPI ID"
             />
           </div>
+            {/* Terms and Privacy */}
+            <div className="flex items-center justify-center mt-4 space-x-2">
+            <input
+              type="checkbox"
+              id="terms"
+              name="terms"
+              required
+              checked={isChecked}
+              className="w-4 h-4 text-blue-500 bg-[#1f2024] border-gray-300 rounded focus:ring-blue-500"
+              onChange={(e) => setIsChecked(e.target.checked)} // Update state on change
+            />
+            <label htmlFor="terms" className="text-xs text-gray-400">
+              By clicking 'Sign Up,' you agree to Block View's
+              <Link to='/termsAndCondition' className="text-blue-500 hover:underline mx-1">Terms of Service</Link>
+              and
+              <Link to='/termsAndCondition' className="text-blue-500 hover:underline mx-1">Privacy Policy</Link>.
+            </label>
+          </div>
             {/* Submit Button */}
             <button
               type="submit"
@@ -414,22 +437,7 @@ function Signup() {
     }
   }
 `}</style>
-          {/* Terms and Privacy */}
-          <div className="flex items-center justify-center mt-4 space-x-2">
-            <input
-              type="checkbox"
-              id="terms"
-              name="terms"
-              required
-              className="w-4 h-4 text-blue-500 bg-[#1f2024] border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="terms" className="text-xs text-gray-400">
-              By clicking 'Sign Up,' you agree to Block View's
-              <a href="#" className="text-blue-500 hover:underline mx-1">Terms of Service</a>
-              and
-              <a href="#" className="text-blue-500 hover:underline mx-1">Privacy Policy</a>.
-            </label>
-          </div>
+        
 
 
           {/* Login Link */}
