@@ -296,7 +296,7 @@ function Withdrawal() {
             }}>
               <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
             </div>
-            <div className="flex-grow relative z-0  px-4 top-10">
+            <div className="flex-grow relative z-0  px-4">
               {/* <Logo /> */}
               <div
                 className="relative p-4 rounded-lg shadow-lg"
