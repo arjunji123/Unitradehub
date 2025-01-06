@@ -3,7 +3,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoMenu, IoLogOutOutline } from "react-icons/io5";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { logout } from "../../store/actions/authActions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link} from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 function Header() {
@@ -53,7 +53,8 @@ function Header() {
     </div>
     
     <div className="flex gap-3">
-      <AiOutlineQuestionCircle size={24} className="text-gray-400 transition-all duration-300 hover:text-white" />
+      <Link to='/instruction'>      <AiOutlineQuestionCircle size={24} className="text-gray-400 transition-all duration-300 hover:text-white" />
+      </Link>
       <CgProfile 
         onClick={handleNavigate} 
         size={24} 
