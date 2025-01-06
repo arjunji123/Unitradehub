@@ -67,7 +67,7 @@ exports.createRecord = async (req, res, next) => {
     quest_url: req.body.quest_url,
     date_created: date_created,
     start_date: req.body.start_date,
-    // image: body.image,
+    image: body.image,
     description: sanitizedDescription,
     status: req.body.status,
     coin_earn: req.body.coin_earn,
