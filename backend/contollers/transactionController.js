@@ -169,7 +169,7 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
         ut.user_id AS user_id,                -- User ID
         ut.company_id AS company_id,          -- Company ID (maps to users table)
         ut.tranction_coin AS transaction_coin, -- Transaction Coin
-        ut.tranction_rate AS transaction_rate, -- Transaction Rate
+        // ut.tranction_rate AS transaction_rate, -- Transaction Rate
         ut.transction_amount AS transaction_amount, -- Transaction Amount
         ut.trans_doc AS transaction_document, -- Transaction Document
         DATE_FORMAT(ut.data_created, "%d-%m-%Y %H:%i:%s") AS created_date, -- Created Date
@@ -242,8 +242,8 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 
     // Step 2: Update the transaction in the `user_transction` table
     const [updateTransaction] = await connection.query(
-      `UPDATE user_transction SET status = 'approved' WHERE id = ?`,
-      [id]
+      `UPDATE user_transction SET status = 'approved', date_approved = ?  WHERE id = ?`,
+      [dateApprove, id]
     );
 
     // Log the transaction update result
@@ -257,8 +257,8 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 
     // Step 3: Update the corresponding entry in the `usercoin_audit` table
     const [updateAudit] = await connection.query(
-      `UPDATE usercoin_audit SET status = 'completed' WHERE transaction_id = ?`,
-      [id]
+      `UPDATE usercoin_audit SET status = 'completed', date_approved = ?  WHERE transaction_id = ?`,
+      [dateApprove, id]
     );
 
     // Log the audit update result
