@@ -49,28 +49,42 @@ function Send({ togglePopup, coinRanges, userData, company_id }) {
 
     const handleInputChange = (e) => {
         const inputValue = e.target.value;
-        if (inputValue < 0) {
-            setError('Amount cannot be negative.');
-            setCoinAmount(0);
-            return;
+        const validValue = inputValue.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+      
+        // If the value contains non-numeric characters, prevent the change
+        if (validValue !== inputValue) {
+          e.target.value = validValue; // Update input value with valid input
         }
-        if (inputValue > totalCoin) {
-            setError(`You have only ${totalCoin} coins available.`);
+      
+        // Check for negative values and show an error
+        if (validValue < 0) {
+          setError('Amount cannot be negative.');
+          setCoinAmount(0);
+          return;
+        }
+      
+        // Check if input exceeds total coins
+        if (Number(validValue) > totalCoin) {
+          setError(`You have only ${totalCoin} coins available.`);
         } else {
-            setError('');
+          setError('');
         }
-        setCoinAmount(inputValue);
-
+      
+        // Update coin amount with the valid input value
+        setCoinAmount(validValue);
+      
         // Determine the rate based on the input amount and update the selectedRate
         const range = coinRanges.find(
-            (r) => inputValue >= r.min_coins && inputValue <= r.max_coins
+          (r) => Number(validValue) >= r.min_coins && Number(validValue) <= r.max_coins
         );
+      
         if (range) {
-            setSelectedRate(range.rate);
+          setSelectedRate(range.rate); // Update selected rate based on coin range
         } else {
-            setSelectedRate(''); // Reset rate if input is out of range
+          setSelectedRate(''); // Reset rate if input is out of range
         }
-    };
+      };
+      
 
     useEffect(() => {
         const totalRupees = coinAmount * selectedRate;
@@ -124,7 +138,7 @@ function Send({ togglePopup, coinRanges, userData, company_id }) {
                 </p>
 
                 <Input
-                    type="number"
+                    type="text"
                     value={coinAmount}
                     onChange={handleInputChange}
                     placeholder="Enter coin amount"
@@ -145,7 +159,7 @@ function Send({ togglePopup, coinRanges, userData, company_id }) {
                 <div className="flex justify-center items-center">
                     <button
                         onClick={handleSubmit}
-                        className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg"
+                        className="btn bg-[#3A3A3A] text-white font-semibold hover:bg-[#505050] transition duration-300 ease-in-out w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg flex justify-center"
                         disabled={loading}
                     >
                         {loading ? <Spinner /> : 'Submit'}
