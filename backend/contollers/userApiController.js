@@ -1265,6 +1265,132 @@ exports.getUserReferralCode = catchAsyncErrors(async (req, res, next) => {
 //   }
 // });
 
+// exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
+//   const { amount, recipientReferralCode } = req.body;
+//   const senderId = req.user.id; // Sender's user ID
+
+//   try {
+//     // Input validation
+//     if (!amount || !recipientReferralCode) {
+//       return next(
+//         new ErrorHandler("Amount and recipient referral code are required", 400)
+//       );
+//     }
+
+//     if (amount <= 0) {
+//       return next(new ErrorHandler("Amount must be greater than 0", 400));
+//     }
+
+//     // Step 1: Fetch sender's coins
+//     const senderCoinsQuery = await db.query(
+//       "SELECT coins FROM user_data WHERE user_id = ?",
+//       [senderId]
+//     );
+//     const senderCoins = senderCoinsQuery[0][0]?.coins || 0;
+
+//     // Check if the sender has enough coins
+//     if (senderCoins < amount) {
+//       return next(new ErrorHandler("Insufficient coins to transfer", 400));
+//     }
+
+//     // Step 2: Fetch recipient's user ID based on referral code
+//     const recipientQuery = await db.query(
+//       "SELECT user_id FROM user_data WHERE referral_code = ?",
+//       [recipientReferralCode]
+//     );
+//     const recipient = recipientQuery[0][0];
+
+//     if (!recipient) {
+//       return next(new ErrorHandler("Recipient not found", 404));
+//     }
+
+//     const recipientId = recipient.user_id;
+
+//     // Step 3: Begin a transaction
+//     await db.query("START TRANSACTION");
+
+//     // Step 4: Update sender's coins by deducting the amount
+//     const senderUpdateResult = await db.query(
+//       "UPDATE user_data SET coins = coins - ? WHERE user_id = ?",
+//       [amount, senderId]
+//     );
+//     console.log("Sender Update Result:", senderUpdateResult);
+
+//     // Step 5: Update recipient's pending coins
+//     const recipientUpdateResult = await db.query(
+//       "UPDATE user_data SET pending_coin = pending_coin + ? WHERE user_id = ?",
+//       [amount, recipientId]
+//     );
+//     console.log("Recipient Update Result:", recipientUpdateResult);
+
+//     // Check if the updates were successful
+//     if (
+//       senderUpdateResult[0].affectedRows === 0 ||
+//       recipientUpdateResult[0].affectedRows === 0
+//     ) {
+//       await db.query("ROLLBACK"); // Rollback transaction if any update fails
+//       return next(
+//         new ErrorHandler("Failed to update sender or recipient's coins", 500)
+//       );
+//     }
+
+//     // Step 6: Insert entries into usercoin_audit table with status 'completed'
+//     const currentTime = new Date();
+// const updatedrecieverAmount = '-' + String(amount) ;
+
+//     // Entry 1: Sender's transaction
+//     const senderAuditResult = await db.query(
+//       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+//       [
+//         senderId,
+//         0, // Sender's pending_coin as 0
+//         recipientId, // Recipient ID as transaction_id
+//         currentTime,
+//         "dr", // Sender's coin_operation "dr"
+//         "Amount sent", // Description
+//         updatedrecieverAmount, // earn_coin set to transferred amount
+//         "transfer",
+//         "completed", // Status set to 'completed'
+//         "Coins Transferred", // Title for sender
+//       ]
+//     );
+//     console.log("Sender Audit Result:", senderAuditResult);
+// const updatedAmount = '+' + String(amount) ;
+
+//     const recipientAuditResult = await db.query(
+//       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+//       [
+//         recipientId,
+//         0,
+//         senderId, // Sender ID as transaction_id
+//         currentTime,
+//         "cr", // Recipient's coin_operation "cr"
+//         "Amount received", // Description
+//         updatedAmount,
+//         "transfer",
+//         "completed", // Status set to 'completed'
+//         "Coins Received", // Title for recipient
+//       ]
+//     );
+//     console.log("Recipient Audit Result:", recipientAuditResult);
+
+//     // Step 7: Commit the transaction
+//     await db.query("COMMIT");
+
+//     // Step 8: Respond with success
+//     res.status(200).json({
+//       success: true,
+//       message: `${amount} coins successfully transferred to user with referral code ${recipientReferralCode}.`,
+//     });
+//   } catch (error) {
+//     // Rollback transaction in case of error
+//     await db.query("ROLLBACK");
+//     console.error("Error transferring coins:", error);
+//     return next(
+//       new ErrorHandler("An error occurred while transferring coins", 500)
+//     );
+//   }
+// });
 exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
   const { amount, recipientReferralCode } = req.body;
   const senderId = req.user.id; // Sender's user ID
@@ -1306,17 +1432,22 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
 
     const recipientId = recipient.user_id;
 
-    // Step 3: Begin a transaction
+    // Step 3: Check if sender and recipient are the same
+    if (senderId === recipientId) {
+      return next(new ErrorHandler("You cannot transfer coins to your own referral code", 400));
+    }
+
+    // Step 4: Begin a transaction
     await db.query("START TRANSACTION");
 
-    // Step 4: Update sender's coins by deducting the amount
+    // Step 5: Update sender's coins by deducting the amount
     const senderUpdateResult = await db.query(
       "UPDATE user_data SET coins = coins - ? WHERE user_id = ?",
       [amount, senderId]
     );
     console.log("Sender Update Result:", senderUpdateResult);
 
-    // Step 5: Update recipient's pending coins
+    // Step 6: Update recipient's pending coins
     const recipientUpdateResult = await db.query(
       "UPDATE user_data SET pending_coin = pending_coin + ? WHERE user_id = ?",
       [amount, recipientId]
@@ -1334,9 +1465,9 @@ exports.transferCoins = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    // Step 6: Insert entries into usercoin_audit table with status 'completed'
+    // Step 7: Insert entries into usercoin_audit table with status 'completed'
     const currentTime = new Date();
-const updatedrecieverAmount = '-' + String(amount) ;
+    const updatedrecieverAmount = '-' + String(amount);
 
     // Entry 1: Sender's transaction
     const senderAuditResult = await db.query(
@@ -1355,7 +1486,8 @@ const updatedrecieverAmount = '-' + String(amount) ;
       ]
     );
     console.log("Sender Audit Result:", senderAuditResult);
-const updatedAmount = '+' + String(amount) ;
+
+    const updatedAmount = '+' + String(amount);
 
     const recipientAuditResult = await db.query(
       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -1374,10 +1506,10 @@ const updatedAmount = '+' + String(amount) ;
     );
     console.log("Recipient Audit Result:", recipientAuditResult);
 
-    // Step 7: Commit the transaction
+    // Step 8: Commit the transaction
     await db.query("COMMIT");
 
-    // Step 8: Respond with success
+    // Step 9: Respond with success
     res.status(200).json({
       success: true,
       message: `${amount} coins successfully transferred to user with referral code ${recipientReferralCode}.`,
