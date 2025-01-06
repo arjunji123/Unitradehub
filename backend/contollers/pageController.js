@@ -570,6 +570,7 @@ exports.getQuestHistory = async (req, res) => {
         q.end_date,
         q.description,
         q.status,
+        q.image,
         q.coin_earn,
         q.social_media,  -- Include social_media field in the query
         CASE 
