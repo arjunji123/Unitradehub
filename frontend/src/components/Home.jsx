@@ -226,7 +226,7 @@ function Home() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="w-full bg-black text-white min-h-screen overflow-y-scroll flex flex-col max-w-lg relative">
+        <div className="w-full bg-black text-white min-h-screen  flex flex-col max-w-lg relative">
           {/* Header Section */}
           <Header />
           <div style={{
@@ -336,6 +336,9 @@ function Home() {
                     <p className="text-xl md:text-2xl flex">   <span>
                       <img src="src/assets/logo/U.png" alt="" className="w-5 h-5 mt-1" />
                     </span>   <span>{statsData && statsData.total && statsData.total.multiplier ? statsData.total.multiplier : "0"}</span></p>
+                    {/* <span className="text-[10px] px-1 py-0.5 bg-[#9AE8BB] text-[#0F572D] rounded-full">
+                      +20%
+                    </span> */}
                   </div>
 
                   {/* Last Month Profit */}
