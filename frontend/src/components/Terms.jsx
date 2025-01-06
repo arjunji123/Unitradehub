@@ -113,10 +113,10 @@ const TermsAndConditions = () => {
           <p className="text-gray-300 mb-4">
             If you have any questions or concerns, please contact us at{" "}
             <a
-              href="mailto:support@unitradehub.com"
+              href="mailto:Support@Unidigitize.com"
               className="text-blue-400 hover:underline"
             >
-              support@unitradehub.com
+              Support@Unidigitize.com
             </a>
             .
           </p>
