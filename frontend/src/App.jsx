@@ -22,6 +22,7 @@ import History from "./components/History";
 import Profile from "./components/Profile";
 import AuthListener from "./components/AuthListener";
 import TermsAndConditions from "./components/Terms";
+import InstructionPage from "./components/Instruction";
 // Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -185,6 +186,7 @@ function App() {
                 <Route path="/withdrawal" element={<Withdrawal />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/history" element={<History />} />
+                <Route path="/instruction" element={<InstructionPage />} />
               </Route>
             </Routes>
           </div>
