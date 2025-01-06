@@ -250,7 +250,7 @@ function Home() {
                 <img
                   src={userData.user_photo}
                   alt="Profile"
-                  className="w-20 h-20 object-cover rounded-full border-4 border-gray-600"
+                  className="w-28 h-28 object-cover rounded-full border-4 border-gray-600"
                 />
               ) : (
                 <span className="text-4xl ">
