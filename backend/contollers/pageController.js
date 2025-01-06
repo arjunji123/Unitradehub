@@ -37,17 +37,21 @@ exports.createRecord = async (req, res, next) => {
       new ErrorHandler(error.details.map((d) => d.message).join(", "), 400)
     );
   }
+  const timezone = "Asia/Kolkata"; // Use your valid timezone
 
-  const date_created = moment()
-    .tz("Your/Timezone")
-    .format("YYYY-MM-DD HH:mm:ss");
+  // const date_created = moment()
+  //   .tz("Your/Timezone")
+  //   .format("YYYY-MM-DD HH:mm:ss");
+  const date_created = moment().tz(timezone).format("YYYY-MM-DD HH:mm:ss");
 
   const start_date = req.body.start_date
     ? moment(req.body.start_date)
-        .tz("Your/Timezone")
+        .tz("Asia/Kolkata")
         .format("YYYY-MM-DD HH:mm:ss")
     : null;
-
+  const end_date = req.body.end_date
+    ? moment(req.body.end_date).tz(timezone).format("YYYY-MM-DD HH:mm:ss")
+    : null;
   if (req.file) {
     req.body.image = req.file.filename;
   }
@@ -67,10 +71,10 @@ exports.createRecord = async (req, res, next) => {
     quest_url: req.body.quest_url,
     date_created: date_created,
     start_date: req.body.start_date,
-    image: body.image,
+    image: req.body.image || null, // Fix body.image to req.body.image
     description: sanitizedDescription,
     status: req.body.status,
-    coin_earn: req.body.coin_earn,
+   coin_earn: req.body.coin_earn || 0,
     end_date: req.body.end_date,
     social_media: req.body.social_media || null, // Ensure this field is handled
     screenshot_required: screenshotRequired, // Include screenshot_required field
