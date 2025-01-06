@@ -205,6 +205,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   }
 
   const connection = await db.getConnection();
+    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   try {
     await connection.beginTransaction();
