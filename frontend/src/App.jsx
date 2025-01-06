@@ -21,7 +21,7 @@ import Withdrawal from "./components/Withdrawal";
 import History from "./components/History";
 import Profile from "./components/Profile";
 import AuthListener from "./components/AuthListener";
-
+import TermsAndConditions from "./components/Terms";
 // Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -174,6 +174,7 @@ function App() {
                 <Route path="/payment/:id" element={<Payment />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
                 <Route path="/confirm" element={<Confirm />} />
+                <Route path="/termsAndCondition" element={<TermsAndConditions />} />
               </Route>
 
               {/* Private Routes */}
