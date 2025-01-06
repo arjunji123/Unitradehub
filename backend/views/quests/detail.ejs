@@ -122,10 +122,7 @@
                                         <img src="<%- '/uploads/' + module_slug + '/' + blog.image %>"
                                             style="width:300px" /><br />
                                         <input type="hidden" name="old_image" value="<%- blog.image %>">
-                                        <div class="delete_btn_box">
-                                            <a href="/admin/<%= module_slug %>/delete-image/<%= blog.id %>">Delete
-                                                Image</a>
-                                        </div>
+                                    
                                         <% } else { %>
                                             <p>No image available</p>
                                             <% } %>
