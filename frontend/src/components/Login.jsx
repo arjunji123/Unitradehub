@@ -240,7 +240,10 @@ function Login() {
       document.removeEventListener("touchmove", preventTouch);
     };
   }, []);
-
+  const handleNavigate = () => {
+    navigate('/');
+  };
+  console.log('handleNavigate', handleNavigate)
   return (
     <div className="bg-black flex justify-center items-center min-h-screen">
       <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
@@ -346,7 +349,7 @@ function Login() {
 
         {/* Footer Section */}
         <div className="bg-[#111113] py-4 sm:py-6 text-center rounded-b-2xl">
-          <p className="text-xs sm:text-sm text-[#909090]">
+          <p   onClick={handleNavigate} className="text-xs sm:text-sm text-[#909090]">
             New to Unitrade?
             <Link to="/" className="text-white font-semibold hover:underline ml-1">
               Sign Up
