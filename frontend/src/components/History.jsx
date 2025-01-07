@@ -215,8 +215,11 @@ useEffect(() => {
                       {groupedWithdrawals[date].map((transaction, index) => (
                         <div key={index} className="flex items-center justify-between py-3">
                           <div className="flex items-center space-x-3">
-                          <img src="src/assets/logo/U.png" className="w-5 h-5" alt="" />
-                          <h3 className="text-sm font-semibold capitalize">{transaction.title}</h3>
+                          <img src="src/assets/logo/U.png" className="w-7 h-7 " alt="" />
+                          <h3 className="text-sm font-semibold capitalize">{transaction.title}     <p className="text-xs text-gray-400">
+                            {Math.abs(transaction.earn_coin)} Coins
+                          </p></h3>
+                      
                           </div>
                           <button
                             onClick={() => handleApprove(transaction.transaction_id)}
