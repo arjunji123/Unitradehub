@@ -37,7 +37,7 @@ const CustomSwiper = ({
   const gradientBackgrounds = [
     "from-gray-300 to-gray-400", // First slide
     "from-[#ebe0e2] to-[#ebe0e2]", // Second slide
-    "from-[#e1d0a1] to-[#e1d0a1]", // Third slide
+    "from-[#e8dfc8] to-[#e8dfc8]", // Third slide
     "from-[#e1b1a1] to-[#e1b1a1]", // Fourth slide
     "from-[#b3d396] to-[#b3d396]", // Fivth slide
     "from-[#e7dee8] to-[#e7dee8]", // Sixth slide
