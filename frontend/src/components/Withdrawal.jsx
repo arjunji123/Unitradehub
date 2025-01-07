@@ -242,6 +242,8 @@ function Withdrawal() {
     });
   };
 
+ 
+
 
   // Handle Button Click
   const handleButtonClick = (coinRanges, companyId) => {
@@ -251,6 +253,33 @@ function Withdrawal() {
     } else {
       // Show SweetAlert
       showAlert();
+    }
+  };
+
+   // SweetAlert function for attractive alert
+   const showAlertShare = () => {
+    MySwal.fire({
+      title: "Insufficient Referrals!",
+      text: "You need to connect with at least 2 people to share coins.",
+      icon: "warning",
+      confirmButtonText: "Okay",
+      buttonsStyling: true,
+      customClass: {
+        popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]", // Adjust width for mobile
+        title: "text-white text-sm sm:text-base font-bold", // Smaller text for mobile, larger for larger screens
+        content: "text-gray-300 text-xs sm:text-sm", // Adjust description size for mobile
+        confirmButton: "bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-xs sm:text-sm", // Button size adjustment
+      },
+    });
+  };
+  // Handle Button Click
+  const handleButtonShare = () => {
+    if (userData && userData.referral_count >= 2) {
+      // Open popup or perform the Sell action
+      toggleSharePopup();
+    } else {
+      // Show SweetAlert
+      showAlertShare();
     }
   };
   return (
@@ -315,7 +344,7 @@ function Withdrawal() {
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   {/* Send Button */}
                   <div
-                    onClick={() => toggleSharePopup()}
+                    onClick={() => handleButtonShare()}
                     className="text-white mx-auto cursor-pointer flex flex-col items-center transition duration-300 ease-in-out opacity-100"
                   >
                     <div className="rounded-full w-8 h-8 bg-[#303030] flex justify-center items-center">
