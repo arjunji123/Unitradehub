@@ -141,7 +141,7 @@ function Send({ togglePopup, coinRanges, userData, company_id }) {
                     type="text"
                     value={coinAmount}
                     onChange={handleInputChange}
-                    placeholder="Enter coin amount"
+                    placeholder="Enter coin "
                 />
                 {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
 
