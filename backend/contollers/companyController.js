@@ -538,7 +538,7 @@ exports.getAllCompaniesApi = catchAsyncErrors(async (req, res, next) => {
     // Fetch all companies and their coin rate ranges
     const companiesQuery = await db.query(
       `SELECT u.id AS company_id, u.user_name AS company_name, 
-            c.description,
+              c.description,
               cr.min_coins, cr.max_coins, cr.rate AS range_rate
        FROM users u
        LEFT JOIN company_data c ON u.id = c.company_id
@@ -555,12 +555,13 @@ exports.getAllCompaniesApi = catchAsyncErrors(async (req, res, next) => {
 
     // Map the results to a structured array of companies with coin ranges
     const companies = companiesQuery[0].reduce((acc, company) => {
+      // Check if the company already exists in the accumulator
       let existingCompany = acc.find(
         (item) => item.company_id === company.company_id
       );
 
-      // If company doesn't exist yet in the accumulator, create it
       if (!existingCompany) {
+        // Create a new company object if it doesn't exist
         existingCompany = {
           company_id: company.company_id,
           company_name: company.company_name,
@@ -570,12 +571,16 @@ exports.getAllCompaniesApi = catchAsyncErrors(async (req, res, next) => {
         acc.push(existingCompany);
       }
 
-      // If there is a coin range, add it to the company's coin_ranges
-      if (company.min_coins && company.max_coins && company.range_rate) {
+      // Validate and add coin ranges if the data exists
+      if (
+        company.min_coins !== null &&
+        company.max_coins !== null &&
+        company.range_rate !== null
+      ) {
         existingCompany.coin_ranges.push({
-          min_coins: company.min_coins,
-          max_coins: company.max_coins,
-          rate: company.range_rate,
+          min_coins: parseFloat(company.min_coins),
+          max_coins: parseFloat(company.max_coins),
+          rate: parseFloat(company.range_rate),
         });
       }
 
@@ -588,7 +593,7 @@ exports.getAllCompaniesApi = catchAsyncErrors(async (req, res, next) => {
       data: companies,
     });
   } catch (error) {
-    console.error("Error fetching companies:", error);
+    console.error("Error fetching companies:", error.message);
     return next(
       new ErrorHandler("An error occurred while fetching companies", 500)
     );
