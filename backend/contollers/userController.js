@@ -496,7 +496,6 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
       FROM users
       WHERE status = 1
         AND user_type = 'user'
-        AND id != 2
     `);
 
   // Fetch the sum of pending_coins from usercoin_audit where type is 'quest' or 'referral'
