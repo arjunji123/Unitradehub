@@ -70,7 +70,7 @@ function ShareCoin({ toggleSharePopup, handleSendInputChange, handleSendMoney , 
                     name="amount"
                     value={sendData.amount}
                     onChange={handleAmountChange}
-                placeholder="Enter your amount"
+                placeholder="Enter Coin"
                 className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
             />
    {/* Error Message */}
