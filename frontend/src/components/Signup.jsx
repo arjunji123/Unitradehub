@@ -249,13 +249,10 @@ function Signup() {
 // <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col h-[700px] overflow-hidden pb-[120px]">
 //         <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto pb-[120px]">
 //           <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
-<div className="bg-black flex justify-center items-center h-screen overflow-hidden">
+<div className="bg-black flex justify-center items-center h-screen overflow-y-auto">
   <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
-  <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col min-h-[90vh] overflow-hidden">
-    <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto sticky top-0" style={{
-      WebkitOverflowScrolling: 'touch', // Ensures smooth scrolling for iOS
-      height: 'calc(100vh - 4rem)', // Adjusts for padding and header size
-    }}>
+  <div className="w-full max-w-lg bg-black text-white rounded-lg shadow-lg font-Inter flex flex-col h-[100vh] overflow-hidden pb-[120px]">
+    <div id="content" className="p-6 space-y-6 flex-grow overflow-y-auto pb-[120px]">
       <h2 className="text-2xl font-bold text-center text-white mb-6">Create account</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Input */}
