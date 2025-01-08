@@ -328,7 +328,7 @@ function Withdrawal() {
             </div>
             <div className="flex-grow relative z-0  px-4">
               {/* <Logo /> */}
-{/*               <div
+              <div
                 className="relative p-4 rounded-lg shadow-lg"
                 style={{
                   backgroundImage: 'url(src/assets/gif/star.gif)',  // Provide the path to your GIF here
@@ -336,7 +336,7 @@ function Withdrawal() {
                   backgroundPosition: 'center',  // Centers the GIF
                   backgroundRepeat: 'no-repeat',  // Prevents the GIF from repeating
                 }}
-              > */}
+              >
                 <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mb-4">
                   <img src="src/assets/logo/U.png" alt="Logo" className="w-8 h-8" />
                   <p>{userData ? userData.coins : "0"}</p>
@@ -364,7 +364,7 @@ function Withdrawal() {
                     </div>
                     <span className="text-xs text-center font-Inter">History</span>
                   </div>
-{/*                 </div> */}
+                </div>
 
                 <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
                   Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
