@@ -83,7 +83,7 @@ const {
   getUserHistory,
   getFilteredUserHistory,
   getUserStats,
-checkUser,
+// checkUser,
 } = require("../contollers/userApiController");
 const {
   isAuthenticatedUser,
@@ -216,7 +216,7 @@ router.get(
   getFilteredUserHistory
 );
 router.post("/user-approve", isApiAuthenticatedUser, approveUserTransaction);
-router.post("/check-pay", checkUser);
+// router.post("/check-pay", checkUser);
 
 
 router.get("/stats-data", isApiAuthenticatedUser, getUserStats);
