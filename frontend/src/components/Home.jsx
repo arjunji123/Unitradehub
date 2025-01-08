@@ -30,6 +30,7 @@ function Home() {
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
   const [theme, setTheme] = useState('light'); // Theme state: light or dark
+  const [warningShown, setWarningShown] = useState(false); // Track if warning is shown
 
   const [isChartOpen, setIsChartOpen] = useState(false); // New state to control chart visibility
 
@@ -58,7 +59,10 @@ function Home() {
   };
   const handleClick = () => {
     if (pendingCoin?.pending_coin === 0) {
-      toast.warn("You have no coins.");
+      if (!warningShown) {
+        toast.warn("You have no coins.");
+        setWarningShown(true); // Set warningShown to true
+      }
       return;
     }
 
@@ -115,20 +119,20 @@ function Home() {
 
   useEffect(() => {
     if (statsData) {
-      const dynamicLabels = Object.keys(statsData.monthly || {}); 
+      const dynamicLabels = Object.keys(statsData.monthly || {});
       const finalValue = statsData.final_value;
       const totalMultiplierData = Array(dynamicLabels.length).fill(statsData.total?.multiplier || 0); // Set total multiplier data
 
       // Set chart data and options
       setChartData({
-        labels: dynamicLabels, 
+        labels: dynamicLabels,
         datasets: [
           {
             label: "Total Multiplier",
             data: totalMultiplierData,
             borderColor: "rgba(99, 57, 249, 1)", // Purple color for the line
             borderWidth: 3, // Increased border width
-            pointBackgroundColor: "rgba(99, 57, 249, 1)", 
+            pointBackgroundColor: "rgba(99, 57, 249, 1)",
             tension: 0.3, // Reduced tension for angular lines
             fill: false, // No fill under the line
             backgroundColor: "rgba(99, 57, 249, 0.2)", // Light fill color
@@ -138,12 +142,12 @@ function Home() {
             label: "Final Value",
             data: Array(dynamicLabels.length).fill(finalValue || 0), // Set final value as same for each month
             borderColor: "rgba(0, 255, 0, 1)", // Green color for the line
-            borderWidth: 3, 
-            pointBackgroundColor: "rgba(0, 255, 0, 1)", 
+            borderWidth: 3,
+            pointBackgroundColor: "rgba(0, 255, 0, 1)",
             tension: 0.3,
             fill: false,
             backgroundColor: "rgba(0, 255, 0, 0.2)", // Light fill color
-            pointRadius: 5, 
+            pointRadius: 5,
           },
         ],
         options: {
@@ -151,7 +155,7 @@ function Home() {
           maintainAspectRatio: false, // Allow chart to fill container
           scales: {
             y: {
-              beginAtZero: false, 
+              beginAtZero: false,
               grid: {
                 color: "rgba(0, 0, 0, 0.1)", // Subtle grid lines for a cleaner look
               },
@@ -189,8 +193,8 @@ function Home() {
       });
     }
   }, [statsData]);
-  
-   useEffect(() => {
+
+  useEffect(() => {
     // Disable drag and touch gestures
     const preventDrag = (e) => e.preventDefault();
     const preventTouch = (e) => e.preventDefault();
@@ -205,7 +209,7 @@ function Home() {
   }, []);
 
 
-  
+
 
 
 
@@ -243,7 +247,7 @@ function Home() {
           {/* User Info Section */}
           <div className="flex flex-col items-center  space-y-2">
             <div
-              onClick={handleNavigate}
+              // onClick={handleNavigate}
               className="bg-blue-600 text-white h-28 w-28 flex justify-center items-center rounded-full"
             >
               {userData?.user_photo ? (
@@ -307,25 +311,27 @@ function Home() {
 
           {/* Wallet Section */}
           <div className="mt-auto px-3 py-4 mb-10">
-          {/* <div onClick={handleClick} className="flex justify-center items-center my-2">
+            {/* <div onClick={handleClick} className="flex justify-center items-center my-2">
               <img className="w-44 h-44  object-cover" src="src/images/coin.png" alt="" />
             </div> */}
-             {/* Image container with animation when clicked */}
-<div onClick={handleClick} className="flex justify-center items-center my-2 relative">
-  <div
-    className={`absolute top-0 left-0 w-full h-full z-0 transition-opacity duration-500 ${isAnimating ? 'opacity-100' : 'opacity-0'}`}
-    style={{
-      background: 'url("src/assets/gif/earthatnightfromspace_preview-ezgif.com-optimize.gif") no-repeat center center',
-      backgroundSize: 'cover',
-      animation: isAnimating ? 'backgroundAnimation 2.5s forwards' : 'none',
-    }}
-  ></div>
-  <img 
-    className="w-44 h-44 object-cover z-10" 
-    src="src/images/coin.png" 
-    alt="" 
-  />
-</div>
+            {/* Image container with animation when clicked */}
+            <div onClick={handleClick} className="flex justify-center items-center my-2 relative">
+              <div
+                className={`absolute top-0 left-0 w-full h-full z-0 transition-opacity duration-500 ${isAnimating ? 'opacity-100' : 'opacity-0'}`}
+                style={{
+                  background: 'url("src/assets/gif/earthatnightfromspace_preview-ezgif.com-optimize.gif") no-repeat center center',
+                  backgroundSize: 'cover',
+                  animation: isAnimating ? 'backgroundAnimation 2.5s forwards' : 'none',
+                }}
+              ></div>
+              <img
+                 className={`w-44 h-44 object-cover z-10 transition-opacity duration-300 ${
+                  pendingCoin?.pending_coin === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-80'
+                }`}
+                src="src/images/coin.png"
+                alt=""
+              />
+            </div>
             <div className="box-border flex flex-col p-3 isolate border-2 border-gray-600 rounded-[12px] text-white">
               <p className="text-xs md:text-sm text-gray-400">Wallet</p>
               <div className="rounded-lg shadow-md text-white flex items-center justify-between space-x-4">
