@@ -35,14 +35,9 @@ function App({ Component, pageProps }) {
 
     }
  
-    const handleTouchMove = (e) => {
-      if (!e.target.closest("#content")) {
-        e.preventDefault(); // Block scrolling outside of #content
-      }
-    };
 
 
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+ 
 
 
     // Timer for preloader
@@ -52,7 +47,6 @@ function App({ Component, pageProps }) {
 
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
   // Add this to your main component (e.g., App.js or a custom hook)
