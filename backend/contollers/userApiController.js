@@ -671,6 +671,10 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
+    if (pay_image) {
+      const updatePayConfirmQuery = "UPDATE users SET pay_confirm = 1 WHERE id = ?";
+      await db.query(updatePayConfirmQuery, [user_id]);
+    }
     // Insert notification data into the notifications table
     const notificationQuery = `
       INSERT INTO notifications 
