@@ -6,28 +6,29 @@ const module_slug = Model.module_slug;
 
 var Storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    console.log(file);
-    callback(null, "./uploads/");
+    console.log(file); // For debugging: check file details
+    callback(null, "./uploads/"); // Directory where the image will be uploaded
   },
   filename: function (req, file, callback) {
-    console.log(file);
-    callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    console.log(file); // For debugging: check file details
+    callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname); // Set filename with timestamp
   },
 });
 
-var upload = multer({ storage: Storage, 
+var upload = multer({
+  storage: Storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // Max file size of 5MB
-  }, ,
+    fileSize: 10 * 1024 * 1024, // Max file size of 10MB
+  },
   fileFilter: function (req, file, callback) {
     // File type validation (allow only image files)
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.mimetype)) {
-      return callback(new Error('Only image files are allowed (jpeg, png, gif)'), false);
+      return callback(new Error('Only image files are allowed (jpeg, png, gif)'), false); // Reject non-image files
     }
-    callback(null, true); // Allow the file if valid
+    callback(null, true); // Accept valid image files
   }
-}).any();
+}).any(); // Allow multiple files with any field name
 // Import multer for image upload
 const {
   checkAdminLoginOrDashboard,
