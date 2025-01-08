@@ -53,13 +53,6 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    // Check if user_type is "user"
-    if (user.user_type !== "user") {
-      return next(
-        new ErrorHandler("Invalid user type. Only 'user' type is allowed.", 403)
-      );
-    }
-
     // Check user status
     const status = parseInt(user.status); // Parse status once
     if (status === 0) {
@@ -76,10 +69,11 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
     } else if (status === 1) {
       return res.status(200).json({
         success: true,
-        message: "User is inactive or blocked",
+        message: "You have already paid",
         user: {
           id: user.id,
           mobile: user.mobile,
+          status: user.status,
           user_type: user.user_type,
         },
       });
