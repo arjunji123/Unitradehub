@@ -670,11 +670,24 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
         )
       );
     }
-
-    if (pay_image) {
+ if (pay_image) {
       const updatePayConfirmQuery = "UPDATE users SET pay_confirm = 1 WHERE id = ?";
-      await db.query(updatePayConfirmQuery, [user_id]);
+      const payConfirmResult = await db.query(updatePayConfirmQuery, [user_id]);
+
+      // Log result to debug
+      console.log("Pay confirm update result:", payConfirmResult);
+
+      if (payConfirmResult.affectedRows === 0) {
+        return next(
+          new ErrorHandler(
+            "Failed to update pay_confirm field in users table",
+            500
+          )
+        );
+      }
     }
+
+  
     // Insert notification data into the notifications table
     const notificationQuery = `
       INSERT INTO notifications 
