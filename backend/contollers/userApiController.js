@@ -2206,11 +2206,41 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
   const user_id = req.user.id;
 
   try {
-    const result = await db.query(
-      `SELECT user_id, transaction_id, coin_operation, status, earn_coin, pending_coin, type, company_id, date_entered, title
-       FROM usercoin_audit
-       WHERE user_id = ? AND status = 'waiting' AND type = 'withdrawal'
-       ORDER BY date_entered DESC`,
+    // const result = await db.query(
+    //   `SELECT user_id, transaction_id, coin_operation, status, earn_coin, pending_coin, type, company_id, date_entered, title
+    //    FROM usercoin_audit
+    //    WHERE user_id = ? AND status = 'waiting' AND type = 'withdrawal'
+    //    ORDER BY date_entered DESC`,
+    //   [user_id]
+    // );
+ const result = await db.query(
+      `
+      SELECT 
+        uca.user_id, 
+        uca.transaction_id, 
+        uca.coin_operation, 
+        uca.status, 
+        uca.earn_coin, 
+        uca.pending_coin, 
+        uca.type, 
+        uca.company_id, 
+        uca.date_entered, 
+        uca.title,
+        ut.trans_id, 
+        ut.utr_no
+      FROM 
+        usercoin_audit uca
+      LEFT JOIN 
+        user_transaction ut
+      ON 
+        uca.transaction_id = ut.id
+      WHERE 
+        uca.user_id = ? 
+        AND uca.status = 'waiting' 
+        AND uca.type = 'withdrawal'
+      ORDER BY 
+        uca.date_entered DESC
+      `,
       [user_id]
     );
 
