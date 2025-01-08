@@ -539,25 +539,44 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
 exports.allUsers = catchAsyncErrors(async (req, res, next) => {
   // Fetch user data along with pay_image and pending_coin in a single query using LEFT JOIN
   // This SQL query fetches user details and related data
-  const users = await db.query(
-    `SELECT 
-      u.id,
-      u.user_name,
-      u.email,
-      u.mobile,
-      DATE_FORMAT(u.date_created, "%d-%m-%Y") AS date_created,
-      ud.referral_code,
-      ud.pay_image,
-      ud.pending_coin,
-       ud.coins,
-      u.user_type,
-      u.status  
-   FROM users u
-   INNER JOIN user_data ud ON u.id = ud.user_id 
-   WHERE u.user_type IN (?)`,
-    ["user"]
-  );
-
+  // const users = await db.query(
+  //   `SELECT 
+  //     u.id,
+  //     u.user_name,
+  //     u.email,
+  //     u.mobile,
+  //     DATE_FORMAT(u.date_created, "%d-%m-%Y") AS date_created,
+  //     ud.referral_code,
+  //     ud.pay_image,
+  //     ud.pending_coin,
+  //      ud.coins,
+  //     u.user_type,
+  //     u.status  
+  //  FROM users u
+  //  INNER JOIN user_data ud ON u.id = ud.user_id 
+  //  WHERE u.user_type IN (?)`,
+  //   ["user"]
+  // );
+ const users = await db.query(
+      `SELECT 
+        u.id,
+        u.user_name,
+        u.email,
+        u.mobile,
+        DATE_FORMAT(u.date_created, "%d-%m-%Y") AS date_created,
+        ud.referral_code,
+        ud.pay_image,
+        ud.pending_coin,
+        ud.coins,
+        u.user_type,
+        u.status,
+        p.user_name AS parent_user_name 
+      FROM users u
+      INNER JOIN user_data ud ON u.id = ud.user_id
+      LEFT JOIN users p ON u.parent_id = p.id 
+      WHERE u.user_type IN (?)`,
+      ["user"]
+    );
   res.render(module_slug + "/index", {
     layout: module_layout,
     title: module_single_title + " " + module_add_text,
