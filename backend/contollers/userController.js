@@ -557,26 +557,28 @@ exports.allUsers = catchAsyncErrors(async (req, res, next) => {
   //  WHERE u.user_type IN (?)`,
   //   ["user"]
   // );
- const users = await db.query(
-      `SELECT 
-        u.id,
-        u.user_name,
-        u.email,
-        u.mobile,
-        DATE_FORMAT(u.date_created, "%d-%m-%Y") AS date_created,
-        ud.referral_code,
-        ud.pay_image,
-        ud.pending_coin,
-        ud.coins,
-        u.user_type,
-        u.status,
-        p.user_name AS parent_user_name 
-      FROM users u
-      INNER JOIN user_data ud ON u.id = ud.user_id -- Join user_data table
-      LEFT JOIN users parent ON ud.parent_id = parent.id -- Join users table for parent_id
-      WHERE u.user_type IN (?)`,
-      ["user"]
-    );
+const users = await db.query(
+  `
+  SELECT 
+      u.id,
+      u.user_name,
+      u.email,
+      u.mobile,
+      DATE_FORMAT(u.date_created, "%d-%m-%Y") AS date_created,
+      ud.referral_code,
+      ud.pay_image,
+      ud.pending_coin,
+      ud.coins,
+      u.user_type,
+      u.status,
+      parent.user_name AS parent_user_name -- Fetch parent's user_name
+  FROM users u
+  INNER JOIN user_data ud ON u.id = ud.user_id
+  LEFT JOIN users parent ON ud.parent_id = parent.id -- Join parent user
+  WHERE u.user_type IN (?)
+  `,
+  ["user"]
+);
   res.render(module_slug + "/index", {
     layout: module_layout,
     title: module_single_title + " " + module_add_text,
