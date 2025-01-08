@@ -15,7 +15,19 @@ var Storage = multer.diskStorage({
   },
 });
 
-var upload = multer({ storage: Storage });
+var upload = multer({ storage: Storage, 
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Max file size of 5MB
+  }, ,
+  fileFilter: function (req, file, callback) {
+    // File type validation (allow only image files)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return callback(new Error('Only image files are allowed (jpeg, png, gif)'), false);
+    }
+    callback(null, true); // Allow the file if valid
+  }
+}).any();
 // Import multer for image upload
 const {
   checkAdminLoginOrDashboard,
