@@ -2231,7 +2231,7 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
       FROM 
         usercoin_audit uca
       LEFT JOIN 
-        user_transaction ut
+        user_transction ut
       ON 
         uca.transaction_id = ut.id
       WHERE 
