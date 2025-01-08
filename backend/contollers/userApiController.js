@@ -39,7 +39,7 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
   try {
     // Query to find user by mobile
     const [userData] = await db.query(
-      "SELECT * FROM users WHERE mobile = ? LIMIT 1",
+      "SELECT * FROM users WHERE mobile = ? AND user_type = 'user' LIMIT 1",
       [mobile]
     );
     const user = userData[0]; // Access the first user in the result
