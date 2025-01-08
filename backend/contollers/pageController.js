@@ -577,6 +577,7 @@ exports.getQuestHistory = async (req, res) => {
         q.description,
         q.status,
         q.image,
+       q.duration,
         q.coin_earn,
         q.social_media,  -- Include social_media field in the query
         CASE 
@@ -612,6 +613,7 @@ exports.getQuestHistory = async (req, res) => {
       status: quest.completion_status,
       image:
         process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image,
+duration: quest.duration,
       coin_earn: parseFloat(quest.coin_earn).toFixed(2),
       social_media: quest.social_media, // Include social_media in the response
     }));
@@ -889,7 +891,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
 
     // Fetch quest details, including activity type, coin_earn value, and quest_name
     const [questResult] = await db.query(
-      "SELECT id, coin_earn, activity, quest_name FROM quest WHERE id = ?",
+      "SELECT id, coin_earn, activity, quest_name, duration FROM quest WHERE id = ?",
       [quest_id]
     );
 
@@ -903,7 +905,9 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       coin_earn: coinEarn,
       activity,
       quest_name: fetchedQuestName,
+duration: duration,
     } = questResult[0];
+
     console.log("Quest ID, Coin Earn, Activity, Quest Name:", {
       fetchedQuestId,
       coinEarn,
