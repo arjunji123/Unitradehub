@@ -54,7 +54,7 @@ function Footer() {
         <span className={`text-xs mt-1 ${activePage === 'home' ? 'font-bold' : 'opacity-50'}`}>Home</span>
       </Link>
     </div>
-    <div className="text-center text-white w-1/5 mt-1">
+    {/* <div className="text-center text-white w-1/5 mt-1">
       <Link
         className="flex flex-col items-center cursor-pointer"
         to="/profile"
@@ -66,7 +66,7 @@ function Footer() {
         <ImProfile  size={20}  className={` transition-opacity duration-200 ${activePage === 'profile' ? 'opacity-100' : 'opacity-50'}`} />
         <span className={`text-xs mt-1 ${activePage === 'profile' ? 'font-bold' : 'opacity-50'}`}>Profile</span>
       </Link>
-    </div>
+    </div> */}
     <div className="text-center text-white w-1/5 mt-1">
       <Link
         className="flex flex-col items-center"
