@@ -56,9 +56,9 @@
                                     <td>
                                         <%= user.referral_code %>
                                     </td>
-                                    <td>
-                                        <%= user.parent_user_name %>
-                                    </td>
+                           
+        <td><%= user.parent_user_name || "No Parent" %></td> 
+                           
                                     <td>
                                         <i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i>
                                         <%= user.pending_coin || 0 %>
