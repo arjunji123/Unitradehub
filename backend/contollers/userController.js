@@ -1164,79 +1164,7 @@ exports.editUserForm = catchAsyncErrors(async (req, res, next) => {
     );
   }
 });
-exports.checkUser = catchAsyncErrors(async (req, res, next) => {
-  const { mobile } = req.body;
-  console.log("Request Body:", req.body); // For debugging purposes
 
-  // Validate input
-  if (!mobile) {
-    return next(new ErrorHandler("Mobile number is required", 400));
-  }
-
-  try {
-    // Query to find user by mobile
-    const [userData] = await db.query(
-      "SELECT * FROM users WHERE mobile = ? LIMIT 1",
-      [mobile]
-    );
-
-    // Ensure the result has a user
-    const user = userData[0]; // Access the first user in the result
-    console.log("User Data:", user); // For debugging purposes
-
-    // If no user is found
-    if (!user) {
-      return next(
-        new ErrorHandler("Mobile number not found in the database", 404)
-      );
-    }
-
-    // Validate user status
-    const status = parseInt(user.status); // Parse status once
-    if (status === 0) {
-      // Generate token for the found user
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h", // You can adjust the expiration time as needed
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "User found successfully",
-        token, // Include token in the response
-        user: {
-          id: user.id,
-          mobile: user.mobile,
-          status: user.status,
-        },
-      });
-    } else if (status === 1) {
-      // User is blocked or inactive, but still generate the token
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "User is inactive or blocked",
-        token, // Include token in the response
-        user: {
-          id: user.id,
-          mobile: user.mobile,
-        },
-      });
-    } else {
-      return next(new ErrorHandler("Invalid user status", 400));
-    }
-  } catch (error) {
-    // Log the detailed error for better troubleshooting
-    console.error("Error in checkUser:", error.message);
-
-    // Return a generic error to the client with the original error message
-    return next(
-      new ErrorHandler("An unexpected error occurred", 500, error.message)
-    );
-  }
-});
 // Controller to handle updating user data
 exports.updateUserRecord = catchAsyncErrors(async (req, res, next) => {
   const userId = req.params.id; // Get user ID from request parameters
