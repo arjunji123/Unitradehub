@@ -84,65 +84,7 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
     );
   }
 });
-// exports.checkUser = catchAsyncErrors(async (req, res, next) => {
-//   const { mobile } = req.body;
-//   console.log("Request Body:", req.body); // For debugging purposes
 
-//   // Validate input
-//   if (!mobile) {
-//     return next(new ErrorHandler("Mobile number is required", 400));
-//   }
-
-//   try {
-//     // Query to find user by mobile
-//     const [userData] = await db.query(
-//       "SELECT * FROM users WHERE mobile = ? LIMIT 1",
-//       [mobile]
-//     );
-//     const user = userData[0]; // Access the first user in the result
-//     console.log("User Data:", user); // For debugging purposes
-
-//     // If user not found
-//     if (!user) {
-//       return next(
-//         new ErrorHandler("Mobile number not found in the database", 404)
-//       );
-//     }
-
-//     // Check user status
-//     const status = parseInt(user.status); // Parse status once
-//     if (status === 0) {
-//       return res.status(200).json({
-//         success: true,
-//         message: "User found successfully",
-//         user: {
-//           id: user.id,
-//           mobile: user.mobile,
-//           status: user.status,
-//           user_type: user.user_type,
-//         },
-//       });
-//     } else if (status === 1) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "You have already paid",
-//         user: {
-//           id: user.id,
-//           mobile: user.mobile,
-//           status: user.status,
-//           user_type: user.user_type,
-//         },
-//       });
-//     } else {
-//       return next(new ErrorHandler("Invalid user status", 400));
-//     }
-//   } catch (error) {
-//     console.error("Error in checkUser:", error); // Log the error for debugging
-//     return next(
-//       new ErrorHandler("An unexpected error occurred", 500, error.message)
-//     );
-//   }
-// });
 
 exports.registerUserApi = catchAsyncErrors(async (req, res, next) => {
   // Validate request body with Joi schema
@@ -464,9 +406,10 @@ exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
   const user = userData[0][0];
 
   // If user not found
-  if (!user) {
-    return next(new ErrorHandler("Invalid mobile number or password", 400));
+ if (!user) {
+    return next(new ErrorHandler("Invalid mobile number", 400));
   }
+
 
   // Debugging: Log user to check the values
   console.log(user); // Add this to check the user data being fetched
@@ -487,11 +430,9 @@ exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
     password,
     user.password
   );
-
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid mobile number or password", 400));
+    return next(new ErrorHandler("Invalid password", 400));
   }
-
   // Generate token for the authenticated user
   const token = User.generateToken(user.id); // Adjust as per your user object structure
 
