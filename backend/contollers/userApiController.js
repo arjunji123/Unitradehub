@@ -29,6 +29,27 @@ const generateReferralCode = (userId) => {
 };
 
 
+exports.checkUser = catchAsyncErrors(async (req, res, next) => {
+  const { mobile } = req.body;
+  console.log("Request Body:", req.body); // For debugging purposes
+  // Validate input
+  if (!mobile) {
+    return next(new ErrorHandler("Mobile number is required", 400));
+  }
+  try {
+    // Query to find user by mobile
+    const [userData] = await db.query(
+      "SELECT * FROM users WHERE mobile = ? LIMIT 1",
+      [mobile]
+    );
+    const user = userData[0]; // Access the first user in the result
+    console.log("User Data:", user); // For debugging purposes
+    // If user not found
+    if (!user) {
+      return next(
+        new ErrorHandler("Mobile number not found in the database", 404)
+      );
+    }
     // Check user status
     const status = parseInt(user.status); // Parse status once
     if (status === 0) {
