@@ -29,61 +29,61 @@ const generateReferralCode = (userId) => {
 };
 
 
-exports.checkUser = catchAsyncErrors(async (req, res, next) => {
-  const { mobile } = req.body;
-  console.log("Request Body:", req.body); // For debugging purposes
-  // Validate input
-  if (!mobile) {
-    return next(new ErrorHandler("Mobile number is required", 400));
-  }
-  try {
-    // Query to find user by mobile
-    const [userData] = await db.query(
-      "SELECT * FROM users WHERE mobile = ? AND user_type = 'user' LIMIT 1",
-      [mobile]
-    );
-    const user = userData[0]; // Access the first user in the result
-    console.log("User Data:", user); // For debugging purposes
-    // If user not found
-    if (!user) {
-      return next(
-        new ErrorHandler("Mobile number not found in the database", 404)
-      );
-    }
-    // Check user status
-    const status = parseInt(user.status); // Parse status once
-    if (status === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "User found successfully",
-        user: {
-          id: user.id,
-          mobile: user.mobile,
-          status: user.status,
-          user_type: user.user_type,
-        },
-      });
-    } else if (status === 1) {
-      return res.status(200).json({
-        success: true,
-        message: "You have already paid",
-        user: {
-          id: user.id,
-          mobile: user.mobile,
-          status: user.status,
-          user_type: user.user_type,
-        },
-      });
-    } else {
-      return next(new ErrorHandler("Invalid user status", 400));
-    }
-  } catch (error) {
-    console.error("Error in checkUser:", error); // Log the error for debugging
-    return next(
-      new ErrorHandler("An unexpected error occurred", 500, error.message)
-    );
-  }
-});
+// exports.checkUser = catchAsyncErrors(async (req, res, next) => {
+//   const { mobile } = req.body;
+//   console.log("Request Body:", req.body); // For debugging purposes
+//   // Validate input
+//   if (!mobile) {
+//     return next(new ErrorHandler("Mobile number is required", 400));
+//   }
+//   try {
+//     // Query to find user by mobile
+//     const [userData] = await db.query(
+//       "SELECT * FROM users WHERE mobile = ? AND user_type = 'user' LIMIT 1",
+//       [mobile]
+//     );
+//     const user = userData[0]; // Access the first user in the result
+//     console.log("User Data:", user); // For debugging purposes
+//     // If user not found
+//     if (!user) {
+//       return next(
+//         new ErrorHandler("Mobile number not found in the database", 404)
+//       );
+//     }
+//     // Check user status
+//     const status = parseInt(user.status); // Parse status once
+//     if (status === 0) {
+//       return res.status(200).json({
+//         success: true,
+//         message: "User found successfully",
+//         user: {
+//           id: user.id,
+//           mobile: user.mobile,
+//           status: user.status,
+//           user_type: user.user_type,
+//         },
+//       });
+//     } else if (status === 1) {
+//       return res.status(200).json({
+//         success: true,
+//         message: "You have already paid",
+//         user: {
+//           id: user.id,
+//           mobile: user.mobile,
+//           status: user.status,
+//           user_type: user.user_type,
+//         },
+//       });
+//     } else {
+//       return next(new ErrorHandler("Invalid user status", 400));
+//     }
+//   } catch (error) {
+//     console.error("Error in checkUser:", error); // Log the error for debugging
+//     return next(
+//       new ErrorHandler("An unexpected error occurred", 500, error.message)
+//     );
+//   }
+// });
 
 
 exports.registerUserApi = catchAsyncErrors(async (req, res, next) => {
@@ -388,64 +388,144 @@ const defaultUser = await db.query(
 
 // Login user
 // Login user using mobile number
-exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
-  const { mobile, password } = req.body; // Change to mobile instead of emailOrMobile
+// exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
+//   const { mobile, password } = req.body; // Change to mobile instead of emailOrMobile
 
-  // Checking that mobile number and password are provided
+//   // Checking that mobile number and password are provided
+//   if (!mobile || !password) {
+//     return next(
+//       new ErrorHandler("Please enter mobile number and password", 400)
+//     );
+//   }
+
+//   // Find user by mobile number only
+//   const userData = await db.query(
+//     "SELECT * FROM users WHERE mobile = ? LIMIT 1",
+//     [mobile] // Query only with mobile
+//   );
+//   const user = userData[0][0];
+
+//   // If user not found
+//  if (!user) {
+//     return next(new ErrorHandler("Invalid mobile number", 400));
+//   }
+
+
+//   // Debugging: Log user to check the values
+//   console.log(user); // Add this to check the user data being fetched
+
+//   // Ensure status is a number and check if the user is active
+//   if (parseInt(user.status) === 0) {
+//     // parseInt to ensure we compare number values
+//     return next(
+//       new ErrorHandler(
+//         "Your account is deactivated. Please contact support.",
+//         403
+//       )
+//     );
+//   }
+
+//   // Compare passwords
+//   const isPasswordMatched = await User.comparePasswords(
+//     password,
+//     user.password
+//   );
+//   if (!isPasswordMatched) {
+//     return next(new ErrorHandler("Invalid password", 400));
+//   }
+//   // Generate token for the authenticated user
+//   const token = User.generateToken(user.id); // Adjust as per your user object structure
+
+//   // Send the token and user details in the response
+//   res.status(200).json({
+//     success: true,
+//     token,
+//     user: {
+//       id: user.id,
+//       mobile: user.mobile,
+//       // Add any other user details you want to include in the response
+//     },
+//   });
+// });
+exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
+  const { mobile, password } = req.body;
+
+  // Check that mobile number and password are provided
   if (!mobile || !password) {
     return next(
-      new ErrorHandler("Please enter mobile number and password", 400)
+      new ErrorHandler("Please enter both mobile number and password", 400)
     );
   }
 
-  // Find user by mobile number only
-  const userData = await db.query(
-    "SELECT * FROM users WHERE mobile = ? LIMIT 1",
-    [mobile] // Query only with mobile
-  );
-  const user = userData[0][0];
-
-  // If user not found
- if (!user) {
-    return next(new ErrorHandler("Invalid mobile number", 400));
-  }
-
-
-  // Debugging: Log user to check the values
-  console.log(user); // Add this to check the user data being fetched
-
-  // Ensure status is a number and check if the user is active
-  if (parseInt(user.status) === 0) {
-    // parseInt to ensure we compare number values
-    return next(
-      new ErrorHandler(
-        "Your account is deactivated. Please contact support.",
-        403
-      )
+  try {
+    // Fetch user by mobile
+    const userData = await db.query(
+      "SELECT * FROM users WHERE mobile = ? LIMIT 1",
+      [mobile]
     );
-  }
+    const user = userData[0][0];
 
-  // Compare passwords
-  const isPasswordMatched = await User.comparePasswords(
-    password,
-    user.password
-  );
-  if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid password", 400));
-  }
-  // Generate token for the authenticated user
-  const token = User.generateToken(user.id); // Adjust as per your user object structure
+    // Check if mobile number is invalid
+    if (!user) {
+      return next(new ErrorHandler("Invalid mobile number", 400));
+    }
 
-  // Send the token and user details in the response
-  res.status(200).json({
-    success: true,
-    token,
-    user: {
-      id: user.id,
-      mobile: user.mobile,
-      // Add any other user details you want to include in the response
-    },
-  });
+    // Debugging to check user details
+    console.log(user);
+
+    // Password checking
+    const isPasswordMatched = await User.comparePasswords(
+      password,
+      user.password
+    );
+
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Invalid password", 400));
+    }
+
+    // Handle pay_confirm and status logic
+    const payConfirm = parseInt(user.pay_confirm);
+    const status = parseInt(user.status);
+
+    if (payConfirm === 1 && status === 0) {
+      // Account is pending activation
+      return next(
+        new ErrorHandler(
+          "Your account is not active yet. Please wait for activation.",
+          403
+        )
+      );
+    }
+
+    if (payConfirm === 1 && status === 1) {
+      // Login success
+      const token = User.generateToken(user.id);
+
+      return res.status(200).json({
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          mobile: user.mobile,
+        },
+      });
+    }
+
+    if (payConfirm === 0 && status === 0) {
+      // User not allowed to log in but return 200 OK
+      return res.status(200).json({
+        success: false,
+        message:
+          "Your account is not yet confirmed or active. Please complete the necessary steps.",
+      });
+    }
+
+    // Default fallback
+    return next(new ErrorHandler("Something went wrong. Please try again.", 500));
+  } catch (error) {
+    console.error("Error during login:", error);
+    return next(new ErrorHandler("Internal server error", 500));
+  }
 });
 
 exports.logoutApi = catchAsyncErrors(async (req, res, next) => {
