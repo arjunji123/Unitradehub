@@ -22,7 +22,7 @@ var upload = multer({
   },
   fileFilter: function (req, file, callback) {
     // File type validation (allow only image files)
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/heif', 'image/heic'];
     if (!allowedTypes.includes(file.mimetype)) {
       return callback(new Error('Only image files are allowed (jpeg, png, gif)'), false); // Reject non-image files
     }
