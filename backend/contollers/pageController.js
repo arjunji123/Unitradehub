@@ -74,7 +74,8 @@ exports.createRecord = async (req, res, next) => {
     image: req.body.image || null, // Fix body.image to req.body.image
     description: sanitizedDescription,
     status: req.body.status,
-   coin_earn: req.body.coin_earn || 0,
+    duration: req.body.duration,
+    coin_earn: req.body.coin_earn || 0,
     end_date: req.body.end_date,
     social_media: req.body.social_media || null, // Ensure this field is handled
     screenshot_required: screenshotRequired, // Include screenshot_required field
