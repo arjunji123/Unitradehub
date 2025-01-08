@@ -572,8 +572,8 @@ exports.allUsers = catchAsyncErrors(async (req, res, next) => {
         u.status,
         p.user_name AS parent_user_name 
       FROM users u
-      INNER JOIN user_data ud ON u.id = ud.user_id
-      LEFT JOIN users p ON u.parent_id = p.id 
+      INNER JOIN user_data ud ON u.id = ud.user_id -- Join user_data table
+      LEFT JOIN users parent ON ud.parent_id = parent.id -- Join users table for parent_id
       WHERE u.user_type IN (?)`,
       ["user"]
     );
