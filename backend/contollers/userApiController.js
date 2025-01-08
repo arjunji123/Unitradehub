@@ -671,8 +671,8 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
       );
     }
  if (pay_image) {
-      const updatePayConfirmQuery = "UPDATE users SET pay_confirm = 1 WHERE id = ?";
-      const payConfirmResult = await db.query(updatePayConfirmQuery, [user_id]);
+      const updatePayConfirmQuery = "UPDATE users SET pay_confirm = ? WHERE id = ?";
+const payConfirmResult = await db.query(updatePayConfirmQuery, [parseInt(1), user_id]);
 
       // Log result to debug
       console.log("Pay confirm update result:", payConfirmResult);
