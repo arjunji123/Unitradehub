@@ -569,6 +569,7 @@ const users = await db.query(
       ud.pay_image,
       ud.pending_coin,
       ud.coins,
+ud.parent_id,
       u.user_type,
       u.status,
       parent.user_name AS parent_user_name -- Fetch parent's user_name
