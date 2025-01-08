@@ -30,7 +30,8 @@ const generateReferralCode = (userId) => {
 
 exports.checkUser = catchAsyncErrors(async (req, res, next) => {
   const { mobile } = req.body;
-  console.log(req.body);
+  console.log("Request Body:", req.body); // For debugging purposes
+
   // Validate input
   if (!mobile) {
     return next(new ErrorHandler("Mobile number is required", 400));
@@ -43,7 +44,7 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
       [mobile]
     );
     const user = userData[0]; // Access the first user in the result
-    console.log(user);
+    console.log("User Data:", user); // For debugging purposes
 
     // If user not found
     if (!user) {
@@ -52,8 +53,16 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
+    // Check if user_type is "user"
+    if (user.user_type !== "user") {
+      return next(
+        new ErrorHandler("Invalid user type. Only 'user' type is allowed.", 403)
+      );
+    }
+
     // Check user status
-    if (parseInt(user.status) === 0) {
+    const status = parseInt(user.status); // Parse status once
+    if (status === 0) {
       return res.status(200).json({
         success: true,
         message: "User found successfully",
@@ -61,15 +70,17 @@ exports.checkUser = catchAsyncErrors(async (req, res, next) => {
           id: user.id,
           mobile: user.mobile,
           status: user.status,
+          user_type: user.user_type,
         },
       });
-    } else if (parseInt(user.status) === 1) {
+    } else if (status === 1) {
       return res.status(200).json({
         success: true,
         message: "User is inactive or blocked",
         user: {
           id: user.id,
           mobile: user.mobile,
+          user_type: user.user_type,
         },
       });
     } else {
