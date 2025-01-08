@@ -28,7 +28,7 @@ var upload = multer({
     }
     callback(null, true); // Accept valid image files
   }
-}).any(); // Allow multiple files with any field name
+}); // Allow multiple files with any field name
 // Import multer for image upload
 const {
   checkAdminLoginOrDashboard,
