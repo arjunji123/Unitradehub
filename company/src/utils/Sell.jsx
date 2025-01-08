@@ -1,10 +1,13 @@
-import React, { useState, useEffect , useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ImCross } from 'react-icons/im';
 import { uploadTransactionDoc } from '../../store/actions/withdrawalActions';
-import {fetchUserData} from '../../store/actions/homeActions';
+import { fetchUserData } from '../../store/actions/homeActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { BsCurrencyRupee } from "react-icons/bs";
+import { FaRegCopy } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
 
-function Send({ togglePopup, userDetail , resetUserDetail }) {
+function Send({ togglePopup, userDetail, resetUserDetail }) {
   const [transactionId, setTransactionId] = useState(userDetail?.id || '');
   const [payImage, setPayImage] = useState(null);
   const dispatch = useDispatch();
@@ -19,7 +22,7 @@ function Send({ togglePopup, userDetail , resetUserDetail }) {
     e.preventDefault();
 
     // Log the values to check
-    console.log('Transaction ID:', transactionId);  
+    console.log('Transaction ID:', transactionId);
     console.log('Payment Image:', payImage);
 
     if (transactionId && payImage) {
@@ -32,22 +35,28 @@ function Send({ togglePopup, userDetail , resetUserDetail }) {
   useEffect(() => {
     console.log("Success state:", success);
     console.log("Fetch Called Flag:", fetchCalled.current);
-  
+
     if (success && !fetchCalled.current) {
       console.log("Dispatching fetchUserData...");
       fetchCalled.current = true; // Prevent repeated calls
       dispatch(fetchUserData());
-  
+
       // Close popup and reset user details
       togglePopup();
       resetUserDetail();
     }
   }, [success, dispatch, togglePopup, resetUserDetail]);
-    // Sync transaction ID when userDetail changes
-    useEffect(() => {
-      setTransactionId(userDetail && userDetail.id);
-    }, [userDetail]);
+  // Sync transaction ID when userDetail changes
+  useEffect(() => {
+    setTransactionId(userDetail && userDetail.id);
+  }, [userDetail]);
 
+  const handleCopy = () => {
+    if (userDetail?.upiId) {
+      navigator.clipboard.writeText(userDetail.upiId);
+      toast("UPI ID copied to clipboard!");
+    }
+  };
   return (
     <div className="fixed inset-0 flex items-end justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50" onClick={togglePopup}>
       <div className="bg-[#1B1A1A] p-4 sm:p-6 rounded-t-3xl shadow-xl max-w-lg relative" onClick={(e) => e.stopPropagation()}>
@@ -67,16 +76,27 @@ function Send({ togglePopup, userDetail , resetUserDetail }) {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Amount:</span>
-              <span className="font-medium text-[#B0B0B0] text-sm">${userDetail?.amount}</span>
+              <span className="font-medium text-[#B0B0B0] text-sm flex"><BsCurrencyRupee className="mt-0.5" size={16} />{userDetail?.amount}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Coins:</span>
               <span className="font-medium text-[#B0B0B0] text-sm">{userDetail?.coin}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-gray-400">UPI ID:</span>
-              <span className="font-medium text-[#B0B0B0] text-sm">{userDetail?.upiId}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-[#B0B0B0] text-sm">{userDetail?.upiId}</span>
+                <button
+                  onClick={handleCopy}
+                  className="text-white"
+                  title="Copy UPI ID"
+                >
+                  <FaRegCopy className="text-white hover:text-blue-600 text-lg" />
+                </button>
+              </div>
             </div>
+
+
           </div>
         </div>
 
@@ -107,7 +127,7 @@ function Send({ togglePopup, userDetail , resetUserDetail }) {
           </button>
         </div>
 
-   
+
       </div>
 
       {/* CSS for Custom Spinner */}
