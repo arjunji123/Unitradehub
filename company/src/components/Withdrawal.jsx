@@ -194,7 +194,7 @@ function Withdrawal() {
       <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
         <ToastContainer
           position="top-right"
-          autoClose={5000}
+          autoClose={1000}
           hideProgressBar={false}
           closeOnClick
           pauseOnHover
@@ -257,7 +257,7 @@ function Withdrawal() {
                       </div>
                       <div className="flex justify-between items-center py-1.5">
                         <p className="font-bold flex  font-Inter items-center  ">
-                          <BsCurrencyRupee className="" />  <span className="text-[20px] ">{company.tranction_rate}</span></p>
+                          <BsCurrencyRupee className="" />  <span className="text-[20px] "> {company.transction_amount}</span></p>
                         <div className="text-sm font-medium text-[#5B5A5C]">Online</div>
                       </div>
                       <div className="flex justify-between items-start">
@@ -267,8 +267,8 @@ function Withdrawal() {
                             <span className="text-xs font-medium ml-2 text-[#B8B7BA]">{company.tranction_coin}</span>
                           </p>
                           <p>
-                            <span className="text-xs font-bold text-[#5B5A5C]">Total Amount</span>
-                            <span className="text-xs font-medium ml-2 text-[#B8B7BA]">{company.transction_amount}</span>
+                            <span className="text-xs font-bold text-[#5B5A5C]">Coin Rate</span>
+                            <span className="text-xs font-medium ml-2 text-[#B8B7BA]">{company.tranction_rate}</span>
                           </p>
                         </div>
                         <p className="flex items-start text-green-500 gap-0.5 self-start"> {/* Added self-start */}
