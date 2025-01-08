@@ -521,7 +521,11 @@ return res.status(200).json({
         message:
           "Your account is not yet confirmed or active. Please complete the necessary steps.",
         status,          // Send status in response
-        pay_confirm: payConfirm // Send pay_confirm in response
+        pay_confirm: payConfirm, // Send pay_confirm in response
+       user: {
+          id: user.id,
+          mobile: user.mobile,
+        }
       });
     }
 
