@@ -1,35 +1,67 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const activityDropdown = document.getElementById("activity");
+        const screenshotCheckbox = document.getElementById("screenshot_required");
+        const durationInputContainer = document.createElement("div");
         const form = document.querySelector("form");
+
+        // Create the duration input field
+        durationInputContainer.classList.add("mb-3");
+        durationInputContainer.innerHTML = `
+            <label for="duration" class="form-label">Duration (in minutes)</label>
+            <input type="number" id="duration" name="duration" class="form-control" disabled>
+        `;
+        // Append it to the form after the activity field
+        activityDropdown.parentElement.parentElement.appendChild(durationInputContainer);
+
+        const durationInput = document.getElementById("duration");
+
+        // Initially disable the checkbox and duration input
+        screenshotCheckbox.disabled = true;
+        durationInput.disabled = true;
+
+        activityDropdown.addEventListener("change", () => {
+            const selectedActivity = activityDropdown.value;
+
+            if (selectedActivity === "watch") {
+                // Enable duration input and make it required
+                durationInput.disabled = false;
+                durationInput.required = true;
+
+                // Disable the screenshot checkbox for "watch" and uncheck it
+                screenshotCheckbox.checked = false;
+                screenshotCheckbox.disabled = true;
+            } else if (selectedActivity === "follow") {
+                // Enable the screenshot checkbox and disable duration input
+                screenshotCheckbox.disabled = false;
+                durationInput.disabled = true;
+                durationInput.required = false;
+                durationInput.value = ""; // Clear any previous input
+            } else {
+                // Default case, disable both checkbox and duration input
+                screenshotCheckbox.checked = false;
+                screenshotCheckbox.disabled = true;
+                durationInput.disabled = true;
+                durationInput.required = false;
+                durationInput.value = ""; // Clear any previous input
+            }
+        });
+
         form.addEventListener("submit", (e) => {
             let hasError = false;
 
             // Clear previous errors
             document.querySelectorAll(".error-message").forEach((el) => el.remove());
 
-            // Required fields
-            const requiredFields = ["quest_name", "quest_type", "activity", "start_date", "end_date", "social_media", "quest_url", "coin_earn", "description"];
-
-            requiredFields.forEach((field) => {
-                const fieldElement = form.elements[field];
-                if (!fieldElement || !fieldElement.value.trim()) {
+            // Validation for Duration
+            if (activityDropdown.value === "watch") {
+                if (!durationInput.value.trim() || Number(durationInput.value) <= 0) {
                     hasError = true;
                     const error = document.createElement("small");
                     error.className = "text-danger error-message";
-                    error.textContent = "This field is required";
-                    fieldElement.parentElement.appendChild(error);
+                    error.textContent = "Duration must be greater than 0.";
+                    durationInput.parentElement.appendChild(error);
                 }
-            });
-
-            // Custom validation for Radio Buttons (social_media)
-            const socialMediaChecked = Array.from(form.elements["social_media"]).some((radio) => radio.checked);
-            if (!socialMediaChecked) {
-                hasError = true;
-                const socialMediaContainer = form.querySelector("div.mb-3");
-                const error = document.createElement("small");
-                error.className = "text-danger error-message";
-                error.textContent = "Please select a social media option";
-                socialMediaContainer.appendChild(error);
             }
 
             if (hasError) {
@@ -38,7 +70,6 @@
         });
     });
 </script>
-
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -89,7 +120,14 @@
                                             class="form-control">
                                     </div>
                                 </div>
-
+<div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <label for="duration" class="form-label">Duration (in minutes)</label>
+                                        <input type="number" id="duration" name="duration" class="form-control" disabled>
+                                    </div>
+                                </div>
+                            </div>
                                 <div class="col-lg-6 float-left">
                                     <div class="mb-3">
                                         <label for="end_date" class="form-label">End Date</label>
