@@ -27,6 +27,62 @@ const generateReferralCode = (userId) => {
   const referralCode = `UNITRADE${userId}`; // Prefix "UNITRADE" with the user's user_id
   return referralCode;
 };
+
+exports.checkUser = catchAsyncErrors(async (req, res, next) => {
+  const { mobile } = req.body;
+  console.log(req.body);
+  // Validate input
+  if (!mobile) {
+    return next(new ErrorHandler("Mobile number is required", 400));
+  }
+
+  try {
+    // Query to find user by mobile
+    const [userData] = await db.query(
+      "SELECT * FROM users WHERE mobile = ? LIMIT 1",
+      [mobile]
+    );
+    const user = userData[0]; // Access the first user in the result
+    console.log(user);
+
+    // If user not found
+    if (!user) {
+      return next(
+        new ErrorHandler("Mobile number not found in the database", 404)
+      );
+    }
+
+    // Check user status
+    if (parseInt(user.status) === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "User found successfully",
+        user: {
+          id: user.id,
+          mobile: user.mobile,
+          status: user.status,
+        },
+      });
+    } else if (parseInt(user.status) === 1) {
+      return res.status(200).json({
+        success: true,
+        message: "User is inactive or blocked",
+        user: {
+          id: user.id,
+          mobile: user.mobile,
+        },
+      });
+    } else {
+      return next(new ErrorHandler("Invalid user status", 400));
+    }
+  } catch (error) {
+    console.error("Error in checkUser:", error); // Log the error for debugging
+    return next(
+      new ErrorHandler("An unexpected error occurred", 500, error.message)
+    );
+  }
+});
+
 exports.registerUserApi = catchAsyncErrors(async (req, res, next) => {
   // Validate request body with Joi schema
   try {
