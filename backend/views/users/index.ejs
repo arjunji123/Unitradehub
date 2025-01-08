@@ -57,7 +57,11 @@
                                         <%= user.referral_code %>
                                     </td>
                            
-        <td><%= user.parent_user_name || "No Parent" %></td> 
+<td>
+  <%= user.parent_user_name 
+    ? `${user.parent_user_name} (${user.parent_id})` 
+    : `No Parent (${user.parent_id || "N/A"})` %>
+</td>
                            
                                     <td>
                                         <i class="fas fa-coins" style="color: gold; margin-right: 5px;"></i>
