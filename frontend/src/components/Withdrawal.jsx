@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+ import React, { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { BiSolidUpvote, BiHistory } from "react-icons/bi";
 import { BsPersonFillCheck, BsCurrencyRupee } from "react-icons/bs";
@@ -301,7 +301,7 @@ function Withdrawal() {
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
           // <div className="w-full bg-black text-white flex flex-col max-w-lg h-screen ">
-<div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
+ <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
             {/* Header Section */}
             <Header />
             <div style={{
@@ -377,7 +377,7 @@ function Withdrawal() {
 
               {/* Co-Companies List */}
 {/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8"> */}
-  <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto">
+              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
