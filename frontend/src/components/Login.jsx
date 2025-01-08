@@ -183,6 +183,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for the eye 
 import ToastNotification from "./Toast";
 import { logo } from "../images/index";
 import Loader from '../components/Loader';
+import axios from "axios"; // For API calls;
+import Swal from "sweetalert2"; // SweetAlert2 for alerts
+import { BACKEND_URL } from '../../src/config';
 
 function Login() {
   const dispatch = useDispatch();
@@ -198,25 +201,77 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrors(""); // Clear previous error message
-    setLoading(true); // Set loading state to true
+    setLoading(true); // Show loading spinner
+  
+    let loginSuccessful = false;
+  
     try {
+      // Step 1: Attempt to log in
       await dispatch(login({ mobile, password })); // Dispatch login action
       setToastMessage("Login successful!");
       setShowToast(true);
-      navigate("/home"); // Navigate to home on success
+      loginSuccessful = true; // Mark login as successful
     } catch (error) {
-      const errorMessage = error.message || "An unknown error occurred."; // Get the error message
-      console.error("Caught error:", errorMessage); // Log error for debugging
-      setErrors(errorMessage); // Update the error state for UI display
-      setToastMessage(errorMessage); // Show the error message in toast
+      // Handle login error
+      const errorMessage = error.response?.data?.message || "Login failed. Proceeding to check payment status.";
+      console.error("Login error:", errorMessage);
+      setErrors(errorMessage);
+      setToastMessage(errorMessage);
       setShowToast(true);
+    }
 
-      // Stop the loading state after a short delay
-      setTimeout(() => {
-        setLoading(false); // Reset loading state to allow retry
-      }, 2000); // 2-second delay
+    try {
+      // Step 2: Call `check-pay` API regardless of login success
+      const response = await axios.post(  `${BACKEND_URL}/api/v1/check-pay`, { mobile });
+      const { success, message, user } = response.data;
+      const userId = response.data.user.id;
+      console.log("userId:", userId);
+      if (success) {
+        if (user.status === "1" && loginSuccessful) {
+          // User is activated and login was successful, navigate to home
+          navigate("/home");
+        } else if (user.status === "0") {
+          // User hasn't paid, show SweetAlert for payment
+          Swal.fire({
+            icon: "warning",
+            title: "Payment Required",
+            text: "You haven't completed your payment. Please proceed to the payment screen.",
+            confirmButtonText: "Go to Payment",
+            background: "#333", // Dark mode
+            color: "#fff",
+            iconColor: "#f39c12", // Dark-themed warning color
+          }).then(() => {
+            // Redirect to the payment screen
+            navigate(`/payment/${userId}`);
+          });
+        } else {
+          // User has already paid but admin activation is pending
+          Swal.fire({
+            icon: "info",
+            title: "Pending Activation",
+            text: "You have completed the payment. Please wait for admin activation.",
+            confirmButtonText: "OK",
+            background: "#333", // Dark mode
+            color: "#fff",
+            iconColor: "#3498db", // Dark-themed info color
+          });
+        }
+      } else {
+        console.error("Check-pay API failed:", message);
+      }
+    } catch (error) {
+      // Handle errors from `check-pay` API
+      const errorMessage = error.response?.data?.message || "Error occurred while checking payment status.";
+      console.error("Check-pay API error:", errorMessage);
+      setErrors(errorMessage);
+      setToastMessage(errorMessage);
+      setShowToast(true);
+    } finally {
+      setLoading(false); // Stop loading spinner
     }
   };
+  
+  
 
   const [firstName, setFirstName] = useState("");
 
@@ -243,7 +298,6 @@ function Login() {
   const handleNavigate = () => {
     navigate('/');
   };
-  console.log('handleNavigate', handleNavigate)
   return (
     <div className="bg-black flex justify-center items-center min-h-screen">
       <ToastNotification message={toastMessage} show={showToast} setShow={setShowToast} />
