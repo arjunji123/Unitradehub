@@ -364,7 +364,7 @@ function Withdrawal() {
                     </div>
                     <span className="text-xs text-center font-Inter">History</span>
                   </div>
-                </div>
+{/*                 </div> */}
 
                 <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
                   Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
