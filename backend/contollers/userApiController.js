@@ -487,36 +487,41 @@ exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
     const payConfirm = parseInt(user.pay_confirm);
     const status = parseInt(user.status);
 
-    if (payConfirm === 1 && status === 0) {
+   if (payConfirm === 1 && status === 0) {
       // Account is pending activation
-      return next(
-        new ErrorHandler(
-          "Your account is not active yet. Please wait for activation.",
-          403
-        )
-      );
+      return res.status(200).json({
+        success: false,
+        message: "Your account is not active yet. Please wait for activation.",
+        status,          // Send status in response
+        pay_confirm: payConfirm // Send pay_confirm in response
+      });
     }
+
 
     if (payConfirm === 1 && status === 1) {
       // Login success
       const token = User.generateToken(user.id);
 
-      return res.status(200).json({
+return res.status(200).json({
         success: true,
         token,
         user: {
           id: user.id,
           mobile: user.mobile,
         },
+        status,          // Send status in response
+        pay_confirm: payConfirm // Send pay_confirm in response
       });
     }
 
     if (payConfirm === 0 && status === 0) {
       // User not allowed to log in but return 200 OK
-      return res.status(200).json({
+  return res.status(200).json({
         success: false,
         message:
           "Your account is not yet confirmed or active. Please complete the necessary steps.",
+        status,          // Send status in response
+        pay_confirm: payConfirm // Send pay_confirm in response
       });
     }
 
