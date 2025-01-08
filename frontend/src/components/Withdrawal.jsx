@@ -1,4 +1,4 @@
- import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { BiSolidUpvote, BiHistory } from "react-icons/bi";
 import { BsPersonFillCheck, BsCurrencyRupee } from "react-icons/bs";
@@ -31,7 +31,7 @@ function Withdrawal() {
   const [sharePopup, setSharePopup] = useState(false);
   const [selectedCoinRate, setSelectedCoinRate] = useState(null);
   const [company_id, setCompany_id] = useState(null);
-  const [expandedCompanyId, setExpandedCompanyId] = useState(null); // State to track the expanded company
+    const [expandedCompanyId, setExpandedCompanyId] = useState(null); // State to track the expanded company
 
   // Toggle function to expand/collapse a row
   const toggleExpandRow = (companyId) => {
@@ -87,16 +87,6 @@ function Withdrawal() {
     };
     fetchData();
   }, [dispatch]);
-  useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
-
-    document.addEventListener("dragstart", preventDrag);
-
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
@@ -242,8 +232,6 @@ function Withdrawal() {
     });
   };
 
- 
-
 
   // Handle Button Click
   const handleButtonClick = (coinRanges, companyId) => {
@@ -253,33 +241,6 @@ function Withdrawal() {
     } else {
       // Show SweetAlert
       showAlert();
-    }
-  };
-
-   // SweetAlert function for attractive alert
-   const showAlertShare = () => {
-    MySwal.fire({
-      title: "Insufficient Referrals!",
-      text: "You need to connect with at least 2 people to share coins.",
-      icon: "warning",
-      confirmButtonText: "Okay",
-      buttonsStyling: true,
-      customClass: {
-        popup: "bg-gray-800 text-white rounded-lg shadow-lg w-[90%] sm:w-[400px]", // Adjust width for mobile
-        title: "text-white text-sm sm:text-base font-bold", // Smaller text for mobile, larger for larger screens
-        content: "text-gray-300 text-xs sm:text-sm", // Adjust description size for mobile
-        confirmButton: "bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg text-xs sm:text-sm", // Button size adjustment
-      },
-    });
-  };
-  // Handle Button Click
-  const handleButtonShare = () => {
-    if (userData && userData.referral_count >= 2) {
-      // Open popup or perform the Sell action
-      toggleSharePopup();
-    } else {
-      // Show SweetAlert
-      showAlertShare();
     }
   };
   return (
@@ -300,83 +261,71 @@ function Withdrawal() {
           <Loader />
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
-          // <div className="w-full bg-black text-white flex flex-col max-w-lg h-screen ">
- <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
-            {/* Header Section */}
-            <Header />
-            <div style={{
-              position: 'absolute',
-              width: '239px',
-              height: '239px',
-              left: '160px',
-              top: '116px',
-              background: 'rgba(99, 57, 249, 0.25',
-              filter: 'blur(100px)',
-            }}>
-              <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
-            </div>
-            <div style={{
-              position: 'absolute',
-              width: '243px',
-              height: '243px',
-              left: '-91px',
-              top: '423px',
-              background: 'rgba(99, 57, 249, 0.25)',
-              filter: 'blur(100px)',
-            }}>
-              <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
-            </div>
-            <div className="flex-grow relative z-0  px-4">
+ <div className="w-full bg-black text-white flex flex-col max-w-lg px-4 hide-scrollbar overflow-y-auto">
+               {/* Header Section */}
+         <Header/>
+         <div style={{
+            position: 'absolute',
+            width: '239px',
+            height: '239px',
+            left: '160px',
+            top: '116px',
+            background: 'rgba(99, 57, 249, 0.25',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
+          <div style={{
+            position: 'absolute',
+            width: '243px',
+            height: '243px',
+            left: '-91px',
+            top: '423px',
+            background: 'rgba(99, 57, 249, 0.25)',
+            filter: 'blur(100px)',
+          }}>
+            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+          </div>
+            <div className="flex-grow relative z-0  px-4 top-10">
               {/* <Logo /> */}
-              <div
-                className="relative p-4 rounded-lg shadow-lg"
-                style={{
-                  backgroundImage: 'url(src/assets/gif/star.gif)',  // Provide the path to your GIF here
-                  backgroundSize: 'cover',  // Ensures the GIF covers the entire background
-                  backgroundPosition: 'center',  // Centers the GIF
-                  backgroundRepeat: 'no-repeat',  // Prevents the GIF from repeating
-                }}
-              >
-                <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mb-4">
-                  <img src="src/assets/logo/U.png" alt="Logo" className="w-8 h-8" />
-                  <p>{userData ? userData.coins : "0"}</p>
-                </div>
 
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {/* Send Button */}
-                  <div
-                    onClick={() => handleButtonShare()}
-                    className="text-white mx-auto cursor-pointer flex flex-col items-center transition duration-300 ease-in-out opacity-100"
-                  >
-                    <div className="rounded-full w-8 h-8 bg-[#303030] flex justify-center items-center">
-                      <BiSolidUpvote size={22} />
-                    </div>
-                    <span className="text-xs text-center font-Inter">Send</span>
-                  </div>
-
-                  {/* History Button */}
-                  <div
-                    onClick={() => handleIconClick(2)}
-                    className="text-white mx-auto cursor-pointer flex flex-col items-center transition duration-300 ease-in-out opacity-100"
-                  >
-                    <div className="rounded-full w-8 h-8 bg-[#303030] flex justify-center items-center">
-                      <BiHistory size={22} />
-                    </div>
-                    <span className="text-xs text-center font-Inter">History</span>
-                  </div>
-                </div>
-
-                <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
-                  Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
-                </p>
+              <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mt-3 mb-4">
+                <img src="src/assets/logo/U.png" alt="Logo" className="w-8 h-8 " />
+                <p>{userData ? userData.coins : "0"}</p>
               </div>
 
 
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {/* Send Button */}
+                <div
+                  onClick={() => toggleSharePopup()}
+                  className="text-white mx-auto cursor-pointer flex flex-col items-center transition duration-300 ease-in-out opacity-100"
+                >
+                  <div className="rounded-full w-8 h-8 bg-[#303030] flex justify-center items-center">
+                    <BiSolidUpvote size={22} />
+                  </div>
+                  <span className="text-xs text-center font-Inter">Send</span>
+                </div>
+
+                {/* History Button */}
+                <div
+                  onClick={() => handleIconClick(2)}
+                  className="text-white mx-auto cursor-pointer flex flex-col items-center transition duration-300 ease-in-out opacity-100"
+                >
+                  <div className="rounded-full w-8 h-8 bg-[#303030] flex justify-center items-center">
+                    <BiHistory size={22} />
+                  </div>
+                  <span className="text-xs text-center font-Inter">History</span>
+                </div>
+              </div>
+
+              <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
+                Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
+              </p>
 
               <hr className="border-gray-300 mb-4 w-full mx-auto" />
 
               {/* Co-Companies List */}
-{/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8"> */}
               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
@@ -384,125 +333,52 @@ function Withdrawal() {
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <div className="w-5 h-5 bg-sky-400 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold uppercase">
-                              {company.company_name.charAt(0)}
-                            </span>
+                            <span className="text-sm font-bold uppercase ">{company.company_name.charAt(0)}</span>
                           </div>
-                          <span className="text-sm font-medium capitalize">
-                            {company.company_name}
-                          </span>
+                          <span className="text-sm font-medium capitalize">{company.company_name}</span>
                         </div>
                       </div>
-
-                      {/* Always show the first coin range */}
-                      {company.coin_ranges && company.coin_ranges.length > 0 && (
-                        <div className="flex justify-between items-start mb-1">
-                          <div className="leading-4">
-                            <p>
-                              <span className="text-xs font-bold text-[#5B5A5C]">Coin</span>
-                              <span className="text-xs font-medium ml-2 text-[#B8B7BA]">
-                                {company.coin_ranges[0].min_coins} -{" "}
-                                {company.coin_ranges[0].max_coins} : Rate{" "}
-                                {company.coin_ranges[0].rate}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                      )}
 
                       {/* Toggle button to expand/collapse */}
-                      {company.coin_ranges && company.coin_ranges.length > 1 && (
-                        <>
-                          {/* <button
-                            onClick={() => toggleExpandRow(company.company_id)}
-                            className="text-xs font-medium text-blue-500 hover:underline"
-                          >
-                            {expandedCompanyId === company.company_id
-                              ? "Show Less"
-                              : "Show More"}
-                          </button> */}
+                      <button
+                        onClick={() => toggleExpandRow(company.company_id)}
+                        className="text-xs font-medium text-blue-500 hover:underline"
+                      >
+                        {expandedCompanyId === company.company_id ? 'Show Less' : 'Show More'}
+                      </button>
 
-                          {/* Show remaining coin ranges if expanded */}
-                          {expandedCompanyId === company.company_id &&
-                            company.coin_ranges.slice(1).map((range, index) => (
-                              <div key={index} className="flex justify-between items-start mb-1">
-                                <div className="leading-4">
-                                  <p>
-                                    <span className="text-xs font-bold text-[#5B5A5C]">
-                                      Coin
-                                    </span>
-                                    <span className="text-xs font-medium ml-2 text-[#B8B7BA]">
-                                      {range.min_coins} - {range.max_coins} : Rate {range.rate}
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          {/* Toggle button to expand/collapse */}
-                          <button
-                            onClick={() => toggleExpandRow(company.company_id)}
-                            className="text-xs font-medium text-blue-500 hover:underline flex items-center gap-1"
-                          >
-                            {expandedCompanyId === company.company_id ? (
-                              <>
-                                <span>Show Less</span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={2}
-                                  stroke="currentColor"
-                                  className="w-4 h-4"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M19 14l-7-7-7 7"
-                                  />
-                                </svg>
-                              </>
-                            ) : (
-                              <>
-                                <span>Show More</span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={2}
-                                  stroke="currentColor"
-                                  className="w-4 h-4"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 10l7 7 7-7"
-                                  />
-                                </svg>
-                              </>
-                            )}
-                          </button>
+                      {/* Show coin ranges only if this company is expanded */}
+                      {expandedCompanyId === company.company_id && company.coin_ranges && company.coin_ranges.length > 0 ? (
+                        company.coin_ranges.map((range, index) => (
+                          <div key={index} className="flex justify-between items-start mb-1">
+                            <div className="leading-4">
+                              <p>
+                                <span className="text-xs font-bold text-[#5B5A5C]">Coin</span>
+                                <span className="text-xs font-medium ml-2 text-[#B8B7BA]">
+                                  {range.min_coins} - {range.max_coins} : Rate {range.rate}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) :""}
 
-                        </>
-                      )}
+<div className="flex justify-between items-center py-1.5 ">
+                <div className="">
 
-                      <div className="flex justify-between items-center py-1.5">
-                        <div className=""></div>
-                        <button
-                          className="leading-none px-3 py-1.5 text-sm rounded-full bg-red-600 flex text-white font-semibold hover:bg-red-500 transition duration-200 ease-in-out"
-                          onClick={() =>
-                            handleButtonClick(company.coin_ranges, company.company_id)
-                          }
-                        >
-                          Sell
-                        </button>
-                      </div>
+                </div>
+                <button
+                  className="leading-none px-3 py-1.5 text-sm rounded-full bg-red-600 flex text-white font-semibold hover:bg-red-500 transition duration-200 ease-in-out"
+                  onClick={() => handleButtonClick(company.coin_ranges, company.company_id)}
+                >Sell
+                </button>
+              </div>
                     </div>
                   ))
                 ) : (
                   <p>No companies found</p>
                 )}
               </div>
-
             </div>
 
             {/* <div style={{
