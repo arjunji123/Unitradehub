@@ -1404,9 +1404,13 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
     // Now, update the transaction based on user ID, transaction ID, and trans_id
     let userQuery =
       // "UPDATE user_transction SET utr_no = ?, trans_doc = ?, trans_id = ?, status = ? WHERE transaction_id = ? AND user_id = ?";
-      "UPDATE user_transction SET utr_no = ?, trans_doc = ?, trans_id = ?, status = ? WHERE id = ?";
-    let userData = [utr_no, trans_doc, trans_id, "waiting", transaction_id];
+      "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ? WHERE id = ?";
+    let userData = [utr_no, trans_id, "waiting", transaction_id];
 
+   if (trans_doc) {
+      userQuery += ", trans_doc = ?";
+      userData.push(trans_doc);
+    }
     const updateResult = await db.query(userQuery, userData);
 
     if (updateResult.affectedRows === 0) {
