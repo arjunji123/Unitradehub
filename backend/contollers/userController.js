@@ -867,7 +867,7 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
 
     // Distribute coins based on activation
     await distributeCoins(userId);
-    const [userData] = await QueryModel.getData("users", { id: userId });
+    const [userData] = await db.query("SELECT email FROM users WHERE id = ?", [userId]);
     if (!userData || userData.length === 0) {
       return next(new ErrorHandler("User email not found", 404));
     }
@@ -875,8 +875,13 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
 
     // Step 2: Construct the email body
     const emailMessage = `
-    • Hello, your account status has been updated to: ${newStatus}.
-    • If you have any questions, feel free to contact support.
+    Hello,
+
+    Your account status has been successfully updated to: ${newStatus}.
+    If you have any questions, please feel free to contact support.
+
+    Regards,
+    The Unitrade Hub
     `;
 
     // Step 3: Send the email via sendEmail function
