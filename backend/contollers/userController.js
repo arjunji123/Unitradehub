@@ -877,7 +877,7 @@ const userName = userData[0]?.user_name;
 
     // Step 2: Construct the email body
     const emailMessage = `
-   Hi ${userName},
+Hi ${userName},
 
 🎉 Congratulations! Your Unitradehub account has been successfully activated. We're thrilled to have you on board.
 
@@ -889,7 +889,9 @@ You’ve received 2000 coins in your pending balance. Complete fun tasks, earn m
 🙌 Earn More Coins!
 
 Invite your friends and earn referral rewards 🤑.
+
 Complete exciting tasks to earn even more coins.
+
 💼 Share Coins & Earn Money!
 Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.
 
@@ -921,6 +923,7 @@ Team Unitradehub
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+  html: emailMessage,
     });
   }
 });
