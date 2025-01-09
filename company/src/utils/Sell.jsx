@@ -9,41 +9,49 @@ import { toast, ToastContainer } from "react-toastify";
 
 function Send({ togglePopup, userDetail, resetUserDetail }) {
   const [transactionId, setTransactionId] = useState(userDetail?.id || '');
+    // States for form inputs
+    const [transId, setTransId] = useState('');
+    const [utrNo, setUtrNo] = useState('');
   const [payImage, setPayImage] = useState(null);
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector((state) => state.moneyData);
   const fetchCalled = useRef(false);
-  const handleFileChange = (e) => {
-    setPayImage(e.target.files[0]);
-  };
+
+ // Handle file input change
+ const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setPayImage(file);
+  }
+};
 
   // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Log the values to check
-    console.log('Transaction ID:', transactionId);
-    console.log('Payment Image:', payImage);
-
-    if (transactionId && payImage) {
-      // Call the action to dispatch the API request
-      dispatch(uploadTransactionDoc(transactionId, payImage)); // Use userDetail.id directly here
-    } else {
-      console.log('Both Transaction ID and Payment Image are required');
+ // Ensure either `trans_id` or `utr_no` is provided
+    if (!transId && !utrNo) {
+      console.log('Either Transaction ID or UTR No. is required');
+      return;
     }
+     // Build the payload
+     const payload = {
+      transaction_id: transactionId,
+      trans_id: transId || null, // Add `trans_id` only if provided
+      utr_no: utrNo || null, // Add `utr_no` only if provided
+      trans_doc: payImage || null, // Add `trans_doc` (image) if provided
+    };
+
+    // Log the payload for debugging
+    console.log('Payload:', payload);
+// Dispatch the action with the payload
+dispatch(uploadTransactionDoc(payload));
   };
   useEffect(() => {
-    console.log("Success state:", success);
-    console.log("Fetch Called Flag:", fetchCalled.current);
-
-    if (success && !fetchCalled.current) {
-      console.log("Dispatching fetchUserData...");
-      fetchCalled.current = true; // Prevent repeated calls
+    if (success) {
+      // Reset state after successful submission
       dispatch(fetchUserData());
-
-      // Close popup and reset user details
       togglePopup();
-      resetUserDetail();
+      resetUserDetail(); // Reset user details
     }
   }, [success, dispatch, togglePopup, resetUserDetail]);
   // Sync transaction ID when userDetail changes
@@ -99,7 +107,22 @@ function Send({ togglePopup, userDetail, resetUserDetail }) {
 
           </div>
         </div>
-
+        <input
+            type="text"
+            value={transId}
+            onChange={(e) => setTransId(e.target.value)}
+            placeholder="Enter Transaction Id"
+            className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
+          />
+          <input
+                type="text"
+                value={utrNo}
+                onChange={(e) => setUtrNo(e.target.value)}
+            placeholder="Enter UTR No."
+            className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
+          />
+  
+          <p className="text-sm sm:text-base text-[#B0B0B0] text-center ">OR</p>
         <div>
           <label className="font-medium text-[#B0B0B0] my-1" htmlFor="payImage">Payment Image:</label>
           <input
