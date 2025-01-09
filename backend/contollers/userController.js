@@ -910,6 +910,7 @@ Team Unitradehub
       email: userEmail, // User's email address
       subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
       message: emailMessage,
+  html: emailMessage,
     };
 
     await sendEmail(emailOptions); // Send the email to the user's email address
@@ -923,7 +924,7 @@ Team Unitradehub
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
-  html: emailMessage,
+
     });
   }
 });
