@@ -1958,40 +1958,33 @@ exports.createSellTransaction = async (req, res, next) => {
 
     // Step 7: Fetch company data to get the company mobile number
     const [companyData] = await db.query(
-      "SELECT mobile FROM users WHERE id = ?",
+      "SELECT email FROM users WHERE id = ?",
       [req.body.company_id]
     );
 
     // Ensure company mobile number exists
-    if (!companyData || companyData.length === 0) {
-      return next(new ErrorHandler("Company mobile number not found", 404));
+ if (!companyData || companyData.length === 0) {
+      return next(new ErrorHandler("Company email not found", 404));
     }
 
-    const companyMobileNo = companyData[0]?.mobile;
 
+    const companyEmail = companyData[0]?.email;
     // Step 8: Construct the concise message body
-    const message = `
+    const emailMessage = `
     • User: ${userName}
     • Requested to sell: ${req.body.tranction_coin} coins
     • Transaction Amount: ₹${req.body.transction_amount}
     `;
 
     // Step 9: Send the message via UltraMsg API
-    const options = {
-      method: "POST",
-      url: "https://api.ultramsg.com/instance102785/messages/chat",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      form: {
-        token: "wqgyrqdxhmyu51bh", // Your UltraMsg API token
-        to: `+91${companyMobileNo}`, // Company mobile number
-        body: message,
-      },
+    const emailOptions = {
+      email: companyEmail, // Company email address
+      subject: "Sell Coin Transaction Request",
+      message: emailMessage,
     };
 
-    request(options, function (error, response, body) {
-      if (error) throw new Error(error);
-      console.log(body);
-    });
+     await sendEmail(emailOptions); // Send the email to the company's email address
+
 
     // Step 10: Respond with success message
     res.status(201).json({
