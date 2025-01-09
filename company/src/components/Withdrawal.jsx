@@ -95,6 +95,7 @@ function Withdrawal() {
   const handleSellClick = (amount, id, coin, upiId, userName) => {
     setUserDetail({ amount, id, coin, upiId, userName });
     togglePopup(); // Open the popup
+    console.log('setUserDetail', setUserDetail)
   };
   const [inputValue, setInputValue] = useState("");
   const qrRef = useRef(null);
