@@ -1971,9 +1971,42 @@ exports.createSellTransaction = async (req, res, next) => {
     const companyEmail = companyData[0]?.email;
     // Step 8: Construct the concise message body
     const emailMessage = `
-    • User: ${userName}
-    • Requested to sell: ${req.body.tranction_coin} coins
-    • Transaction Amount: ₹${req.body.transction_amount}
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
+    <p>Hi ${userName},</p>
+
+    <p>🎉 <strong>Transaction Request Received!</strong></p>
+
+    <p>We have received your request to sell coins. Here's a quick summary of your transaction:</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">User:</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">${userName}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Coins Requested to Sell:</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">${req.body.tranction_coin} Coins</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Transaction Amount:</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">₹${req.body.transction_amount}</td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 20px;">To complete your transaction and make the payment, please click the link below:</p>
+
+    <p>
+      💳 <a href="https://t.me/unitrade_company_bot" target="_blank" style="color: #007BFF;">Click here to make the payment</a>
+    </p>
+
+    <p>We are processing your request and will update you once the transaction is completed. Feel free to reach out if you have any questions or need further assistance.</p>
+
+    <p>Thank you for using Unitradehub!</p>
+
+    <p>Best regards,<br>Team Unitradehub</p>
+  </body>
+</html>
     `;
 
     // Step 9: Send the message via UltraMsg API
