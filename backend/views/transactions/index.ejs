@@ -55,11 +55,12 @@
                                     <%= transactions.transaction_status %>
                                 </td>
                                 <td>
-                                    <% if (transactions.transaction_document) { %>
-                                        <button class="btn btn-info view-doc"
-                                            data-doc="<%= '/uploads' + transactions.trans_doc %>">
-                                            View Document
+                                    <% if (transactions.trans_doc) { %>
+                                        <button class="btn btn-info view-image"
+                                            data-doc="<%- process.env.BACKEND_URL %>uploads/<%= transactions.trans_doc %>">
+                                            View Screenshot
                                         </button>
+                                         
                                         <% } else { %>
                                             No document uploaded
                                             <% } %>
@@ -87,32 +88,91 @@
 </div>
 
 <!-- Modal for viewing documents- --->
-<div class="modal fade" id="docModal" tabindex="-1" role="dialog" aria-labelledby="docModalLabel" aria-hidden="true">
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="docModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="docModalLabel">Transaction Document</h5>
+                <h5 class="modal-title" id="imageModalLabel">Transaction Image</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <img id="modalDoc" src="" alt="Transaction Document" class="img-fluid" />
+                <img id="modalImage" src="" alt="Transaction Document" class="img-fluid" />
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <script>
     $(document).ready(function () {
-        // Show modal with the clicked document
-        $('.view-doc').click(function () {
-            var docUrl = $(this).data('doc');
-            $('#modalDoc').attr('src', docUrl);
-            $('#docModal').modal('show');
+
+
+        // Show modal with the clicked image
+        $('.view-image').click(function () {
+            var imageUrl = $(this).data('image');
+            $('#modalImage').attr('src', imageUrl);
+            $('#imageModal').modal('show');
         });
     });
 </script>
+<style>
+    /* Container styling */
+    .action_box a {
+        position: relative;
+        display: inline-block;
+        margin: 0 5px;
+        text-decoration: none;
+        color: #6c757d;
+        /* Default icon color */
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    /* Hover effect on links */
+    .action_box a:hover {
+        transform: scale(1.2);
+        /* Slight scaling effect */
+        color: #007bff;
+        /* Change to a modern blue shade */
+    }
+
+    /* Text styling above the icon */
+    .action_box a::after {
+        content: attr(data-title);
+        /* Use a custom attribute for hover text */
+        position: absolute;
+        top: -35px;
+        /* Adjusts the text just above the icon */
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        /* Center text horizontally and hide initially */
+        background: rgba(0, 0, 0, 0.75);
+        /* Semi-transparent background */
+        color: #fff;
+        /* Text color */
+        font-size: 12px;
+        padding: 5px 8px;
+        border-radius: 4px;
+        white-space: nowrap;
+        /* Prevent text wrapping */
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+        /* Prevent interaction with the text */
+        z-index: 10;
+        /* Ensure text appears above other elements */
+    }
+
+    /* Show the text smoothly on hover */
+    .action_box a:hover::after {
+        transform: translateX(-50%) scale(1);
+        /* Fully visible and centered */
+        opacity: 1;
+    }
+</style>
 
 <script>
     $(document).ready(function () {
