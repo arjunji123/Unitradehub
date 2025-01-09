@@ -1464,7 +1464,7 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Transaction document is required", 400));
   }
   // Get the uploaded file's filename, if present (optional field)
-  const trans_doc = req.file ? req.file.filename : null;
+  const pay_image = req.file ? req.file.filename : null;
 
   // Debugging: Log user ID, transaction details, and uploaded file (if any)
   console.log(`User ID from params: ${user_id}`);
