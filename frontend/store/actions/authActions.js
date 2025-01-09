@@ -54,49 +54,65 @@ export const login = (credentials) => async (dispatch) => {
     // Make the API request to the backend
     const response = await fetcher.post(`${BACKEND_URL}/api/v1/api-login`, credentials);
 
-    // If successful and token received, proceed as usual
-    if (response?.token) {
+    // Check if the response contains a token and login is successful
+    if (response?.token && response?.success) {
       setToken(response.token); // Store the token in cookies or localStorage
       const userData = { token: response.token, ...response };
       storeUserData(userData); // Save user data in localStorage
+
+      // Dispatch login success action
       dispatch({
         type: LOGIN_SUCCESS,
         payload: userData,
       });
-    } else {
-      // Handle case where token is not returned, throw an error with the message
-      throw new Error(response?.error || "Token not received from the server.");
-    }
-  } catch (error) {
-    // Check if the error message is an object or a string
-    let errorMessage = "An unknown error occurred."; // Default error message
 
-    // If the error is an object (from backend response), access the error message
-    if (error?.message && error.message.includes("Invalid mobile number or password")) {
-      // Error message is in the string, so we extract it
-      errorMessage = JSON.parse(error.message)?.error || error.message;
-    } 
-    else if (error?.message && error.message.includes("Your account is deactivated. Please contact support.")) {
-       // Error message is in the string, so we extract it
-       errorMessage = JSON.parse(error.message)?.error || error.message;
+      // Return the successful response with user data
+      return { success: true, user: response.user, token: response.token };
     }
-    else if (error?.message) {
-      errorMessage = error.message; // Use the error message from the catch block
+
+    // Check for the account not being active yet
+    if (response?.message && response.message === "Your account is not active yet. Please wait for activation.") {
+      return { 
+        status: 0, 
+        message: response.message, 
+        user: response.user,
+        pay_confirm: response.pay_confirm // Include the pay_confirm status
+      };
     }
+
+    // Check for the account needing confirmation or payment
+    if (response?.message && response.message === "Your account is not yet confirmed or active. Please complete the necessary steps.") {
+      return { 
+        status: "payment_required", 
+        message: response.message, 
+        user: response.user, 
+        pay_confirm: response.pay_confirm // Include the pay_confirm status
+      };
+    }
+
+    // Default error handling if no token or other error occurred
+    throw new Error(response?.error || "Token not received from the server.");
+
+  } catch (error) {
+    // Handle other errors (e.g., network issues)
+    const errorMessage = error?.message || "An unknown error occurred."; // Default error message
 
     // Log the error for debugging
     console.error("Login failed:", errorMessage);
 
-    // Dispatch the error message to Redux store
+    // Dispatch login failure action with error message
     dispatch({
       type: LOGIN_FAILURE,
-      payload: errorMessage, // Send only the error message to the store
+      payload: errorMessage,
     });
 
-    // Throw only the error message for handling in the component
-    throw new Error(errorMessage); // Pass only the error message to the component
+    // Return the error to be handled in the component
+    return { success: false, message: errorMessage };
   }
 };
+
+
+
 
 
 // Signup action
