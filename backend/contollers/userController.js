@@ -875,44 +875,45 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
   const userEmail = userData[0]?.email;
 const userName = userData[0]?.user_name;
     // Step 2: Construct the email body
-    const emailMessage = `
-Hi ${userName},
+const emailMessage = `
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
+    <p>Hi ${userName},</p>
 
-🎉 Congratulations! Your Unitradehub account has been successfully activated. We're thrilled to have you on board.
+    <p>🎉 <strong>Congratulations!</strong> Your Unitradehub account has been successfully activated. We're thrilled to have you on board.</p>
 
-🌟 Here's what you can do now:
+    <p>🌟 <strong>Here's what you can do now:</strong></p>
 
-💰 2000 Coins Awaiting You!
-You’ve received 2000 coins in your pending balance. Complete fun tasks, earn more coins, and transfer them to your total balance by tapping!
+    <p>💰 <strong>2000 Coins Awaiting You!</strong><br>
+       You’ve received 2000 coins in your pending balance. Complete fun tasks, earn more coins, and transfer them to your total balance by tapping!</p>
 
-🙌 Earn More Coins!
+    <p>🙌 <strong>Earn More Coins!</strong><br>
+       Invite your friends and earn referral rewards 🤑.<br>
+       Complete exciting tasks to earn even more coins.</p>
 
-Invite your friends and earn referral rewards 🤑.
+    <p>💼 <strong>Share Coins & Earn Money!</strong><br>
+       Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.</p>
 
-Complete exciting tasks to earn even more coins.
+    <p>👉 <strong>Ready to get started?</strong> Log in to Unitradehub via Telegram now!</p>
 
-💼 Share Coins & Earn Money!
-Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.
+    <p>
+      <a href="https://t.me/TheUnitadeHub_bot?startapp=1" 
+         style="color: #1a73e8; text-decoration: none; font-weight: bold;">🔗 Click here to access Unitradehub</a>
+    </p>
 
-👉 Ready to get started? Log in to Unitradehub via Telegram now!
+    <p>If you have any questions, feel free to contact our support team. We're here to help you every step of the way!</p>
 
+    <p>Welcome to the world of trading, earning, and growing 🚀.<br>Team Unitradehub</p>
+  </body>
+</html>
+`;
 
-🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=1">Click here to access Unitradehub</a>
+const emailOptions = {
+  email: userEmail, // User's email address
+  subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
+  html: emailMessage, // Use HTML content
+};
 
-
-If you have any questions, feel free to contact our support team. We're here to help you every step of the way!
-
-Welcome to the world of trading, earning, and growing 🚀.
-Team Unitradehub
-
-    `;
-
-    // Step 3: Send the email via sendEmail function
-    const emailOptions = {
-      email: userEmail, // User's email address
-      subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
-      html: emailMessage,
-    };
 
     await sendEmail(emailOptions); // Send the email to the user's email address
     // Send a JSON response
