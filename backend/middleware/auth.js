@@ -65,7 +65,8 @@ exports.isApiAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   }
 
   const decodeData = jwt.verify(token, process.env.JWT_SECRET);
-  console.log(decodeData);
+  console.log("1111111", decodeData);
+  console.log("++++++++++++++++++++=");
 
   const loginUser = await db.query("SELECT * FROM users WHERE id = ?", [
     decodeData.id,
