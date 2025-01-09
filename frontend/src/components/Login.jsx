@@ -183,10 +183,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for the eye 
 import ToastNotification from "./Toast";
 import { logo } from "../images/index";
 import Loader from '../components/Loader';
-import axios from "axios"; // For API calls;
-import Swal from "sweetalert2"; // SweetAlert2 for alerts
-import { BACKEND_URL } from '../../src/config';
-
+import Swal from "sweetalert2"; // Import SweetAlert2
 function Login() {
   const dispatch = useDispatch();
   const [mobile, setMobile] = useState("");
@@ -197,79 +194,88 @@ function Login() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const navigate = useNavigate();
-
+  const extractErrorMessage = (errorResponse) => {
+    try {
+      // Log the received error response to see its structure
+      console.log('Received Error Response:', errorResponse);
+  
+      // Check if the message field exists and parse it
+      if (errorResponse?.message) {
+        const parsedMessage = JSON.parse(errorResponse.message);
+        console.log('Parsed Message:', parsedMessage);
+        
+        // Extract the error message from the parsed message
+        return parsedMessage?.error || "An unknown error occurred.";
+      }
+  
+      // If no message, return the default error
+      return "An unknown error occurred.";
+    } catch (error) {
+      console.error("Error parsing the response:", error);
+      return "An unknown error occurred.";
+    }
+  };
+  
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrors(""); // Clear previous error message
-    setLoading(true); // Show loading spinner
-  
-    let loginSuccessful = false;
+    setLoading(true); // Set loading state to true
   
     try {
-      // Step 1: Attempt to log in
-      await dispatch(login({ mobile, password })); // Dispatch login action
-      setToastMessage("Login successful!");
-      setShowToast(true);
-      loginSuccessful = true; // Mark login as successful
-    } catch (error) {
-      // Handle login error
-      const errorMessage = error.response?.data?.message || "Login failed. Proceeding to check payment status.";
-      console.error("Login error:", errorMessage);
-      setErrors(errorMessage);
-      setToastMessage(errorMessage);
-      setShowToast(true);
-    }
-
-    try {
-      // Step 2: Call `check-pay` API regardless of login success
-      const response = await axios.post(  `${BACKEND_URL}/api/v1/check-pay`, { mobile });
-      const { success, message, user } = response.data;
-      const userId = response.data.user.id;
-      console.log("userId:", userId);
-      if (success) {
-        if (user.status === "1" && loginSuccessful) {
-          // User is activated and login was successful, navigate to home
-          navigate("/home");
-        } else if (user.status === "0") {
-          // User hasn't paid, show SweetAlert for payment
-          Swal.fire({
-            icon: "warning",
-            title: "Payment Required",
-            text: "You haven't completed your payment. Please proceed to the payment screen.",
-            confirmButtonText: "Go to Payment",
-            background: "#333", // Dark mode
-            color: "#fff",
-            iconColor: "#f39c12", // Dark-themed warning color
-          }).then(() => {
-            // Redirect to the payment screen
-            navigate(`/payment/${userId}`);
-          });
-        } else {
-          // User has already paid but admin activation is pending
-          Swal.fire({
-            icon: "info",
-            title: "Pending Activation",
-            text: "You have completed the payment. Please wait for admin activation.",
-            confirmButtonText: "OK",
-            background: "#333", // Dark mode
-            color: "#fff",
-            iconColor: "#3498db", // Dark-themed info color
-          });
-        }
+      // Dispatch the login action and capture the response
+      const response = await dispatch(login({ mobile, password }));
+  
+      console.log("API Response: ", response); // Log the API response for debugging
+  
+      // Check if the login is successful
+      if (response?.success && response?.token) {
+        setToastMessage("Login successful!");
+        setShowToast(true);
+        navigate("/home"); // Navigate to home on success
+      } else if (response?.status === 0 && response?.message === "Your account is not active yet. Please wait for activation.") {
+        // Handle account not active yet condition
+        setToastMessage("Your account is not active yet. Please wait for activation.");
+        setShowToast(true); // Show the toast message
+      } else if (response?.status === "payment_required" && response?.message === "Your account is not yet confirmed or active. Please complete the necessary steps.") {
+        // Handle payment required condition
+        setToastMessage("Your account is not yet confirmed or active. Please complete the necessary steps.");
+        setShowToast(true); // Show the toast message
+  
+        // Optionally, show a SweetAlert for payment instructions
+        const userId = response?.user?.id;
+        Swal.fire({
+          title: "Payment Required",
+          text: "Your account is not yet activated. Please complete the payment to activate your account.",
+          icon: "warning",
+          background: "#333", // Dark mode background
+          color: "#fff", // Dark mode text color
+          confirmButtonText: "Go to Payment",
+          confirmButtonColor: "red", // Customize button color if needed
+        }).then((result) => {
+          if (result.isConfirmed && userId) {
+            navigate(`/payment/${userId}`); // Navigate to payment page
+          }
+        });
       } else {
-        console.error("Check-pay API failed:", message);
+        // Default error handling if no token or other error occurred
+        const errorMessage = extractErrorMessage(response);
+        setToastMessage(errorMessage); // Show the error message in toast
+        setShowToast(true); // Show the toast with the error message
       }
     } catch (error) {
-      // Handle errors from `check-pay` API
-      const errorMessage = error.response?.data?.message || "Error occurred while checking payment status.";
-      console.error("Check-pay API error:", errorMessage);
-      setErrors(errorMessage);
-      setToastMessage(errorMessage);
+      const errorMessage = error?.message || "An unknown error occurred."; // Catch any errors during the try block
+      setErrors(errorMessage); // Update the error state for UI display
+      setToastMessage(errorMessage); // Show the error message in toast
       setShowToast(true);
+
     } finally {
-      setLoading(false); // Stop loading spinner
+      setLoading(false); // Reset loading state after success or failure
     }
   };
+  
+  
+  
   
   
 
@@ -297,6 +303,8 @@ function Login() {
   }, []);
   const handleNavigate = () => {
     navigate('/');
+    console.log("dsdss", navigate);
+    
   };
   return (
     <div className="bg-black flex justify-center items-center min-h-screen">
