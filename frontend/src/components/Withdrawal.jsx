@@ -88,13 +88,13 @@ function Withdrawal() {
     fetchData();
   }, [dispatch]);
   useEffect(() => {
-    // Prevent drag gestures
     const preventDrag = (e) => e.preventDefault();
-
-    document.addEventListener("dragstart", preventDrag);
-
+  
+    const botElement = document.getElementById("bot-container"); // Replace with your bot's actual ID or class
+    botElement?.addEventListener("dragstart", preventDrag);
+  
     return () => {
-      document.removeEventListener("dragstart", preventDrag);
+      botElement?.removeEventListener("dragstart", preventDrag);
     };
   }, []);
 
@@ -300,8 +300,7 @@ function Withdrawal() {
           <Loader />
         ) :
           // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
-          // <div className="w-full bg-black text-white flex flex-col max-w-lg h-screen ">
- <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
+          <div id="bot-container" className="w-full bg-black text-white flex flex-col max-w-lg h-screen ">
             {/* Header Section */}
             <Header />
             <div style={{
@@ -376,8 +375,7 @@ function Withdrawal() {
               <hr className="border-gray-300 mb-4 w-full mx-auto" />
 
               {/* Co-Companies List */}
-{/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8"> */}
-              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
+              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8">
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
