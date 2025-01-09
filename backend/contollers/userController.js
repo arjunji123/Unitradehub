@@ -877,34 +877,27 @@ const userName = userData[0]?.user_name;
 
     // Step 2: Construct the email body
     const emailMessage = `
-Hi ${userName},
+<html>
+    <body>
+      <p>Hi ${userName},</p>
+      <p>🎉 Congratulations! Your Unitradehub account has been successfully activated. We're thrilled to have you on board.</p>
 
-🎉 Congratulations! Your Unitradehub account has been successfully activated. We're thrilled to have you on board.
+      <p>🌟 Here's what you can do now:</p>
+      <ul>
+        <li>💰 2000 Coins Awaiting You! You’ve received 2000 coins in your pending balance. Complete fun tasks, earn more coins, and transfer them to your total balance by tapping!</li>
+        <li>🙌 Earn More Coins! Invite your friends and earn referral rewards 🤑.</li>
+        <li>💼 Share Coins & Earn Money! Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.</li>
+      </ul>
 
-🌟 Here's what you can do now:
+      <p>👉 Ready to get started? Log in to Unitradehub via Telegram now!</p>
 
-💰 2000 Coins Awaiting You!
-You’ve received 2000 coins in your pending balance. Complete fun tasks, earn more coins, and transfer them to your total balance by tapping!
+      <p>🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=1" target="_blank">Click here to access Unitradehub</a></p>
 
-🙌 Earn More Coins!
+      <p>If you have any questions, feel free to contact our support team. We're here to help you every step of the way!</p>
 
-Invite your friends and earn referral rewards 🤑.
-
-Complete exciting tasks to earn even more coins.
-
-💼 Share Coins & Earn Money!
-Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.
-
-👉 Ready to get started? Log in to Unitradehub via Telegram now!
-
-
-🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=1">Click here to access Unitradehub</a>
-
-
-If you have any questions, feel free to contact our support team. We're here to help you every step of the way!
-
-Welcome to the world of trading, earning, and growing 🚀.
-Team Unitradehub
+      <p>Welcome to the world of trading, earning, and growing 🚀.<br>Team Unitradehub</p>
+    </body>
+  </html>
     `;
 
     // Step 3: Send the email via sendEmail function
