@@ -897,9 +897,9 @@ Once you've accumulated enough coins, share them with companies at the best rate
 
 👉 Ready to get started? Log in to Unitradehub via Telegram now!
 
-<p>
-🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=1" target="_blank">Click here to access Unitradehub</a>
-</p>
+
+🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=1">Click here to access Unitradehub</a>
+
 
 If you have any questions, feel free to contact our support team. We're here to help you every step of the way!
 
