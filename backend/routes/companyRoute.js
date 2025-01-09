@@ -13,7 +13,7 @@ const router = express.Router();
 var Storage = multer.diskStorage({
   destination: function (req, file, callback) {
     console.log(file);
-    callback(null, "./uploads/quests");
+    callback(null, "./uploads");
   },
   filename: function (req, file, callback) {
     console.log(file);
@@ -105,7 +105,7 @@ router
   .post(isApiAuthenticatedUser, createCompanySellTransaction);
 router.post(
   "/upload-transaction-doc", // Route to handle transaction document upload
-  upload.single("pay_image"), // This is where multer handles file upload
+  upload.single("trans_doc"), // This is where multer handles file upload
   uploadTransactionDocApi // Call the handler
 );
 module.exports = router;
