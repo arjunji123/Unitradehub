@@ -324,18 +324,18 @@ function Home() {
               </div>
               <div
                 onClick={handleClick}
-                className="flex justify-center items-center bottom-24 my-2 relative cursor-pointer"
+                className="flex justify-center items-center bottom-[135px] my-2 relative cursor-pointer"
               >
                 {/* GIF Container */}
                 <img
-                  className={`w-52 h-52 object-cover absolute z-10 ${isAnimating ? "visible" : "invisible"}`}
+                  className={`w-72 h-72  object-cover absolute z-10 ${isAnimating ? "visible" : "invisible"}`}
                   src={`src/assets/gif/button.gif?${new Date().getTime()}`} // Timestamp to force refresh the GIF
                   alt="Animated GIF"
                 />
 
                 {/* Static Image */}
                 <img
-                  className={`w-52 h-52 object-cover absolute z-10 ${pendingCoin?.pending_coin === 0
+                  className={`w-72 h-72 object-cover absolute z-10 ${pendingCoin?.pending_coin === 0
                     ? "opacity-50 cursor-not-allowed"
                     : "opacity-80"} ${isAnimating ? "invisible" : "visible"}`}
                   src="src/assets/gif/coin.png"
