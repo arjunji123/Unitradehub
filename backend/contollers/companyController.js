@@ -1411,6 +1411,10 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
       userQuery += ", trans_doc = ?";
       userData.push(trans_doc);
     }
+
+   userQuery += " WHERE transaction_id = ?";
+    userData.push(transaction_id);
+
     const updateResult = await db.query(userQuery, userData);
 
     if (updateResult.affectedRows === 0) {
