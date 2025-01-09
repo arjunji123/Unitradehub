@@ -1470,6 +1470,7 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   console.log(`Transaction ID: ${transaction_id}`);
   console.log(`Trans ID: ${trans_id}`);
   console.log(`Document Filename: ${trans_doc || "No file uploaded"}`);
+  console.log(`File object from multer:`, req.file);  // Check if req.file contains the file
 
   try {
     // Initialize the base query
@@ -1482,12 +1483,12 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
       userData.push(trans_doc);
     }
 
-    // Add the WHERE clause to filter by transaction_id
-  userQuery += " WHERE id = ?";
-  userData.push(transaction_id);
+    // Add the WHERE clause to filter by `id`
+    userQuery += " WHERE id = ?";
+    userData.push(transaction_id); // Assuming `transaction_id` is the `id` column in your table
 
     // Execute the query
-    const updateResult = await db.query(userQuery, userData);
+    const [updateResult] = await db.query(userQuery, userData);
 
     // Check if any rows were affected
     if (updateResult.affectedRows === 0) {
