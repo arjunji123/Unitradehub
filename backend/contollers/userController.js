@@ -874,7 +874,6 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
     }
   const userEmail = userData[0]?.email;
 const userName = userData[0]?.user_name;
-const link 
     // Step 2: Construct the email body
     const emailMessage = `
 Hi ${userName},
