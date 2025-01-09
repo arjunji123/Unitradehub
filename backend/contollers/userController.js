@@ -867,7 +867,26 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
 
     // Distribute coins based on activation
     await distributeCoins(userId);
+    const [userData] = await QueryModel.getData("users", { id: userId });
+    if (!userData || userData.length === 0) {
+      return next(new ErrorHandler("User email not found", 404));
+    }
+  const userEmail = userData[0]?.email;
 
+    // Step 2: Construct the email body
+    const emailMessage = `
+    • Hello, your account status has been updated to: ${newStatus}.
+    • If you have any questions, feel free to contact support.
+    `;
+
+    // Step 3: Send the email via sendEmail function
+    const emailOptions = {
+      email: userEmail, // User's email address
+      subject: "User Status Updated",
+      message: emailMessage,
+    };
+
+    await sendEmail(emailOptions); // Send the email to the user's email address
     // Send a JSON response
     res.json({
       success: true,
