@@ -88,7 +88,16 @@ function Withdrawal() {
     fetchData();
   }, [dispatch]);
 
+  useEffect(() => {
+    // Prevent drag gestures
+    const preventDrag = (e) => e.preventDefault();
 
+    document.addEventListener("dragstart", preventDrag);
+
+    return () => {
+      document.removeEventListener("dragstart", preventDrag);
+    };
+  }, []);
   const handleIconClick = (index) => {
     setActiveIndex(index);
     // Close all pop-ups when clicking a different icon
@@ -273,16 +282,7 @@ function Withdrawal() {
       showAlertShare();
     }
   };
-  useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
 
-    document.addEventListener("dragstart", preventDrag);
-
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
   
   
   return (
@@ -303,8 +303,7 @@ function Withdrawal() {
           <Loader />
         ) :
          // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
- <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
-            {/* Header Section */}
+ <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">            {/* Header Section */}
             <Header />
             <div style={{
               position: 'absolute',
@@ -328,7 +327,7 @@ function Withdrawal() {
             }}>
               <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
             </div>
-            <div className="flex-grow relative z-0  px-4">
+          <div className="flex-grow relative z-0  px-4 top-10">
               {/* <Logo /> */}
 {/*               <div
                 className="relative p-4 rounded-lg shadow-lg"
@@ -382,7 +381,7 @@ function Withdrawal() {
               {/* Co-Companies List */}
 {/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8">
  */}
-              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
+              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8">
 
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
