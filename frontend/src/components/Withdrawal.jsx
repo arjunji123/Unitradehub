@@ -330,7 +330,7 @@ function Withdrawal() {
             </div>
             <div className="flex-grow relative z-0  px-4">
               {/* <Logo /> */}
-              <div
+{/*               <div
                 className="relative p-4 rounded-lg shadow-lg"
                 style={{
                   backgroundImage: 'url(src/assets/gif/star.gif)',  // Provide the path to your GIF here
@@ -338,8 +338,10 @@ function Withdrawal() {
                   backgroundPosition: 'center',  // Centers the GIF
                   backgroundRepeat: 'no-repeat',  // Prevents the GIF from repeating
                 }}
-              >
-                <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mb-4">
+              > */}
+                // <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mb-4">
+
+              <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mt-3 mb-4">
                   <img src="src/assets/logo/U.png" alt="Logo" className="w-8 h-8" />
                   <p>{userData ? userData.coins : "0"}</p>
                 </div>
@@ -371,14 +373,17 @@ function Withdrawal() {
                 <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
                   Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
                 </p>
-              </div>
+{/*               </div> */}
 
 
 
               <hr className="border-gray-300 mb-4 w-full mx-auto" />
 
               {/* Co-Companies List */}
-              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8">
+{/*               <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar pb-8">
+ */}
+              <div id="content" className="flex flex-col h-[400px] space-y-4 overflow-y-auto hide-scrollbar">
+
                 {apiCompanies && apiCompanies.data && apiCompanies.data.length > 0 ? (
                   apiCompanies.data.map((company) => (
                     <div key={company.company_id} className="py-2">
