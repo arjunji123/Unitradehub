@@ -6,7 +6,6 @@ import { CgProfile } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMeData, fetchCoinData, transferCoins, fetchStats } from "../../store/actions/homeActions";
 import { ImCross } from "react-icons/im";
-import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from '../components/Loader';
@@ -93,7 +92,7 @@ function Home() {
         setCoins(newCoins);
 
         // Remove coins after animation
-        setTimeout(() => setCoins([]), 1000);
+        setTimeout(() => setCoins([]), 0);
 
         // Re-fetch data to update userData and pendingCoin without hard refresh
         dispatch(fetchCoinData());
@@ -105,7 +104,7 @@ function Home() {
       })
       .finally(() => {
         // Reset animation after it's completed
-        setTimeout(() => setIsAnimating(false), 1000); // Duration of the animation
+        setTimeout(() => setIsAnimating(false), 500); // Duration of the animation
       });
   };
 
@@ -273,12 +272,12 @@ function Home() {
               {userData ? userData.user_name : "User Name"}
             </p>
 
-            <p className="text-2xl font-semibold flex">
+            {/* <p className="text-2xl font-semibold flex">
               <span>
                 <img src="src/assets/logo/U.png" alt="" className="w-6 h-6 mt-1" />
               </span>
               <span>{userData ? userData.coins : "0"}</span>
-            </p>
+            </p> */}
 
           </div>
           <div style={{
@@ -311,27 +310,56 @@ function Home() {
 
           {/* Wallet Section */}
           <div className="mt-auto px-3 py-4 mb-10">
-            {/* <div onClick={handleClick} className="flex justify-center items-center my-2">
-              <img className="w-44 h-44  object-cover" src="src/images/coin.png" alt="" />
-            </div> */}
-            {/* Image container with animation when clicked */}
-            <div onClick={handleClick} className="flex justify-center items-center my-2 relative">
+            <div>
+              <div className="flex ">
+                <img src="https://cdn-icons-png.flaticon.com/512/2550/2550403.png" alt="" className="w-4 h-4 mt-1" />
+                <p className="ml-0.5 text-sm font-medium ">
+                  <span>
+                    {userData ? userData.pending_coin : "0"}
+                  </span>/
+                  <span>
+                    {userData ? userData.coins : "0"}
+                  </span>
+                </p>
+              </div>
               <div
-                className={`absolute top-0 left-0 w-full h-full z-0 transition-opacity duration-500 ${isAnimating ? 'opacity-100' : 'opacity-0'}`}
-                style={{
-                  background: 'url("src/assets/gif/earthatnightfromspace_preview-ezgif.com-optimize.gif") no-repeat center center',
-                  backgroundSize: 'cover',
-                  animation: isAnimating ? 'backgroundAnimation 2.5s forwards' : 'none',
-                }}
-              ></div>
-              <img
-                 className={`w-44 h-44 object-cover z-10 transition-opacity duration-300 ${
-                  pendingCoin?.pending_coin === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-80'
-                }`}
-                src="src/images/coin.png"
-                alt=""
-              />
+                onClick={handleClick}
+                className="flex justify-center items-center bottom-24 my-2 relative cursor-pointer"
+              >
+                {/* GIF Container */}
+                <img
+                  className={`w-52 h-52 object-cover absolute z-10 ${isAnimating ? "visible" : "invisible"}`}
+                  src={`src/assets/gif/button.gif?${new Date().getTime()}`} // Timestamp to force refresh the GIF
+                  alt="Animated GIF"
+                />
+
+                {/* Static Image */}
+                <img
+                  className={`w-52 h-52 object-cover absolute z-10 ${pendingCoin?.pending_coin === 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "opacity-80"} ${isAnimating ? "invisible" : "visible"}`}
+                  src="src/assets/gif/coin.png"
+                  alt="Static Image"
+                />
+              </div>
             </div>
+            {/* <div
+              onClick={handleClick}
+              className="flex justify-center items-center bottom-24 my-2 relative cursor-pointer"
+            >
+              <img
+                className={`w-52 h-52 object-cover absolute z-10 ${isAnimating ? "visible" : "invisible"}`}
+                src={`src/assets/gif/button.gif?${new Date().getTime()}`} 
+                alt="Animated GIF"
+              />
+              <img
+                className={`w-52 h-52 object-cover absolute z-10 ${pendingCoin?.pending_coin === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "opacity-80"} ${isAnimating ? "invisible" : "visible"}`}
+                src="src/assets/gif/coin.png"
+                alt="Static Image"
+              />
+            </div> */}
             <div className="box-border flex flex-col p-3 isolate border-2 border-gray-600 rounded-[12px] text-white">
               <p className="text-xs md:text-sm text-gray-400">Wallet</p>
               <div className="rounded-lg shadow-md text-white flex items-center justify-between space-x-4">
