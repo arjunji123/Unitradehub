@@ -1487,7 +1487,7 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   userData.push(transaction_id);
 
     // Execute the query
-    const [updateResult] = await db.query(userQuery, userData);
+    const updateResult = await db.query(userQuery, userData);
 
     // Check if any rows were affected
     if (updateResult.affectedRows === 0) {
