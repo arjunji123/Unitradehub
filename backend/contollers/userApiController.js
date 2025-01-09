@@ -2508,13 +2508,13 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
     const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
     const totalPendingCoins =
       totalPendingCoinsResult[0][0].total_pending_coins || 0;
-    const totalMultiplier = totalUsers * 6000 + totalPendingCoins;
-
+const totalMultiplier = (Number(totalUsers) * 6000) + Number(totalPendingCoins);
     // Parse monthly stats
     const monthlyUsers = monthlyStatsResult[0][0].monthly_users - 1; // Subtract 2 from the monthly users count
     const monthlyPendingCoins =
       monthlyPendingCoinsResult[0][0].monthly_pending_coins || 0;
-    const monthlyMultiplier = monthlyUsers * 6000 + monthlyPendingCoins;
+    const monthlyMultiplier = (Number(monthlyUsers * 6000) + Number(monthlyPendingCoins);
+
 
     // Send both stats in the response
     res.status(200).json({
