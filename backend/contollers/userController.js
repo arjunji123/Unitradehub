@@ -867,27 +867,46 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
 
     // Distribute coins based on activation
     await distributeCoins(userId);
-    const [userData] = await db.query("SELECT email FROM users WHERE id = ?", [userId]);
+
+    const [userData] = await db.query("SELECT email, user_name FROM users WHERE id = ?", [userId]);
     if (!userData || userData.length === 0) {
       return next(new ErrorHandler("User email not found", 404));
     }
   const userEmail = userData[0]?.email;
+const userName = userData[0]?.user_name;
 
     // Step 2: Construct the email body
     const emailMessage = `
-    Hello,
+   Hi ${userName},
 
-    Your account status has been successfully updated to: ${newStatus}.
-    If you have any questions, please feel free to contact support.
+🎉 Congratulations! Your Unitradehub account has been successfully activated. We're thrilled to have you on board.
 
-    Regards,
-    The Unitrade Hub
+🌟 Here's what you can do now:
+
+💰 2000 Coins Awaiting You!
+You’ve received 2000 coins in your pending balance. Complete fun tasks, earn more coins, and transfer them to your total balance by tapping!
+
+🙌 Earn More Coins!
+
+Invite your friends and earn referral rewards 🤑.
+Complete exciting tasks to earn even more coins.
+💼 Share Coins & Earn Money!
+Once you've accumulated enough coins, share them with companies at the best rates. We'll ensure the payment is transferred directly to your account.
+
+👉 Ready to get started? Log in to Unitradehub via Telegram now!
+
+🔗 <a href="https://t.me/TheUnitadeHub_bot?startapp=" target="_blank">Click here to access Unitradehub</a>
+
+If you have any questions, feel free to contact our support team. We're here to help you every step of the way!
+
+Welcome to the world of trading, earning, and growing 🚀.
+Team Unitradehub
     `;
 
     // Step 3: Send the email via sendEmail function
     const emailOptions = {
       email: userEmail, // User's email address
-      subject: "User Status Updated",
+      subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
       message: emailMessage,
     };
 
