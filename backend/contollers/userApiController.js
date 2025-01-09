@@ -2228,8 +2228,8 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
         uca.title,
         ut.trans_id, 
         ut.utr_no,
-  ut.transaction_amount,
-    ut.transaction_rate,
+  ut.transction_amount,
+    ut.tranction_rate,
          u.user_name 
       FROM 
         usercoin_audit uca
