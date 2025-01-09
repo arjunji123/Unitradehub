@@ -302,9 +302,10 @@ function Withdrawal() {
         {loading ? (
           <Loader />
         ) :
+    <Header />
          // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
  <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">            {/* Header Section */}
-            <Header />
+        
             <div style={{
               position: 'absolute',
               width: '239px',
