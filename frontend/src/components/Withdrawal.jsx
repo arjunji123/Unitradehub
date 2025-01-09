@@ -87,16 +87,7 @@ function Withdrawal() {
     };
     fetchData();
   }, [dispatch]);
-  useEffect(() => {
-    const preventDrag = (e) => e.preventDefault();
-  
-    const botElement = document.getElementById("bot-container"); // Replace with your bot's actual ID or class
-    botElement?.addEventListener("dragstart", preventDrag);
-  
-    return () => {
-      botElement?.removeEventListener("dragstart", preventDrag);
-    };
-  }, []);
+
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
@@ -282,6 +273,35 @@ function Withdrawal() {
       showAlertShare();
     }
   };
+  useEffect(() => {
+    // Prevent drag gestures
+    const preventDrag = (e) => e.preventDefault();
+  
+    // Get the bot element (or any element you want to block drag on)
+    const botElement = document.getElementById("bot-container");
+  
+    // Prevent dragstart, touchstart, and touchmove on the bot element
+    const preventTouchAndDrag = (e) => {
+      if (e.type === "touchmove") {
+        // Allow scrolling
+        return;
+      }
+      e.preventDefault();  // Disable drag behavior
+    };
+  
+    // Add event listeners to the bot element
+    botElement?.addEventListener("dragstart", preventTouchAndDrag);
+    botElement?.addEventListener("touchstart", preventTouchAndDrag);
+    botElement?.addEventListener("touchmove", preventTouchAndDrag, { passive: false });
+  
+    // Cleanup event listeners when the component unmounts
+    return () => {
+      botElement?.removeEventListener("dragstart", preventTouchAndDrag);
+      botElement?.removeEventListener("touchstart", preventTouchAndDrag);
+      botElement?.removeEventListener("touchmove", preventTouchAndDrag);
+    };
+  }, []);
+  
   return (
 
     <>
