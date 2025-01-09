@@ -1483,8 +1483,8 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
     }
 
     // Add the WHERE clause to filter by transaction_id
-    userQuery += " WHERE transaction_id = ?";
-    userData.push(transaction_id);
+  userQuery += " WHERE id = ?";
+  userData.push(transaction_id);
 
     // Execute the query
     const [updateResult] = await db.query(userQuery, userData);
