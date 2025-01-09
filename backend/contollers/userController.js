@@ -509,7 +509,8 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
   const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
   const totalPendingCoins =
     totalPendingCoinsResult[0][0].total_pending_coins || 0;
-  const totalMultiplier = ( totalUsers * 6000 ) + totalPendingCoins;
+const totalMultiplier = (Number(totalUsers) * 6000) + Number(totalPendingCoins);
+
 
   const finalValue = baseValue + totalCoinEarn;
   // Extract the counts from the results
