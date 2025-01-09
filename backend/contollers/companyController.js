@@ -1473,8 +1473,8 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
 
   try {
     // Initialize the base query
-    let userQuery = "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ? WHERE id = ?";
-    const userData = [utr_no, trans_id, "waiting" , transaction_id];
+    let userQuery = "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ?";
+    const userData = [utr_no, trans_id, "waiting"];
 
     // Include `trans_doc` only if the file is uploaded
     if (trans_doc) {
