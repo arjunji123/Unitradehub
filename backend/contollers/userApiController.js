@@ -2227,13 +2227,20 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
         uca.date_entered, 
         uca.title,
         ut.trans_id, 
-        ut.utr_no
+        ut.utr_no,
+  ut.transaction_amount,
+    ut.transaction_rate,
+         u.user_name 
       FROM 
         usercoin_audit uca
       LEFT JOIN 
         user_transction ut
       ON 
         uca.transaction_id = ut.id
+LEFT JOIN 
+    users u
+  ON 
+    uca.company_id = u.id
       WHERE 
         uca.user_id = ? 
         AND uca.status = 'waiting' 
