@@ -171,7 +171,7 @@ exports.allTransactions = catchAsyncErrors(async (req, res, next) => {
         ut.tranction_coin AS transaction_coin, -- Transaction Coin
         ut.tranction_rate AS transaction_rate, -- Transaction Rate
         ut.transction_amount AS transaction_amount, -- Transaction Amount
-        ut.trans_doc AS transaction_document, -- Transaction Document
+        ut.trans_doc,
         DATE_FORMAT(ut.data_created, "%d-%m-%Y %H:%i:%s") AS created_date, -- Created Date
         ut.status AS transaction_status,      -- Transaction Status
         u.user_name AS user_name,             -- User's Name (from users table)
