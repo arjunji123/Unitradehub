@@ -1372,9 +1372,80 @@ exports.reqGetAllHistoryApiReqApi = async (req, res, next) => {
 //     return next(new ErrorHandler("Database operation failed", 500));
 //   }
 // });
+// exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
+//   // Get user ID from route parameters and required fields from request body
+//   const user_id = req.params.id;
+//   const { transaction_id, trans_id, utr_no } = req.body;
+
+//   // Check if `transaction_id`, `trans_id`, and `utr_no` are provided
+//   if (!transaction_id) {
+//     return next(new ErrorHandler("Transaction ID is required", 400));
+//   }
+
+//   if (!trans_id) {
+//     return next(new ErrorHandler("Trans ID is required", 400));
+//   }
+
+//   if (!utr_no) {
+//     return next(new ErrorHandler("UTR number is required", 400));
+//   }
+
+//   // Get the uploaded file's filename, if present (optional field)
+//   let trans_doc = req.file ? req.file.filename : null;
+
+//   // Debugging: Log user ID, transaction details, and uploaded file (if any)
+//   console.log(`User ID from params: ${user_id}`);
+//   console.log(`UTR Number: ${utr_no}`);
+//   console.log(`Transaction ID: ${transaction_id}`);
+//   console.log(`Trans ID: ${trans_id}`);
+//   console.log(`Document Filename: ${trans_doc || "No file uploaded"}`);
+
+//   try {
+//     // Now, update the transaction based on user ID, transaction ID, and trans_id
+//     let userQuery =
+//       // "UPDATE user_transction SET utr_no = ?, trans_doc = ?, trans_id = ?, status = ? WHERE transaction_id = ? AND user_id = ?";
+//       "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ? WHERE id = ?";
+//     let userData = [utr_no, trans_id, "waiting", transaction_id];
+
+//    if (trans_doc) {
+//       userQuery += ", trans_doc = ?";
+//       userData.push(trans_doc);
+//     }
+
+//    userQuery += " WHERE transaction_id = ?";
+//     userData.push(transaction_id);
+
+//     const updateResult = await db.query(userQuery, userData);
+
+//     if (updateResult.affectedRows === 0) {
+//       return next(
+//         new ErrorHandler(
+//           "No transaction found with the provided transaction ID and user ID",
+//           404
+//         )
+//       );
+//     }
+
+//     // Send a success response back to the client
+//     res.status(200).json({
+//       success: true,
+//       message:
+//         "Transaction document uploaded successfully and status updated to 'waiting'.",
+//       data: {
+//         utr_no,
+//         trans_doc: trans_doc || "No document uploaded", // Optional in response
+//         trans_id,
+//         status: "waiting",
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Database operation error:", error); // Log the error for debugging
+//     return next(new ErrorHandler("Database operation failed", 500));
+//   }
+// });
 exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   // Get user ID from route parameters and required fields from request body
-  const user_id = req.params.id;
+  const user_id = req.params.id; // Assuming this is optional; adjust if required.
   const { transaction_id, trans_id, utr_no } = req.body;
 
   // Check if `transaction_id`, `trans_id`, and `utr_no` are provided
@@ -1391,7 +1462,7 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   }
 
   // Get the uploaded file's filename, if present (optional field)
-  let trans_doc = req.file ? req.file.filename : null;
+  const trans_doc = req.file ? req.file.filename : null;
 
   // Debugging: Log user ID, transaction details, and uploaded file (if any)
   console.log(`User ID from params: ${user_id}`);
@@ -1401,26 +1472,28 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   console.log(`Document Filename: ${trans_doc || "No file uploaded"}`);
 
   try {
-    // Now, update the transaction based on user ID, transaction ID, and trans_id
-    let userQuery =
-      // "UPDATE user_transction SET utr_no = ?, trans_doc = ?, trans_id = ?, status = ? WHERE transaction_id = ? AND user_id = ?";
-      "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ? WHERE id = ?";
-    let userData = [utr_no, trans_id, "waiting", transaction_id];
+    // Initialize the base query
+    let userQuery = "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ?";
+    const userData = [utr_no, trans_id, "waiting"];
 
-   if (trans_doc) {
+    // Include `trans_doc` only if the file is uploaded
+    if (trans_doc) {
       userQuery += ", trans_doc = ?";
       userData.push(trans_doc);
     }
 
-   userQuery += " WHERE transaction_id = ?";
+    // Add the WHERE clause to filter by transaction_id
+    userQuery += " WHERE transaction_id = ?";
     userData.push(transaction_id);
 
-    const updateResult = await db.query(userQuery, userData);
+    // Execute the query
+    const [updateResult] = await db.query(userQuery, userData);
 
+    // Check if any rows were affected
     if (updateResult.affectedRows === 0) {
       return next(
         new ErrorHandler(
-          "No transaction found with the provided transaction ID and user ID",
+          "No transaction found with the provided transaction ID",
           404
         )
       );
@@ -1429,8 +1502,7 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
     // Send a success response back to the client
     res.status(200).json({
       success: true,
-      message:
-        "Transaction document uploaded successfully and status updated to 'waiting'.",
+      message: "Transaction document uploaded successfully and status updated to 'waiting'.",
       data: {
         utr_no,
         trans_doc: trans_doc || "No document uploaded", // Optional in response
@@ -1439,7 +1511,9 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("Database operation error:", error); // Log the error for debugging
+    // Log the error for debugging
+    console.error("Database operation error:", error.message);
+
     return next(new ErrorHandler("Database operation failed", 500));
   }
 });
