@@ -339,7 +339,7 @@ function Withdrawal() {
                   backgroundRepeat: 'no-repeat',  // Prevents the GIF from repeating
                 }}
               > */}
-                // <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mb-4">
+
 
               <div className="flex items-center justify-center font-Inter leading-3 text-[34px] font-extrabold mt-3 mb-4">
                   <img src="src/assets/logo/U.png" alt="Logo" className="w-8 h-8" />
@@ -373,8 +373,8 @@ function Withdrawal() {
                 <p className="text-center font-Inter text-xs text-[#f5eded] mb-4">
                   Sell your points at your chosen price, anytime and anywhere. Get instant cash withdrawals with no delays!
                 </p>
-              </div>
-
+{/*               </div>
+ */}
 
 
               <hr className="border-gray-300 mb-4 w-full mx-auto" />
