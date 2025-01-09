@@ -274,33 +274,50 @@ function Withdrawal() {
     }
   };
   useEffect(() => {
-    // Prevent drag gestures
-    const preventDrag = (e) => e.preventDefault();
+    // Function to prevent drag gestures but allow scrolling
+    const preventDrag = (e) => {
+      e.preventDefault();
+      e.stopPropagation();  // Stop event propagation for drag
+    };
   
-    // Get the bot element (or any element you want to block drag on)
-    const botElement = document.getElementById("bot-container");
-  
-    // Prevent dragstart, touchstart, and touchmove on the bot element
-    const preventTouchAndDrag = (e) => {
+    // Function to allow scrolling but prevent dragging
+    const preventTouchAndAllowScroll = (e) => {
       if (e.type === "touchmove") {
-        // Allow scrolling
+        // Allow scrolling but block dragging
         return;
       }
-      e.preventDefault();  // Disable drag behavior
+      e.preventDefault();  // Prevent drag gestures on touchstart
+      e.stopPropagation(); // Stop the event from propagating
     };
   
-    // Add event listeners to the bot element
-    botElement?.addEventListener("dragstart", preventTouchAndDrag);
-    botElement?.addEventListener("touchstart", preventTouchAndDrag);
-    botElement?.addEventListener("touchmove", preventTouchAndDrag, { passive: false });
+    // Get the bot container element (or the element where you want to block drag)
+    const botElement = document.getElementById("bot-container");
   
-    // Cleanup event listeners when the component unmounts
+    // Add event listeners to prevent dragging but allow scrolling
+    botElement?.addEventListener("dragstart", preventDrag);
+    botElement?.addEventListener("touchstart", preventTouchAndAllowScroll);
+    botElement?.addEventListener("touchmove", preventTouchAndAllowScroll, { passive: false });
+    botElement?.addEventListener("touchend", preventTouchAndAllowScroll);
+  
+    // Apply event listeners globally for dragstart, touchstart, touchmove, touchend
+    document.addEventListener("dragstart", preventDrag);
+    document.addEventListener("touchstart", preventTouchAndAllowScroll);
+    document.addEventListener("touchmove", preventTouchAndAllowScroll, { passive: false });
+    document.addEventListener("touchend", preventTouchAndAllowScroll);
+  
+    // Cleanup event listeners on component unmount
     return () => {
-      botElement?.removeEventListener("dragstart", preventTouchAndDrag);
-      botElement?.removeEventListener("touchstart", preventTouchAndDrag);
-      botElement?.removeEventListener("touchmove", preventTouchAndDrag);
+      botElement?.removeEventListener("dragstart", preventDrag);
+      botElement?.removeEventListener("touchstart", preventTouchAndAllowScroll);
+      botElement?.removeEventListener("touchmove", preventTouchAndAllowScroll);
+      botElement?.removeEventListener("touchend", preventTouchAndAllowScroll);
+      document.removeEventListener("dragstart", preventDrag);
+      document.removeEventListener("touchstart", preventTouchAndAllowScroll);
+      document.removeEventListener("touchmove", preventTouchAndAllowScroll);
+      document.removeEventListener("touchend", preventTouchAndAllowScroll);
     };
   }, []);
+  
   
   return (
 
