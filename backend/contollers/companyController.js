@@ -1460,7 +1460,9 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
   if (!utr_no) {
     return next(new ErrorHandler("UTR number is required", 400));
   }
-
+  if (!req.file) {
+    return next(new ErrorHandler("Transaction document is required", 400));
+  }
   // Get the uploaded file's filename, if present (optional field)
   const trans_doc = req.file ? req.file.filename : null;
 
@@ -1474,21 +1476,15 @@ exports.uploadTransactionDocApi = catchAsyncErrors(async (req, res, next) => {
 
   try {
     // Initialize the base query
-    let userQuery = "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ?";
-    const userData = [utr_no, trans_id, "waiting"];
+    let userQuery = "UPDATE user_transction SET utr_no = ?, trans_id = ?, status = ?,  trans_doc = ?";
+    const userData = [utr_no, trans_id, "waiting", trans_doc];
 
-    // Include `trans_doc` only if the file is uploaded
-    if (trans_doc) {
-      userQuery += ", trans_doc = ?";
-      userData.push(trans_doc);
-    }
-
-    // Add the WHERE clause to filter by `id`
-    userQuery += " WHERE id = ?";
+   userQuery += " WHERE id = ?";
     userData.push(transaction_id); // Assuming `transaction_id` is the `id` column in your table
 
     // Execute the query
     const [updateResult] = await db.query(userQuery, userData);
+
 
     // Check if any rows were affected
     if (updateResult.affectedRows === 0) {
