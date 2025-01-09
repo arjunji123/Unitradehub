@@ -911,8 +911,9 @@ const emailMessage = `
 const emailOptions = {
   email: userEmail, // User's email address
   subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
-  html: emailMessage, // Use HTML content
+  message: emailMessage, // Passing the HTML message content here
 };
+
 
 
     await sendEmail(emailOptions); // Send the email to the user's email address
