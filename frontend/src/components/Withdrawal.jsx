@@ -274,47 +274,13 @@ function Withdrawal() {
     }
   };
   useEffect(() => {
-    // Function to prevent drag gestures but allow scrolling
-    const preventDrag = (e) => {
-      e.preventDefault();
-      e.stopPropagation();  // Stop event propagation for drag
-    };
-  
-    // Function to allow scrolling but prevent dragging
-    const preventTouchAndAllowScroll = (e) => {
-      if (e.type === "touchmove") {
-        // Allow scrolling but block dragging
-        return;
-      }
-      e.preventDefault();  // Prevent drag gestures on touchstart
-      e.stopPropagation(); // Stop the event from propagating
-    };
-  
-    // Get the bot container element (or the element where you want to block drag)
-    const botElement = document.getElementById("bot-container");
-  
-    // Add event listeners to prevent dragging but allow scrolling
-    botElement?.addEventListener("dragstart", preventDrag);
-    botElement?.addEventListener("touchstart", preventTouchAndAllowScroll);
-    botElement?.addEventListener("touchmove", preventTouchAndAllowScroll, { passive: false });
-    botElement?.addEventListener("touchend", preventTouchAndAllowScroll);
-  
-    // Apply event listeners globally for dragstart, touchstart, touchmove, touchend
+    // Prevent drag gestures
+    const preventDrag = (e) => e.preventDefault();
+
     document.addEventListener("dragstart", preventDrag);
-    document.addEventListener("touchstart", preventTouchAndAllowScroll);
-    document.addEventListener("touchmove", preventTouchAndAllowScroll, { passive: false });
-    document.addEventListener("touchend", preventTouchAndAllowScroll);
-  
-    // Cleanup event listeners on component unmount
+
     return () => {
-      botElement?.removeEventListener("dragstart", preventDrag);
-      botElement?.removeEventListener("touchstart", preventTouchAndAllowScroll);
-      botElement?.removeEventListener("touchmove", preventTouchAndAllowScroll);
-      botElement?.removeEventListener("touchend", preventTouchAndAllowScroll);
       document.removeEventListener("dragstart", preventDrag);
-      document.removeEventListener("touchstart", preventTouchAndAllowScroll);
-      document.removeEventListener("touchmove", preventTouchAndAllowScroll);
-      document.removeEventListener("touchend", preventTouchAndAllowScroll);
     };
   }, []);
   
@@ -336,8 +302,8 @@ function Withdrawal() {
         {loading ? (
           <Loader />
         ) :
-          // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
-          <div id="bot-container" className="w-full bg-black text-white flex flex-col max-w-lg h-screen ">
+         // <div className="w-full bg-black text-white flex flex-col max-w-lg  overflow-hidden">
+ <div className="w-full bg-black text-white flex flex-col max-w-lg hide-scrollbar overflow-y-auto">
             {/* Header Section */}
             <Header />
             <div style={{
