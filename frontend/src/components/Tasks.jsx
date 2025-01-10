@@ -66,92 +66,183 @@ function Tasks() {
     icon: <FaYoutube size={32} color="white" className="mr-4" />,
     videoUrl: quest.quest_url,
     coin: quest.coin_earn,
-    status: quest.status
+    status: quest.status,
+    duration:quest.duration,
   }));
-  const handleWatchButtonClick = async (task, videoUrl) => {
+  // const handleWatchButtonClick = async (task, videoUrl) => {
 
+  //   try {
+  //     setWatchTimes(prev => ({ ...prev, [task]: Date.now() }));
+  //     setIsVideoWatched(prev => ({ ...prev, [task]: true }));
+  //     // Ensure the videoUrl is valid
+  //     const url = new URL(videoUrl);
+  //     const videoId = url.searchParams.get("v");
+
+  //     if (!videoId) {
+  //       throw new Error("Invalid YouTube URL");
+  //     }
+
+  //     // Fetch the duration from YouTube API
+  //     const duration = await fetchVideoDuration(videoId);
+  //     setVideoDurations(prev => ({ ...prev, [task]: duration }));
+  //   } catch (error) {
+  //     console.error("Error handling video URL:", error);
+  //     // Optional: Show an error message to the user
+  //   }
+  // };
+
+  // const API_KEY = 'AIzaSyCNdfiNQIQ2H_-BN4vvddtlHBAbjsAwRTU';
+  // const fetchVideoDuration = async (videoId) => {
+
+
+  //   try {
+  //     const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails&key=${API_KEY}`);
+  //     const data = await response.json();
+  //     if (data.items.length > 0) {
+  //       const duration = data.items[0].contentDetails.duration;
+  //       return convertDurationToSeconds(duration);
+  //     }
+  //     throw new Error("Video not found");
+  //   } catch (error) {
+  //     toast(`Error fetching video duration: ${error.message}`);
+  //     return 0; // Default duration to 0 on error
+  //   }
+  // };
+
+
+  // const convertDurationToSeconds = (duration) => {
+  //   const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  //   const hours = (parseInt(match[1]) || 0) * 3600;
+  //   const minutes = (parseInt(match[2]) || 0) * 60;
+  //   const seconds = parseInt(match[3]) || 0;
+  //   return hours + minutes + seconds;
+  // };
+
+  // const handleCheckButtonClick = (task, questId) => {
+  //   const currentTime = Date.now();
+  //   const watchStartTime = watchTimes[task];
+  //   const timeSpent = (currentTime - watchStartTime) / 1000;
+
+  //   // Check against the video duration
+  //   const requiredDuration = videoDurations[task] || 0;
+
+  //   if (timeSpent >= requiredDuration) {
+  //     completeQuest(questId, task);
+  //   } else {
+  //     const remainingTime = Math.max(requiredDuration - timeSpent, 0);
+  //     // Convert remaining time to minutes and seconds
+  //     const remainingMinutes = Math.floor(remainingTime / 60); // Get the minutes
+  //     const remainingSeconds = Math.floor(remainingTime % 60); // Get the seconds
+
+  //     // Format the time as 'minutes:seconds'
+  //     const formattedTime = `${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  //     // console.log('formattedTime', formattedTime)
+  //     toast(`You need to watch the video for ${formattedTime} minute more.`);
+  //     setIsVideoWatched(prev => ({ ...prev, [task]: false }));
+  //   }
+  // };
+
+  // const completeQuest = async (questId, task) => {
+  //   // console.log("questIdquestId",questId);
+
+  //   try {
+  //     setLoadingState(prevState => ({ ...prevState, [task]: true }));
+  //     const tokenData = localStorage.getItem("user");
+  //     if (!tokenData) throw new Error("No token data found in localStorage");
+
+  //     const parsedTokenData = JSON.parse(tokenData);
+  //     const token = parsedTokenData.token;
+
+  //     const response = await fetch(`${BACKEND_URL}/api/v1/api-quests/complete-quest`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({ quest_id: questId }),
+  //     });
+
+  //     if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+  //     // Simulate a delay after the request completes
+  //     setTimeout(() => {
+  //       setLoadingState(prevState => ({ ...prevState, [task]: false })); // End loading after delay
+  //       dispatch(fetchQuestHistory());
+  //       setHasWatched(prev => ({ ...prev, [task]: true }));
+  //       toast("Task Completed!");
+  //     }, 1500); // Delay of 1.5 seconds (adjust as needed)
+
+  //   } catch (error) {
+  //     toast.error(`Error completing task: ${error.message}`);
+  //     console.error("Error completing quest:", error);
+  //   }
+  // };
+
+
+  const handleWatchButtonClick = (task, durationInMinutes) => {
+    console.log("Task:", task, "Duration from API (minutes):", durationInMinutes);
     try {
+      // Convert duration from minutes to milliseconds and store it
+      const durationInMilliseconds = durationInMinutes * 60 * 1000;
+  
+      // Set the current time as the start time for the task
       setWatchTimes(prev => ({ ...prev, [task]: Date.now() }));
+  
+      // Mark the task as being watched
       setIsVideoWatched(prev => ({ ...prev, [task]: true }));
-      // Ensure the videoUrl is valid
-      const url = new URL(videoUrl);
-      const videoId = url.searchParams.get("v");
-
-      if (!videoId) {
-        throw new Error("Invalid YouTube URL");
-      }
-
-      // Fetch the duration from YouTube API
-      const duration = await fetchVideoDuration(videoId);
-      setVideoDurations(prev => ({ ...prev, [task]: duration }));
+  
+      // Store the video duration in milliseconds
+      setVideoDurations(prev => ({ ...prev, [task]: durationInMilliseconds }));
     } catch (error) {
-      console.error("Error handling video URL:", error);
-      // Optional: Show an error message to the user
+      console.error("Error handling watch button click:", error);
+      toast.error("An error occurred while starting the watch task.");
     }
   };
-
-  const API_KEY = 'AIzaSyCNdfiNQIQ2H_-BN4vvddtlHBAbjsAwRTU';
-  const fetchVideoDuration = async (videoId) => {
-
-
-    try {
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails&key=${API_KEY}`);
-      const data = await response.json();
-      if (data.items.length > 0) {
-        const duration = data.items[0].contentDetails.duration;
-        return convertDurationToSeconds(duration);
-      }
-      throw new Error("Video not found");
-    } catch (error) {
-      toast(`Error fetching video duration: ${error.message}`);
-      return 0; // Default duration to 0 on error
-    }
-  };
-
-
-  const convertDurationToSeconds = (duration) => {
-    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-    const hours = (parseInt(match[1]) || 0) * 3600;
-    const minutes = (parseInt(match[2]) || 0) * 60;
-    const seconds = parseInt(match[3]) || 0;
-    return hours + minutes + seconds;
-  };
-
+  
   const handleCheckButtonClick = (task, questId) => {
-    const currentTime = Date.now();
-    const watchStartTime = watchTimes[task];
-    const timeSpent = (currentTime - watchStartTime) / 1000;
-
-    // Check against the video duration
-    const requiredDuration = videoDurations[task] || 0;
-
-    if (timeSpent >= requiredDuration) {
+    const currentTime = Date.now(); // Get the current time
+    const watchStartTime = watchTimes[task] || 0; // Get the start time of the task
+    const timeSpentInMilliseconds = currentTime - watchStartTime; // Calculate time spent in milliseconds
+    const requiredDurationInMilliseconds = videoDurations[task] || 0; // Get required duration in milliseconds
+  
+    console.log("Task:", task);
+    console.log("Watch Start Time:", new Date(watchStartTime).toISOString());
+    console.log("Time Spent (milliseconds):", timeSpentInMilliseconds);
+    console.log("Required Duration (milliseconds):", requiredDurationInMilliseconds);
+  
+    if (timeSpentInMilliseconds >= requiredDurationInMilliseconds) {
+      // If the user has watched for the required duration, mark the task as complete
       completeQuest(questId, task);
+      // toast.success("Task completed successfully!");
     } else {
-      const remainingTime = Math.max(requiredDuration - timeSpent, 0);
-      // Convert remaining time to minutes and seconds
-      const remainingMinutes = Math.floor(remainingTime / 60); // Get the minutes
-      const remainingSeconds = Math.floor(remainingTime % 60); // Get the seconds
-
-      // Format the time as 'minutes:seconds'
-      const formattedTime = `${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-      // console.log('formattedTime', formattedTime)
-      toast(`You need to watch the video for ${formattedTime} minute more.`);
+      // Calculate the remaining time in milliseconds
+      const remainingTimeInMilliseconds = Math.max(requiredDurationInMilliseconds - timeSpentInMilliseconds, 0);
+  
+      // Convert remaining time to minutes and seconds for user-friendly display
+      const remainingMinutes = Math.floor(remainingTimeInMilliseconds / (60 * 1000)); // Minutes
+      const remainingSeconds = Math.floor((remainingTimeInMilliseconds % (60 * 1000)) / 1000); // Seconds
+  
+      const formattedTime =
+        remainingMinutes > 0
+          ? `${remainingMinutes} minute(s) and ${remainingSeconds} second(s)`
+          : `${remainingSeconds} second(s)`;
+  
+      // Notify the user about the remaining time
+      toast.info(`You need to watch the video for ${formattedTime} more.`);
+  
+      // Mark the task as not yet watched completely
       setIsVideoWatched(prev => ({ ...prev, [task]: false }));
     }
   };
-
+  
   const completeQuest = async (questId, task) => {
-    // console.log("questIdquestId",questId);
-
     try {
       setLoadingState(prevState => ({ ...prevState, [task]: true }));
       const tokenData = localStorage.getItem("user");
       if (!tokenData) throw new Error("No token data found in localStorage");
-
+  
       const parsedTokenData = JSON.parse(tokenData);
       const token = parsedTokenData.token;
-
+  
       const response = await fetch(`${BACKEND_URL}/api/v1/api-quests/complete-quest`, {
         method: "POST",
         headers: {
@@ -160,21 +251,20 @@ function Tasks() {
         },
         body: JSON.stringify({ quest_id: questId }),
       });
-
+  
       if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
-      // Simulate a delay after the request completes
       setTimeout(() => {
-        setLoadingState(prevState => ({ ...prevState, [task]: false })); // End loading after delay
+        setLoadingState(prevState => ({ ...prevState, [task]: false }));
         dispatch(fetchQuestHistory());
         setHasWatched(prev => ({ ...prev, [task]: true }));
         toast("Task Completed!");
-      }, 1500); // Delay of 1.5 seconds (adjust as needed)
-
+      }, 1500); // Delay of 1.5 seconds
     } catch (error) {
       toast.error(`Error completing task: ${error.message}`);
       console.error("Error completing quest:", error);
     }
   };
+  
   const socials = nonBannerQuests && nonBannerQuests.filter((quest) => quest.activity === "follow").map((quest, index) => {
     let icon = null;
     if (quest.quest_name.toLowerCase().includes("youtube")) {
@@ -327,7 +417,12 @@ function Tasks() {
   };
   
   
-  
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    tg.disableClosingConfirmation();
+    tg.disableVerticalSwipes(); // Disable vertical swipes on mobile
+  }, []);
   
 
   return (
@@ -406,7 +501,7 @@ function Tasks() {
                                 href={row.videoUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                onClick={() => handleWatchButtonClick(row.taskKey, row.videoUrl)}
+                                onClick={() => handleWatchButtonClick(row.taskKey,  row.duration)}
                                 className="bg-[#282828] text-white w-20 flex justify-center py-2 rounded-full text-sm font-bold"
                               >
                                 <span>Watch</span>
@@ -415,7 +510,7 @@ function Tasks() {
 
                             {watchTimes[row.taskKey] && (
                               <button
-                                onClick={() => handleCheckButtonClick(row.taskKey, row.questId)}
+                                onClick={() => handleCheckButtonClick(row.taskKey, row.questId, row.duration)}
                                 className="bg-[#282828] text-white w-20 flex justify-center py-2 rounded-full text-sm font-bold"
                               >
                                 {loadingState[row.taskKey] ? (
