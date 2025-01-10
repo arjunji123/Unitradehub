@@ -107,7 +107,8 @@ const CustomSwiper = ({
                                 taskKey,
                                 handleWatchButtonClick,
                                 taskKey,
-                                banner.quest_url
+                                // banner.quest_url,
+                                banner.duration
                               )
                             }
                             className="bg-gray-900 text-white w-20 flex justify-center py-1.5 rounded-full text-sm font-bold"
@@ -189,7 +190,7 @@ const CustomSwiper = ({
         handleSubmit(taskKey, banner.quest_id, 0);
       } else {
         // Open the popup if a screenshot is required
-        handleButtonClick(taskKey, togglePopup, taskKey, banner.quest_id, banner.screenshot_required);
+        handleButtonClick(taskKey, togglePopup, taskKey, banner.quest_id, banner.screenshot_required,);
       }
     }}
     className={`bg-gray-900 text-white w-20 flex justify-center py-1.5 rounded-full text-sm font-bold ${
