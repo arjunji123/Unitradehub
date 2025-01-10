@@ -71,7 +71,10 @@ function Profile() {
   accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg",
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
-      if (file) {
+      if  (
+      file &&
+      ["image/jpeg", "image/png", "image/gif", "image/heif", "image/heic", "image/jpg"].includes(file.type)
+    )  {
         setImage(file);
         setImagePreview(URL.createObjectURL(file));
         console.log("Image selected:", file.name);
