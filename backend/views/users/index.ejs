@@ -154,15 +154,16 @@
 
 <script>
     $(document).ready(function () {
-
-
-        // Show modal with the clicked image
         $('.view-image').click(function () {
             var imageUrl = $(this).data('image');
             $('#modalImage').attr('src', imageUrl);
             $('#imageModal').modal('show');
         });
     });
+$(document).on('click', '.close', function () {
+    $('#imageModal').modal('hide');
+});
+
 </script>
 <style>
     /* Container styling */
