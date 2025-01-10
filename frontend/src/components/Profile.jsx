@@ -817,7 +817,6 @@ const { getRootProps, getInputProps } = useDropzone({
               )} */}
 
 
-            </div>
 
             <div className="text-center mt-4">
               {/* User Name */}
