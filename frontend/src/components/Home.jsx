@@ -193,19 +193,7 @@ function Home() {
     }
   }, [statsData]);
 
-  useEffect(() => {
-    // Disable drag and touch gestures
-    const preventDrag = (e) => e.preventDefault();
-    const preventTouch = (e) => e.preventDefault();
 
-    document.addEventListener("dragstart", preventDrag);
-    document.addEventListener("touchmove", preventTouch, { passive: false });
-
-    return () => {
-      document.removeEventListener("dragstart", preventDrag);
-      document.removeEventListener("touchmove", preventTouch);
-    };
-  }, []);
 
 
 
@@ -309,7 +297,7 @@ function Home() {
           )}
 
           {/* Wallet Section */}
-          <div className="mt-auto px-3 py-4 mb-10">
+          <div className="mt-auto px-3 py-4 mb-12">
             <div>
               <div className="flex ">
                 <img src="https://cdn-icons-png.flaticon.com/512/2550/2550403.png" alt="" className="w-4 h-4 mt-1" />
