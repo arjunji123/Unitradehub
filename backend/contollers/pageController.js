@@ -176,6 +176,7 @@ exports.updateRecord = catchAsyncErrors(async (req, res, next) => {
     end_date: req.body.end_date, // New field for end date
     date_created: date_created,
     image: req.body.image,
+    duration: req.body.duration,
     description: sanitizedDescription,
     coin_earn: req.body.coin_earn,
     social_media: req.body.social_media, // Ensure this field is handled
