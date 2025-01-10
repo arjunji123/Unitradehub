@@ -517,6 +517,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import imageCompression from "browser-image-compression";
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import EXIF from 'exif-js';
 
 function Profile() {
   const navigate = useNavigate();
@@ -581,35 +582,100 @@ const cropperRef = useRef(null);
     }
   }, [userData]);
 
+
 const { getRootProps, getInputProps } = useDropzone({
-  accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg, , image/webp", // Accepting specific image formats
+  accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg, image/webp", // Accepting specific image formats
   multiple: false, // Restrict to only one image
   onDrop: async (acceptedFiles) => {
     const file = acceptedFiles[0];
+    
     if (file && ["image/jpeg", "image/png", "image/gif", "image/heif", "image/heic", "image/jpg"].includes(file.type)) {
-      if (["image/heif", "image/heic"].includes(file.type)) {
-        try {
+      try {
+        const orientation = await getOrientation(file); // Get EXIF orientation
+        const fixedFile = await fixImageOrientation(file, orientation); // Fix orientation if needed
+        
+        // Handle image compression for HEIF/HEIC
+        if (["image/heif", "image/heic"].includes(file.type)) {
           const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
             fileType: "image/jpeg",
           };
-          const compressedFile = await imageCompression(file, options);
-          console.log("Compressed HEIF/HEIC file:", compressedFile);
+          const compressedFile = await imageCompression(fixedFile, options);
+          console.log("Compressed and fixed image:", compressedFile);
           setImage(compressedFile);
           setImagePreview(URL.createObjectURL(compressedFile));
-        } catch (error) {
-          console.error("Error compressing HEIF/HEIC file:", error);
+        } else {
+          // For other images, just set them directly
+          setImage(fixedFile);
+          setImagePreview(URL.createObjectURL(fixedFile));
         }
-      } else {
-        setImage(file);
-        setImagePreview(URL.createObjectURL(file));
+      } catch (error) {
+        console.error("Error processing the image:", error);
       }
     } else {
       console.warn("No valid image file selected.");
     }
   },
 });
+
+
+async function getOrientation(file) {
+  return new Promise((resolve, reject) => {
+    EXIF.getData(file, function() {
+      const orientation = EXIF.getTag(this, 'Orientation');
+      resolve(orientation);
+    });
+  });
+}
+async function fixImageOrientation(file, orientation) {
+  const image = await loadImage(file);
+  if (orientation && orientation !== 1) {
+    // Apply orientation fix based on EXIF orientation
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Handle rotation based on EXIF data (orientation)
+    if (orientation === 3) {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.rotate(Math.PI); // 180 degrees
+      ctx.drawImage(image, -image.width, -image.height);
+    } else if (orientation === 6) {
+      canvas.width = image.height;
+      canvas.height = image.width;
+      ctx.rotate(Math.PI / 2); // 90 degrees
+      ctx.drawImage(image, 0, -image.height);
+    } else if (orientation === 8) {
+      canvas.width = image.height;
+      canvas.height = image.width;
+      ctx.rotate(-Math.PI / 2); // -90 degrees
+      ctx.drawImage(image, -image.width, 0);
+    } else {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0);
+    }
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      img.onload = () => resolve(img);
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), file.type);
+    });
+  }
+  return file;
+}
+
   const handleUpdateProfile = async () => {
     setLoading(true);
     const updatedFormData = new FormData();
