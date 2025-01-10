@@ -312,7 +312,7 @@ function Home() {
               </div>
               <div
                 onClick={handleClick}
-                className="flex justify-center items-center bottom-[141px] my-2 relative cursor-pointer"
+                className="flex justify-center items-center bottom-[145px] my-2 relative cursor-pointer"
               >
                 {/* GIF Container */}
                 <img
