@@ -72,24 +72,28 @@ function Profile() {
   accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg",
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
-      if  (
-      file &&
-      ["image/jpeg", "image/png", "image/gif", "image/heif", "image/heic", "image/jpg"].includes(file.type)
-    )  if (["image/heif", "image/heic"].includes(file.type)) {
-        const options = {
-          maxSizeMB: 1, // Reduce image size (optional)
-          maxWidthOrHeight: 1920, // Maintain high resolution
-          fileType: "image/jpeg", // Convert HEIF/HEIC to JPEG
-        };
-        const compressedFile = await imageCompression(file, options);
-        setImage(compressedFile);
-        setImagePreview(URL.createObjectURL(compressedFile));
-      } else {
-         setImage(file);
+  if (file && ["image/jpeg", "image/png", "image/gif", "image/heif", "image/heic", "image/jpg"].includes(file.type)) {
+    if (["image/heif", "image/heic"].includes(file.type)) {
+        try {
+            const options = {
+                maxSizeMB: 1, 
+                maxWidthOrHeight: 1920, 
+                fileType: "image/jpeg", 
+            };
+            const compressedFile = await imageCompression(file, options);
+            console.log("Compressed HEIF/HEIC file:", compressedFile); // Debugging line
+            setImage(compressedFile);
+            setImagePreview(URL.createObjectURL(compressedFile));
+        } catch (error) {
+            console.error("Error compressing HEIF/HEIC file:", error);
+        }
+    } else {
+        setImage(file);
         setImagePreview(URL.createObjectURL(file));
-      } else {
-      console.warn("No valid image file selected.");
     }
+} else {
+    console.warn("No valid image file selected.");
+}
     },
   });
 
