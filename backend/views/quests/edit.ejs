@@ -54,7 +54,13 @@
                                         <label for="end_date" class="form-label">End Date</label>
                                         <input type="datetime-local" id="end_date" name="end_date" class="form-control"
                                             value="<%= blog.end_date ? blog.end_date : '' %>">
-
+                                    </div>
+                                </div>
+                                  <div class="col-lg-6 float-left">
+                                    <div class="mb-3">
+                                        <label for="simpleinput" class="form-label">Duration (in minutes)</label>
+                                        <input type="number" id="duration" name="duration" class="form-control"
+                                            value="<%= blog.duration %>">
                                     </div>
                                 </div>
                             </div>
@@ -133,3 +139,52 @@
     </div> <!-- end card -->
 </div><!-- end col -->
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const activityDropdown = document.getElementById("activity");
+        const durationInput = document.getElementById("duration");
+        const screenshotCheckbox = document.getElementById("screenshot_required");
+
+        // Initially disable the checkbox and duration input
+        screenshotCheckbox.disabled = true;
+        durationInput.disabled = true;
+        durationInput.removeAttribute("required");
+
+        activityDropdown.addEventListener("change", () => {
+            const selectedActivity = activityDropdown.value;
+
+            if (selectedActivity === "watch") {
+                // Enable the duration input and make it required
+                durationInput.disabled = false;
+                durationInput.setAttribute("required", true);
+
+                // Disable the checkbox for "watch" and uncheck it
+                screenshotCheckbox.checked = false;
+                screenshotCheckbox.disabled = true;
+            } else {
+                // Disable the duration input and remove its required attribute
+                durationInput.disabled = true;
+                durationInput.value = ""; // Clear the input value
+                durationInput.removeAttribute("required");
+
+                if (selectedActivity === "follow") {
+                    // Enable the checkbox for "follow"
+                    screenshotCheckbox.disabled = false;
+                } else {
+                    // Default case, disable the checkbox
+                    screenshotCheckbox.checked = false;
+                    screenshotCheckbox.disabled = true;
+                }
+            }
+        });
+
+        // Validate the duration input
+        durationInput.addEventListener("input", () => {
+            if (durationInput.value < 1) {
+                durationInput.setCustomValidity("Duration must be greater than 0");
+            } else {
+                durationInput.setCustomValidity("");
+            }
+        });
+    });
+</script>
