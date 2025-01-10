@@ -67,7 +67,8 @@ function Profile() {
   }, [userData]);
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
+    // accept: "image/*",
+  accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg",
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
