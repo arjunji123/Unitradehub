@@ -12,6 +12,7 @@ import ToastNotification from "./Toast";
 import Loader from '../components/Loader';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import imageCompression from "browser-image-compression";
 
 function Profile() {
   const navigate = useNavigate();
@@ -69,18 +70,26 @@ function Profile() {
   const { getRootProps, getInputProps } = useDropzone({
     // accept: "image/*",
   accept: "image/jpeg, image/png, image/gif, image/heif, image/heic, image/jpg",
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if  (
       file &&
       ["image/jpeg", "image/png", "image/gif", "image/heif", "image/heic", "image/jpg"].includes(file.type)
-    )  {
-        setImage(file);
-        setImagePreview(URL.createObjectURL(file));
-        console.log("Image selected:", file.name);
+    )  if (["image/heif", "image/heic"].includes(file.type)) {
+        const options = {
+          maxSizeMB: 1, // Reduce image size (optional)
+          maxWidthOrHeight: 1920, // Maintain high resolution
+          fileType: "image/jpeg", // Convert HEIF/HEIC to JPEG
+        };
+        const compressedFile = await imageCompression(file, options);
+        setImage(compressedFile);
+        setImagePreview(URL.createObjectURL(compressedFile));
       } else {
-        console.warn("No valid image file selected.");
-      }
+         setImage(file);
+        setImagePreview(URL.createObjectURL(file));
+      } else {
+      console.warn("No valid image file selected.");
+    }
     },
   });
 
