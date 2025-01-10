@@ -38,8 +38,8 @@ function Footer() {
   };
 
   return (
-    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-black flex justify-around items-center z-10 text-xs py-2 shadow-lg">
-    <div className="text-center text-white w-1/5">
+    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-black flex justify-around items-center z-10 text-xs py-2 shadow-lg ">
+    <div className="text-center text-white w-1/5 mb-2">
       <Link
         className="flex flex-col items-center"
         to="/home"
@@ -53,7 +53,7 @@ function Footer() {
         <span className={`text-[10px] mt-1 ${activePage === 'home' ? 'font-bold' : 'opacity-50'}`}>Home</span>
       </Link>
     </div>
-    <div className="text-center flex flex-col items-center text-white w-1/5">
+    <div className="text-center flex flex-col items-center text-white w-1/5 mb-2">
       <Link
         className="flex flex-col items-center"
         to="/tasks"
@@ -67,7 +67,7 @@ function Footer() {
         <span className={`text-xs mt-1 ${activePage === 'tasks' ? 'font-bold' : 'opacity-50'}`}>Earn</span>
       </Link>
     </div>
-    <div className="text-center text-white w-1/5">
+    <div className="text-center text-white w-1/5 mb-2">
       <Link
         className="flex flex-col items-center"
         to="/friend"
@@ -81,7 +81,7 @@ function Footer() {
         <span className={`text-xs mt-1 ${activePage === 'friend' ? 'font-bold' : 'opacity-50'}`}>Friends</span>
       </Link>
     </div>
-    <div className="text-center flex flex-col items-center text-white w-1/5">
+    <div className="text-center flex flex-col items-center text-white w-1/5 mb-2">
       <Link
         className="flex flex-col items-center"
         to="/withdrawal"
