@@ -206,6 +206,10 @@ function Signup() {
   };
 
   useEffect(() => {
+      const tg = window.Telegram.WebApp;
+
+    tg.disableClosingConfirmation();
+    tg.disableVerticalSwipes(); // Disable vertical swipes on mobile
     const handleResize = () => {
       const appHeight = window.innerHeight;
       document.documentElement.style.setProperty("--app-height", `${appHeight}px`);
