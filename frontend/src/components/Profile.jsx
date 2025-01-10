@@ -613,11 +613,20 @@ const { getRootProps, getInputProps } = useDropzone({
   const handleUpdateProfile = async () => {
     setLoading(true);
     const updatedFormData = new FormData();
+    for (const key in formData) {
+      if (formData[key] && key !== "user_photo") {
+        updatedFormData.append(key, formData[key]);
+      }
+    }
 
-   if (image) {
-    updatedFormData.append("user_photo", image);
-  }
-
+    if (image && image instanceof File) {
+      updatedFormData.append("user_photo", image);
+    }
+    // Check the contents of FormData before dispatching
+    console.log("Final FormData to be sent:");
+    for (let [key, value] of updatedFormData.entries()) {
+      console.log(key, value);
+    }
   try {
     await dispatch(updateUserProfile(updatedFormData));
     dispatch(fetchMeData());
@@ -630,6 +639,8 @@ const { getRootProps, getInputProps } = useDropzone({
     setLoading(false);
   }
 };
+
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -809,7 +820,7 @@ const { getRootProps, getInputProps } = useDropzone({
       </div>
     )}
   </div>
-);
+
 {/*               {image && (
                 <div className="absolute bottom-1 left-1 bg-gray-800 rounded-full p-2">
                   <BsFillSaveFill className="text-white text-xs" />
