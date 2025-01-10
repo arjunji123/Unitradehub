@@ -192,7 +192,7 @@ router
 
 router
   .route("/api-me/update")
-  .post(isApiAuthenticatedUser, upload.single("user_photo"), updateProfileApi);
+  .patch(isApiAuthenticatedUser, upload.single("user_photo"), updateProfileApi);
 
 router.post(
   "/upload-screenshot/:id",
