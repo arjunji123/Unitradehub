@@ -10,8 +10,11 @@ var Storage = multer.diskStorage({
     callback(null, "./uploads/"); // Directory where the image will be uploaded
   },
   filename: function (req, file, callback) {
-    console.log(file); // For debugging: check file details
-    callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname); // Set filename with timestamp
+    // console.log(file); // For debugging: check file details
+    // callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname); // Set filename with timestamp
+  const uniqueName = `${file.fieldname}_${Date.now()}_${file.originalname}`;
+    console.log("Generated filename:", uniqueName); // For debugging: check filename
+    callback(null, uniqueName);
   },
 });
 
@@ -22,10 +25,17 @@ var upload = multer({
   },
   fileFilter: function (req, file, callback) {
     // File type validation (allow only image files)
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/heif', 'image/heic', 'image/jpg'];
+    const allowedTypes = [ "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/heif",
+      "image/heic",
+      "image/jpg",];
     if (!allowedTypes.includes(file.mimetype)) {
+      console.error("Invalid file type:", file.mimetype); // For debugging
       return callback(new Error('Only image files are allowed (jpeg, png, gif)'), false); // Reject non-image files
     }
+    console.log("File type accepted:", file.mimetype); // For debugging
     callback(null, true); // Accept valid image files
   }
 }); // Allow multiple files with any field name
