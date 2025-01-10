@@ -223,7 +223,6 @@ export const transferCoins = (coinData) => async (dispatch) => {
       type: TRANSFER_COINS_FAILURE,
       payload: error.message,
     });
-    toast.error("Failed to transfer coins.");
   }
 };
 
