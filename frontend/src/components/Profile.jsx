@@ -281,11 +281,23 @@ function Profile() {
                   <BsPencil className="text-white text-xs" />
                 </div>
               </div>
-              {image && (
+{/*               {image && (
                 <div className="absolute bottom-1 left-1 bg-gray-800 rounded-full p-2">
                   <BsFillSaveFill className="text-white text-xs" />
                 </div>
-              )}
+              )} */}
+
+  {image && (
+    <div
+      className="absolute bottom-1 left-1 bg-gray-800 rounded-full p-2 cursor-pointer"
+      onClick={() => {
+        console.log("Saving image...");
+        setImage(null); // Reset image after saving
+      }}
+    >
+      <BsFillSaveFill className="text-white text-xs" />
+    </div>
+  )}
             </div>
 
             <div className="text-center mt-4">
