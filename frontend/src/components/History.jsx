@@ -148,7 +148,12 @@ const TransactionHistory = () => {
       }
     });
   };
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
 
+    tg.disableClosingConfirmation();
+    tg.disableVerticalSwipes(); // Disable vertical swipes on mobile
+  }, []);
   return (
     // <div  className="bg-white min-h-screen flex justify-center overflow-hidden" >
     <div className="bg-white flex justify-center min-h-screen font-Inter overflow-hidden">
@@ -184,7 +189,7 @@ const TransactionHistory = () => {
 
 
 
-          <div id="content" className="flex-grow py-4 h-[400px] overflow-y-auto hide-scrollbar" style={styles.content}>
+          <div  className="flex-grow py-4 h-[400px] overflow-y-auto hide-scrollbar" style={styles.content}>
             {activeTab === "History" && (
               <>
                 {Object.keys(groupedTransactions).length > 0 ? (
@@ -223,13 +228,13 @@ const TransactionHistory = () => {
                           <p className="text-sm font-semibold text-gray-400 mb-3">{date}</p>
                           {groupedWithdrawals[date].map((transaction, index) => (
                             <div
-                              key={index}
-                              className={`flex items-center justify-between mx-2 py-3 ${activeDiv === index
-                                ? 'transition-all transform scale-105 bg-gray-800 px-4 rounded-xl shadow-xl ring-2 ring-gray-600'
-                                : 'bg-transparent'
-                                }`}
-                              onClick={() => handleDivClick(index, transaction)} // Trigger click event
-                            >
+                            key={index}
+                            className={`flex items-center justify-between mx-2 py-3 ${activeDiv === index
+                              ? 'bg-transparent'  // Keep active state as it is
+                              : 'bg-transparent hover:scale-105 hover:bg-gray-800 hover:px-4 hover:rounded-xl hover:shadow-xl hover:ring-2 hover:ring-gray-600'
+                            }`}
+                            onClick={() => handleDivClick(index, transaction)} // Trigger click event
+                          >
                               <div className="flex items-center space-x-3">
                                 <img src="src/assets/logo/U.png" className="w-7 h-7" alt="" />
                                 <h3 className="text-sm font-semibold capitalize">
@@ -250,54 +255,48 @@ const TransactionHistory = () => {
                         </div>
                       ))}
 
-                      {/* Pop-Up */}
-                      {/* Pop-Up */}
-                      {isPopupOpen && transaction && (
-                        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+              {/* Pop-Up */}
+{/* Pop-Up */}
+{isPopupOpen && transaction && (
+  <div className="fixed inset-0 bg-opacity-80 bg-black flex items-center justify-center z-50">
+    {/* Modal Content */}
+    <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black p-6 rounded-lg shadow-2xl w-11/12 sm:w-8/12 md:w-6/12 lg:w-5/12 max-h-[80vh] overflow-y-auto transition-transform transform-gpu">
+      {/* Close Button */}
+      <button
+        onClick={() => setIsPopupOpen(false)}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 focus:outline-none transition duration-300 transform hover:scale-110"
+      >
+        <ImCross size={22} />
+      </button>
 
-                          {/* Close Button */}
-                          <button
-                            onClick={() => setIsPopupOpen(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 focus:outline-none transition duration-300 transform hover:scale-110"
-                          >
-                            <ImCross size={22} />
-                          </button>
+      <h3 className="text-xl md:text-2xl font-semibold text-white my-4 text-center">
+        Transaction Details
+      </h3>
 
-                          {/* Modal Content */}
-                          <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black p-6 md:p-8 rounded-lg shadow-2xl w-full max-w-lg md:max-w-3xl transform transition-all duration-300 scale-95 hover:scale-100">
-
-                            <h3 className="text-2xl md:text-3xl font-semibold text-white mb-6 text-center">Transaction Details</h3>
-
-                            <table className="min-w-full table-auto text-white text-sm md:text-base">
-                              <tbody>
-                                {/* Transaction Rows */}
-                                <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
-                                  <td className="py-2 px-4 border-b border-gray-700">Transaction ID</td>
-                                  <td className="py-2 px-4 border-b border-gray-700">{transaction.trans_id}</td>
-                                </tr>
-                                <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
-                                  <td className="py-2 px-4 border-b border-gray-700">Date</td>
-                                  <td className="py-2 px-4 border-b border-gray-700">{new Date(transaction.date_entered).toLocaleString()}</td>
-                                </tr>
-                                <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
-                                  <td className="py-2 px-4 border-b border-gray-700">Coins</td>
-                                  <td className="py-2 px-4 border-b border-gray-700">{Math.abs(transaction.earn_coin)} Coins</td>
-                                </tr>
-                                <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
-                                  <td className="py-2 px-4 border-b border-gray-700">Status</td>
-                                  <td className="py-2 px-4 border-b border-gray-700">{transaction.status}</td>
-                                </tr>
-                                <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
-                                  <td className="py-2 px-4 border-b border-gray-700">UTR Number</td>
-                                  <td className="py-2 px-4 border-b border-gray-700">{transaction.utr_no}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                          </div>
-                        </div>
-                      )}
-
+      <table className="w-full table-auto text-white text-sm md:text-base border-collapse">
+        <tbody>
+          {/* Transaction Rows */}
+          <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
+            <td className="py-2 px-4 border-b border-gray-700">Transaction ID</td>
+            <td className="py-2 px-4 border-b border-gray-700 break-all">{transaction && transaction.trans_id ? transaction.trans_id : "Waiting"}</td>
+          </tr>
+          <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
+            <td className="py-2 px-4 border-b border-gray-700">Date</td>
+            <td className="py-2 px-4 border-b border-gray-700">{new Date(transaction.date_entered).toLocaleString()}</td>
+          </tr>
+          <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
+            <td className="py-2 px-4 border-b border-gray-700">Coins</td>
+            <td className="py-2 px-4 border-b border-gray-700">{Math.abs(transaction.earn_coin)} Coins</td>
+          </tr>
+          <tr className="hover:bg-gray-700 transition duration-200 rounded-md">
+            <td className="py-2 px-4 border-b border-gray-700">UTR Number</td>
+            <td className="py-2 px-4 border-b border-gray-700 break-all">{transaction && transaction.utr_no ?  transaction.utr_no : "Waiting"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
 
 
                     </div>
