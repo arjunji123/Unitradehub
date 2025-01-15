@@ -454,7 +454,7 @@ function Home() {
             </div>
 
             {/* Add New Range */}
-            <div className="mt-8 bg-[#1B1A1A] shadow-xl p-6 rounded-lg">
+           {/*  <div className="mt-8 bg-[#1B1A1A] shadow-xl p-6 rounded-lg">
               <h3 className="text-lg font-semibold">Add New Coin Range</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <input
@@ -490,10 +490,10 @@ function Home() {
                   Add Range
                 </button>
               </div>
-              {/* Extra gap added here */}
               <div className="mt-8" />
-            </div>
-          </div>
+            </div>          */}
+          </div> 
+
 
           {/* Footer Section */}
           <Footer />
