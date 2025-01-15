@@ -9,52 +9,53 @@ import { toast, ToastContainer } from "react-toastify";
 
 function Send({ togglePopup, userDetail, resetUserDetail }) {
   const [transactionId, setTransactionId] = useState(userDetail?.id || '');
-    // States for form inputs
-    const [transId, setTransId] = useState('');
-    const [utrNo, setUtrNo] = useState('');
-  const [payImage, setPayImage] = useState(null);
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector((state) => state.moneyData);
   const fetchCalled = useRef(false);
+  const [formData, setFormData] = useState({
+    transaction_id: transactionId,
+    trans_id: '',
+    utr_no: '',
+    trans_doc: null,
+  });
 
- // Handle file input change
- const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setPayImage(file);
-  }
-};
+    // Handle input change
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    };
+  // Handle file change
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData((prevState) => ({
+      ...prevState,
+      trans_doc: file,
+    }));
+  };
 
-  // Handle form submit
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
- // Ensure either `trans_id` or `utr_no` is provided
-    if (!transId && !utrNo) {
-      console.log('Either Transaction ID or UTR No. is required');
+
+    if (!formData.trans_id || !formData.utr_no) {
+      toast.error('Transaction ID and UTR No. are required!');
       return;
     }
-     // Build the payload
-     const payload = {
-      transaction_id: transactionId,
-      trans_id: transId || null, // Add `trans_id` only if provided
-      utr_no: utrNo || null, // Add `utr_no` only if provided
-      trans_doc: payImage || null, // Add `trans_doc` (image) if provided
-    };
 
-    // Log the payload for debugging
-    console.log('Payload:', payload);
-// Dispatch the action with the payload
-dispatch(uploadTransactionDoc(payload));
-  };
-  useEffect(() => {
-    if (success) {
-      // Reset state after successful submission
+    try {
+      // Dispatch API call
+      await dispatch(uploadTransactionDoc(formData));
       dispatch(fetchUserData());
-      togglePopup();
-      resetUserDetail(); // Reset user details
+      togglePopup(); // Close popup after success
+    } catch (error) {
+      console.error('Error uploading document:', error);
     }
-  }, [success, dispatch, togglePopup, resetUserDetail]);
-  // Sync transaction ID when userDetail changes
+  };
+
+
   useEffect(() => {
     setTransactionId(userDetail && userDetail.id);
   }, [userDetail]);
@@ -109,15 +110,17 @@ dispatch(uploadTransactionDoc(payload));
         </div>
         <input
             type="text"
-            value={transId}
-            onChange={(e) => setTransId(e.target.value)}
+            name="trans_id"
+            value={formData.trans_id}
+            onChange={handleInputChange}
             placeholder="Enter Transaction Id"
             className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
           />
           <input
                 type="text"
-                value={utrNo}
-                onChange={(e) => setUtrNo(e.target.value)}
+                 name="utr_no"
+                 value={formData.utr_no}
+                 onChange={handleInputChange}
             placeholder="Enter UTR No."
             className="w-full p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
           />
@@ -127,6 +130,7 @@ dispatch(uploadTransactionDoc(payload));
           <label className="font-medium text-[#B0B0B0] my-1" htmlFor="payImage">Payment Image:</label>
           <input
             type="file"
+             accept="image/*,application/pdf"
             onChange={handleFileChange}
             className="w-full uppercase p-2 sm:p-3 bg-[#2C2C2C] text-white border border-transparent rounded-lg mb-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#505050] transition duration-300 text-sm sm:text-base"
             placeholder="Pay Image"
