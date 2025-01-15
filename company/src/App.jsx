@@ -30,7 +30,7 @@ function App({ Component, pageProps }) {
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
-      // Prevent drag-to-close
+      tg.disableVerticalSwipes(); // Disable vertical swipes on mobile
       tg.disableClosingConfirmation();
 
     }
