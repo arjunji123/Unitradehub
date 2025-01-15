@@ -19,21 +19,21 @@ export const PASSWORD_UPDATE_REQUEST = 'PASSWORD_UPDATE_REQUEST';
 export const PASSWORD_UPDATE_SUCCESS = 'PASSWORD_UPDATE_SUCCESS';
 export const PASSWORD_UPDATE_FAIL = 'PASSWORD_UPDATE_FAIL';
 // Set token in cookies (expires in 7 days)
-const setToken = (token) => {
-  Cookies.set('token', JSON.stringify(token), { expires: 7 });
-};
+// const setToken = (token) => {
+//   Cookies.set('token', JSON.stringify(token), { expires: 7 });
+// };
 
 
 // Get token from cookies
-const getToken = () => {
-  return Cookies.get('token');
-};
+// const getToken = () => {
+//   return Cookies.get('token');
+// };
 
 
 // Remove token from cookies
-const removeToken = () => {
-  Cookies.remove('token');
-};
+// const removeToken = () => {
+//   Cookies.remove('token');
+// };
 
 
 
@@ -56,7 +56,7 @@ export const login = (credentials) => async (dispatch) => {
 
     // Check if the response contains a token and login is successful
     if (response?.token && response?.success) {
-      setToken(response.token); // Store the token in cookies or localStorage
+      // setToken(response.token); // Store the token in cookies or localStorage
       const userData = { token: response.token, ...response };
       storeUserData(userData); // Save user data in localStorage
 
@@ -231,7 +231,6 @@ export const updatePassword = (formPassword) => async (dispatch) => {
 // Logout action
 export const logout = () => (dispatch) => {
   localStorage.removeItem('user'); // Remove user data from localStorage
-  removeToken(); // Remove the token from cookies
   dispatch({
     type: LOGOUT,
   });
@@ -252,4 +251,3 @@ export const loadUserFromLocalStorage = () => (dispatch) => {
     console.log('No user found in localStorage.');
   }
 };
-console.log('Token from cookies:', getToken());
