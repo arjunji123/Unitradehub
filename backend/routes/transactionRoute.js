@@ -3,6 +3,7 @@ const multer = require("multer");
 const {
   allTransactions,
   approveTransaction,
+  createOrder
 } = require("../contollers/transactionController");
 const {
   isAuthenticatedUser,
@@ -18,8 +19,11 @@ var Storage = multer.memoryStorage(); // Use memoryStorage instead of diskStorag
 var upload = multer({ storage: Storage });
 
 router.route("/transactions").get(isAuthenticatedUser, allTransactions);
+
 router
   .route("/approveTransaction")
   .post(isAuthenticatedUser, approveTransaction);
+
+router.route("/create-order").post(createOrder)
 
 module.exports = router;

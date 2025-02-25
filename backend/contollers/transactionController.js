@@ -7,6 +7,9 @@ const db = require("../config/mysql_database");
 const Joi = require("joi");
 const { LocalStorage } = require("node-localstorage");
 const localStorage = new LocalStorage("./scratch");
+const dotenv = require("dotenv");
+dotenv.config({ path: "backend/config/config.env" });
+const Razorpay = require("razorpay");
 
 // const table_name = user_transction;
 // const module_title = Model.module_title;
@@ -35,8 +38,8 @@ const localStorage = new LocalStorage("./scratch");
 //      FROM user_transction ut
 //      JOIN users u ON ut.user_id = u.id
 //      LEFT JOIN user_data ud ON u.id = ud.user_id` );
-  
-  
+
+
 //   console.log("transactions:", transactions); // Log for debugging
 
 //   res.render("transactions/index", {
@@ -64,7 +67,7 @@ const localStorage = new LocalStorage("./scratch");
 //      JOIN users u ON ut.user_id = u.id
 //      LEFT JOIN user_data ud ON u.id = ud.user_id` 
 //   );
-  
+
 //   console.log("transactions:", transactions); // Log for debugging
 
 //   res.render("transactions/index", {
@@ -205,7 +208,7 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
   }
 
   const connection = await db.getConnection();
-    const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const dateApprove = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   try {
     await connection.beginTransaction();
@@ -436,3 +439,19 @@ exports.approveTransaction = catchAsyncErrors(async (req, res, next) => {
 //     connection.release();
 //   }
 // });
+
+exports.createOrder = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const razorpay = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_KEY_SECRET })
+    const options = req.body;
+    const order = await razorpay.orders.create(options);
+
+    if (!order) {
+      res.status(500).send("Error");
+    }
+
+    res.json(order)
+  } catch (err) {
+    res.status(500).send("Error");
+  }
+})

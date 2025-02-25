@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "../store/store";
 import { loadUserFromLocalStorage } from "../store/actions/authActions";
-import desktopImage from './images/desktop3.png'; // Import the image
+import desktopImage from "./images/desktop3.png"; // Import the image
 
 // Component Imports
 import Confirm from "./components/Confirm";
@@ -23,6 +23,7 @@ import Profile from "./components/Profile";
 import AuthListener from "./components/AuthListener";
 import TermsAndConditions from "./components/Terms";
 import InstructionPage from "./components/Instruction";
+import Verify from "./components/Verify";
 // Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -31,11 +32,11 @@ import "./App.css";
 store.dispatch(loadUserFromLocalStorage());
 
 function App() {
-    const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("user");
 
-   useEffect(() => {
+  useEffect(() => {
     const checkDevice = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -80,14 +81,14 @@ function App() {
       window.removeEventListener("resize", handleResize);
     };
   }, [isMobile]);
-    
+
   useEffect(() => {
-      // Prevent body scroll and manage touch gestures within the content area
-      document.body.style.overflow = "hidden";
+    // Prevent body scroll and manage touch gestures within the content area
+    document.body.style.overflow = "hidden";
 
-      const content = document.getElementById("scrollable-content");
+    const content = document.getElementById("scrollable-content");
 
-    const handleTouchStart  = (e) => {
+    const handleTouchStart = (e) => {
       const { scrollTop, scrollHeight, clientHeight } = content;
       content.dataset.scrollStartY = e.touches[0].clientY; // Save the initial touch position
 
@@ -137,14 +138,13 @@ function App() {
   if (!isMobile) {
     // If not on mobile (desktop or other platforms), show the message and image
     return (
-        
       <div className="desktop-message">
         <img
-                  src={desktopImage} 
-       alt="Open on Mobile"
+          src={desktopImage}
+          alt="Open on Mobile"
           style={{
-            width: "100%",       // Adjust the width of the image as needed
-            display: "block",   // Make sure it's displayed as a block element
+            width: "100%", // Adjust the width of the image as needed
+            display: "block", // Make sure it's displayed as a block element
           }}
         />
       </div>
@@ -152,15 +152,17 @@ function App() {
   }
 
   return (
-      
     <Provider store={store}>
       <BrowserRouter>
         <AuthListener />
-        <div id="app-container" className=" w-screen  h-screen overflow-hidden bg-black">
+        <div
+          id="app-container"
+          className=" w-screen  h-screen overflow-hidden bg-black"
+        >
           {/* Scrollable content */}
           <div
             id="scrollable-content"
-          className="h-full w-full overflow-y-auto"
+            className="h-full w-full overflow-y-auto"
           >
             <Routes>
               {/* Redirect based on token existence */}
@@ -175,7 +177,11 @@ function App() {
                 <Route path="/payment/:id" element={<Payment />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
                 <Route path="/confirm" element={<Confirm />} />
-                <Route path="/termsAndCondition" element={<TermsAndConditions />} />
+                <Route
+                  path="/termsAndCondition"
+                  element={<TermsAndConditions />}
+                />
+                <Route path="/verify" element={<Verify />} />
               </Route>
 
               {/* Private Routes */}

@@ -11,7 +11,6 @@ const Joi = require("joi");
 const QueryModel = require("../models/queryModel");
 const { log } = require("console");
 const moment = require("moment-timezone");
-const request = require("request");
 
 const registerSchema = Joi.object({
   user_name: Joi.string().required(),
@@ -276,9 +275,9 @@ exports.registerUserApi = catchAsyncErrors(async (req, res, next) => {
     //   [2]
     // );
 
-const defaultUser = await db.query(
-  "SELECT referral_code FROM user_data WHERE parent_id IS NULL LIMIT 1"
-);
+    const defaultUser = await db.query(
+      "SELECT referral_code FROM user_data WHERE parent_id IS NULL LIMIT 1"
+    );
 
     const referralCode = defaultUser[0]?.[0]?.referral_code || null;
     console.log(defaultUser);
@@ -487,7 +486,7 @@ exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
     const payConfirm = parseInt(user.pay_confirm);
     const status = parseInt(user.status);
 
-   if (payConfirm === 1 && status === 0) {
+    if (payConfirm === 1 && status === 0) {
       // Account is pending activation
       return res.status(200).json({
         success: false,
@@ -502,7 +501,7 @@ exports.loginUserApi = catchAsyncErrors(async (req, res, next) => {
       // Login success
       const token = User.generateToken(user.id);
 
-return res.status(200).json({
+      return res.status(200).json({
         success: true,
         token,
         user: {
@@ -516,13 +515,13 @@ return res.status(200).json({
 
     if (payConfirm === 0 && status === 0) {
       // User not allowed to log in but return 200 OK
-  return res.status(200).json({
+      return res.status(200).json({
         success: false,
         message:
           "Your account is not yet confirmed or active. Please complete the necessary steps.",
         status,          // Send status in response
         pay_confirm: payConfirm, // Send pay_confirm in response
-       user: {
+        user: {
           id: user.id,
           mobile: user.mobile,
         }
@@ -760,22 +759,22 @@ exports.uploadScreenshotApi = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-//       const updatePayConfirmQuery = "UPDATE users SET pay_confirm = ? WHERE id = ?";
-// const payConfirmResult = await db.query(updatePayConfirmQuery, [parseInt(1), user_id]);
+    //       const updatePayConfirmQuery = "UPDATE users SET pay_confirm = ? WHERE id = ?";
+    // const payConfirmResult = await db.query(updatePayConfirmQuery, [parseInt(1), user_id]);
     const updatePayConfirmQuery = "UPDATE users SET pay_confirm = 1 WHERE id = ?";
     const payConfirmResult = await db.query(updatePayConfirmQuery, [user_id]);
-      // Log result to debug
-      console.log("Pay confirm update result:", payConfirmResult);
+    // Log result to debug
+    console.log("Pay confirm update result:", payConfirmResult);
 
-      if (payConfirmResult.affectedRows === 0) {
-        return next(
-          new ErrorHandler(
-            "Failed to update pay_confirm field in users table",
-            500
-          )
-        );
-      }
- 
+    if (payConfirmResult.affectedRows === 0) {
+      return next(
+        new ErrorHandler(
+          "Failed to update pay_confirm field in users table",
+          500
+        )
+      );
+    }
+
     // Insert notification data into the notifications table
     const notificationQuery = `
       INSERT INTO notifications 
@@ -1094,7 +1093,7 @@ exports.getUserDetailApi = catchAsyncErrors(async (req, res, next) => {
     const userData = userDataQuery[0][0]; // Extract user_data details
     const referralCode = userData.referral_code; // Get the referral code of the logged-in user
 
-     const referralCountQuery = await db.query(
+    const referralCountQuery = await db.query(
       `SELECT COUNT(*) AS referral_count
       FROM user_data 
       JOIN users 
@@ -1396,7 +1395,7 @@ exports.getUserReferralCode = catchAsyncErrors(async (req, res, next) => {
 //       ]
 //     );
 //     console.log("Sender Audit Result:", senderAuditResult);
-    
+
 //     const recipientAuditResult = await db.query(
 //       "INSERT INTO usercoin_audit (user_id, pending_coin, transaction_id, date_entered, coin_operation, description, earn_coin, type, status, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 //       [
@@ -1413,7 +1412,7 @@ exports.getUserReferralCode = catchAsyncErrors(async (req, res, next) => {
 //       ]
 //     );
 //     console.log("Recipient Audit Result:", recipientAuditResult);
-    
+
 
 //     // Step 7: Commit the transaction
 //     await db.query("COMMIT");
@@ -1963,7 +1962,7 @@ exports.createSellTransaction = async (req, res, next) => {
     );
 
     // Ensure company mobile number exists
- if (!companyData || companyData.length === 0) {
+    if (!companyData || companyData.length === 0) {
       return next(new ErrorHandler("Company email not found", 404));
     }
 
@@ -2016,7 +2015,7 @@ exports.createSellTransaction = async (req, res, next) => {
       message: emailMessage,
     };
 
-     await sendEmail(emailOptions); // Send the email to the company's email address
+    await sendEmail(emailOptions); // Send the email to the company's email address
 
 
     // Step 10: Respond with success message
@@ -2239,7 +2238,7 @@ exports.getFilteredUserHistory = catchAsyncErrors(async (req, res, next) => {
     //    ORDER BY date_entered DESC`,
     //   [user_id]
     // );
- const result = await db.query(
+    const result = await db.query(
       `
       SELECT 
         uca.user_id, 
@@ -2541,7 +2540,7 @@ exports.getUserStats = catchAsyncErrors(async (req, res, next) => {
     const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
     const totalPendingCoins =
       totalPendingCoinsResult[0][0].total_pending_coins || 0;
-const totalMultiplier = (parseInt(totalUsers, 10) * 6000) + parseInt(totalPendingCoins, 10);
+    const totalMultiplier = (parseInt(totalUsers, 10) * 6000) + parseInt(totalPendingCoins, 10);
     // Parse monthly stats
     const monthlyUsers = monthlyStatsResult[0][0].monthly_users - 1; // Subtract 2 from the monthly users count
     const monthlyPendingCoins =
