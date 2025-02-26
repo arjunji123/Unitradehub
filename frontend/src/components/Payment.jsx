@@ -74,7 +74,7 @@ function Payment() {
       order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       handler: function (response) {
         console.log(response);
-        navigate("/verify");
+        navigate("/login");
       },
       notes: {
         address: "Razorpay Corporate Office",
