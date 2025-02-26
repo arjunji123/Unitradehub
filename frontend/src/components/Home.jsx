@@ -51,8 +51,8 @@ function Home() {
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
   const [theme, setTheme] = useState("light"); // Theme state: light or dark
-  const [clicks, setClicks] = useState([]);
   const [warningShown, setWarningShown] = useState(false); // Track if warning is shown
+  const [clicks, setClicks] = useState([]);
 
   const [isChartOpen, setIsChartOpen] = useState(false); // New state to control chart visibility
 
@@ -81,6 +81,14 @@ function Home() {
   };
 
   const handleCardClick = (e) => {
+    if (pendingCoin?.pending_coin === 0) {
+      if (!warningShown) {
+        toast.warn("You have no coins.");
+        setWarningShown(true);
+      }
+      return;
+    }
+
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
@@ -92,9 +100,44 @@ function Home() {
       card.style.transform = "";
     }, 100);
 
-    //setPoints(points + pointsToAdd);
+    setIsAnimating(true);
+
+    // Play vibration sound
+    const vibrationSound = new Audio(
+      "src/assets/sound/mobile-phone-vibration-77849.mp3"
+    );
+    vibrationSound.play();
+    vibrationSound.currentTime = 0;
+    setTimeout(() => vibrationSound.pause(), 500);
+
+    if (navigator.vibrate) {
+      navigator.vibrate(500);
+    }
+
+    // Dispatch coin transfer action
+    dispatch(transferCoins())
+      .then(() => {
+        const newCoins = Array.from({ length: 10 }, (_, i) => ({
+          id: Date.now() + i,
+          x: (Math.random() - 0.5) * 300,
+          y: (Math.random() - 1) * 400 - 200,
+          rotate: Math.random() * 360,
+        }));
+        setCoins(newCoins);
+
+        setTimeout(() => setCoins([]), 1000); // Remove after animation
+
+        dispatch(fetchCoinData());
+        dispatch(fetchMeData());
+      })
+      .catch(() => {
+        toast.error("Coin transfer failed.");
+      })
+      .finally(() => {
+        setTimeout(() => setIsAnimating(false), 500);
+      });
+
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
-    console.log(clicks);
   };
 
   const handleAnimationEnd = (id) => {
@@ -366,13 +409,26 @@ function Home() {
                   <span>{userData ? userData.coins : "0"}</span>
                 </p>
               </div>
-              <div
-                // onClick={handleClick}
-                className="flex justify-center items-center bottom-[145px] my-2 relative cursor-pointer"
-              >
+              <div className="flex justify-center items-center bottom-[25px] my-2 relative cursor-pointer">
                 {/* GIF Container */}
+                {/* <img
+                  className={`w-72 h-72  object-cover absolute z-10 ${
+                    isAnimating ? "visible" : "invisible"
+                  }`}
+                  src={`src/assets/gif/button.gif?${new Date().getTime()}`} // Timestamp to force refresh the GIF
+                  alt="Animated GIF"
+                /> */}
 
                 {/* Static Image */}
+                {/* <img
+                  className={`w-72 h-72 object-cover absolute z-10 ${
+                    pendingCoin?.pending_coin === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : "opacity-80"
+                  } ${isAnimating ? "invisible" : "visible"}`}
+                  src="src/assets/gif/coin.png"
+                  alt="Static Image"
+                /> */}
                 <div className="px-4 mt-4 flex justify-center">
                   <div
                     className="w-80 h-80 p-4 rounded-full circle-outer"
