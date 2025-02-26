@@ -509,7 +509,7 @@ exports.dashboard = catchAsyncErrors(async (req, res, next) => {
   const totalUsers = totalStatsResult[0][0].total_users - 1; // Subtract 2 from the total users count
   const totalPendingCoins =
     totalPendingCoinsResult[0][0].total_pending_coins || 0;
-const totalMultiplier = (Number(totalUsers) * 6000) + Number(totalPendingCoins);
+  const totalMultiplier = (Number(totalUsers) * 6000) + Number(totalPendingCoins);
 
 
   const finalValue = baseValue + totalCoinEarn;
@@ -558,8 +558,8 @@ exports.allUsers = catchAsyncErrors(async (req, res, next) => {
   //  WHERE u.user_type IN (?)`,
   //   ["user"]
   // );
-const users = await db.query(
-  `
+  const users = await db.query(
+    `
   SELECT 
       u.id,
       u.user_name,
@@ -579,8 +579,8 @@ ud.parent_id,
   LEFT JOIN users parent ON ud.parent_id = parent.id -- Join parent user
   WHERE u.user_type IN (?)
   `,
-  ["user"]
-);
+    ["user"]
+  );
   res.render(module_slug + "/index", {
     layout: module_layout,
     title: module_single_title + " " + module_add_text,
@@ -854,6 +854,70 @@ exports.createRecord = catchAsyncErrors(async (req, res, next) => {
     }
   }
 });
+exports.deactivateUser = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.body.userId;
+  const newStatus = req.body.status;
+  const performedByUserId = req.body.performedByUserId;
+
+  try {
+    // Update user status in the database
+    await QueryModel.updateData("users", { status: newStatus }, { id: userId });
+    console.info(`User status updated for User ID: ${userId}`);
+
+    const [userData] = await db.query("SELECT email, user_name FROM users WHERE id = ?", [userId]);
+    if (!userData || userData.length === 0) {
+      return next(new ErrorHandler("User email not found", 404));
+    }
+    const userEmail = userData[0]?.email;
+    const userName = userData[0]?.user_name;
+
+    const emailMessage = `<html>
+  <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
+    <p>Hi ${userName},</p>
+
+    <p>⚠️ <strong>Important Update: Account Deactivation</strong></p>
+
+    <p>We regret to inform you that your Unitradehub account has been deactivated. This may have been due to inactivity, a request from your end, or a violation of our platform policies.</p>
+
+    <p>🔒 <strong>What this means:</strong></p>
+    <ul>
+      <li>You can no longer access your Unitradehub account.</li>
+      <li>Any remaining coins or rewards in your account are no longer available.</li>
+      <li>If this was a mistake or you'd like to reactivate your account, you can reach out to our support team.</li>
+    </ul>
+
+    <p>💡 <strong>Need Help?</strong><br>
+       If you believe this was done in error or wish to reactivate your account, please contact our support team.</p>
+
+    <p>We appreciate the time you’ve spent with Unitradehub, and we’d love to have you back in the future.</p>
+
+    <p>🚀 Stay safe, and we hope to see you again!<br>
+    Team Unitradehub</p>
+  </body>
+</html>
+`;
+
+    const emailOptions = {
+      email: userEmail, // User's email address
+      subject: "Your Account is Now deactivated",
+      message: emailMessage, // Passing the HTML message content here
+    };
+
+    await sendEmail(emailOptions); // Send the email to the user's email address
+    // Send a JSON response
+    res.json({
+      success: true,
+      message: `User status updated successfully for User ID: ${userId}`,
+    });
+
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+})
 ////////////////////////////////////////////
 exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
   const userId = req.body.userId;
@@ -866,16 +930,18 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
     console.info(`User status updated for User ID: ${userId}`);
 
     // Distribute coins based on activation
-    await distributeCoins(userId);
+    // await distributeCoins(userId);
 
     const [userData] = await db.query("SELECT email, user_name FROM users WHERE id = ?", [userId]);
     if (!userData || userData.length === 0) {
       return next(new ErrorHandler("User email not found", 404));
     }
-  const userEmail = userData[0]?.email;
-const userName = userData[0]?.user_name;
+
+    const userEmail = userData[0]?.email;
+    const userName = userData[0]?.user_name;
+
     // Step 2: Construct the email body
-const emailMessage = `
+    const emailMessage = `
 <html>
   <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
     <p>Hi ${userName},</p>
@@ -908,13 +974,11 @@ const emailMessage = `
 </html>
 `;
 
-const emailOptions = {
-  email: userEmail, // User's email address
-  subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
-  message: emailMessage, // Passing the HTML message content here
-};
-
-
+    const emailOptions = {
+      email: userEmail, // User's email address
+      subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
+      message: emailMessage, // Passing the HTML message content here
+    };
 
     await sendEmail(emailOptions); // Send the email to the user's email address
     // Send a JSON response
@@ -922,6 +986,7 @@ const emailOptions = {
       success: true,
       message: `User status updated successfully for User ID: ${userId}`,
     });
+
   } catch (error) {
     console.error("Error updating user status:", error);
     res.status(500).json({

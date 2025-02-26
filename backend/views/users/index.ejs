@@ -89,9 +89,14 @@
                                     <td>
                                         <% if (parseInt(user.status)===1) { %>
                                             <!-- User is active, actions button is disabled and hidden -->
-                                            <button class="btn btn-sm btn-danger" disabled>
-                                                <i class="fas fa-toggle-off"></i> Deactivate
-                                            </button>
+                                            <form action="/admin/users/deactivate-user" method="POST"
+                                                style="display:inline;" class="deactivate-form">
+                                                <input type="hidden" name="userId" value="<%= user.id %>">
+                                                <input type="hidden" name="status" value="0">
+                                                <button class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-toggle-off"></i> Deactivate
+                                                </button>
+                                            </form>
                                             <% } else { %>
                                                 <!-- Activate Form - shown only when user is inactive -->
                                                 <form action="/admin/users/update-status" method="POST"

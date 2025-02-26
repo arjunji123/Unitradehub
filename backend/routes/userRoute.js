@@ -12,7 +12,7 @@ var Storage = multer.diskStorage({
   filename: function (req, file, callback) {
     // console.log(file); // For debugging: check file details
     // callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname); // Set filename with timestamp
-  const uniqueName = `${file.fieldname}_${Date.now()}_${file.originalname}`;
+    const uniqueName = `${file.fieldname}_${Date.now()}_${file.originalname}`;
     console.log("Generated filename:", uniqueName); // For debugging: check filename
     callback(null, uniqueName);
   },
@@ -25,7 +25,7 @@ var upload = multer({
   },
   fileFilter: function (req, file, callback) {
     // File type validation (allow only image files)
-    const allowedTypes = [ "image/jpeg",
+    const allowedTypes = ["image/jpeg",
       "image/png",
       "image/gif",
       "image/heif",
@@ -58,6 +58,7 @@ const {
   addFrom,
   createRecord,
   updateUserStatus,
+  deactivateUser,
   // addCoinRate,
   // showCompanyForm,
   // submitCompanyForm,
@@ -71,7 +72,7 @@ const {
   getoneUserHistory,
   getNotificationsApi,
   markNotificationAsRead,
-   markAllNotificationsAsRead,
+  markAllNotificationsAsRead,
 } = require("../contollers/userController");
 const {
   registerUserApi,
@@ -93,7 +94,7 @@ const {
   getUserHistory,
   getFilteredUserHistory,
   getUserStats,
-// checkUser,
+  // checkUser,
 } = require("../contollers/userApiController");
 const {
   isAuthenticatedUser,
@@ -145,6 +146,8 @@ router
 
 // Route for updating user status
 router.post("/users/update-status", updateUserStatus);
+
+router.post("/users/deactivate-user", deactivateUser);
 
 router
   .route("/" + module_slug + "/:id")
