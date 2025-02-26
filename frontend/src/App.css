@@ -8,9 +8,6 @@
   /* For Chrome, Safari, and Opera */
 }
 
-
-
-
 html,
 body {
   height: 100%;
@@ -18,7 +15,7 @@ body {
   touch-action: none; /* Prevent touch gestures outside content */
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;  
+  font-family: "Inter", sans-serif;
 }
 
 #app-container {
@@ -39,16 +36,17 @@ body {
   max-height: 100vh;
 }
 @font-face {
-  font-family: 'Roobert';
-  src: url('./assets/fonts/RoobertTRIALVF-BF67243fd545701.ttf') format('truetype');
+  font-family: "Roobert";
+  src: url("./assets/fonts/RoobertTRIALVF-BF67243fd545701.ttf")
+    format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'GasoekOne';
-  src: url('./assets/fonts/GasoekOne-Regular.ttf') format('truetype');
+  font-family: "GasoekOne";
+  src: url("./assets/fonts/GasoekOne-Regular.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -62,8 +60,8 @@ body {
 } */
 
 @font-face {
-  font-family: 'Inter';
-  src: url('./assets/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
   /* Removed unnecessary backslash */
   font-weight: bold;
   font-style: normal;
@@ -85,13 +83,8 @@ td:not(:last-child) {
 }
 
 th:not(:last-child) {
-  border-bottom: 2px solid rgba(0, 0, 0, .1);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
-
-
-
-
-
 
 /* General background and layout */
 .bg-white {
@@ -143,8 +136,6 @@ th:not(:last-child) {
   object-fit: cover;
 }
 
-
-
 .coin {
   position: absolute;
   display: flex;
@@ -173,7 +164,6 @@ th:not(:last-child) {
 .pending-coin:hover {
   background-color: #333;
 }
-
 
 /* loader.css */
 
@@ -223,11 +213,6 @@ th:not(:last-child) {
   }
 }
 
-
-
-
-
-
 /* animation of profile page */
 
 canvas {
@@ -235,8 +220,6 @@ canvas {
   top: 0;
   left: 0;
 }
-
-
 
 /* Add this to your global CSS or a CSS module */
 .skeleton {
@@ -278,5 +261,35 @@ canvas {
   margin-bottom: 16px;
 }
 
+.circle-outer {
+  background: linear-gradient(to bottom, #575def, #202731);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90vw;
+  height: 90vw;
+  max-width: 360px;
+  max-height: 360px;
+}
 
+.circle-inner {
+  background: radial-gradient(circle, #4960b2, #282e3e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
 
+@keyframes float {
+  0% {
+    opacity: 1;
+    z-index: 10;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    z-index: -10;
+    transform: translateY(-50px);
+  }
+}

@@ -4,19 +4,41 @@ import Logo from "../utils/Logo";
 import Footer from "./Footer";
 import { CgProfile } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMeData, fetchCoinData, transferCoins, fetchStats } from "../../store/actions/homeActions";
+import {
+  fetchMeData,
+  fetchCoinData,
+  transferCoins,
+  fetchStats,
+} from "../../store/actions/homeActions";
 import { ImCross } from "react-icons/im";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from '../components/Loader';
+import Loader from "../components/Loader";
 import Header from "./Header";
 import { useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import mainCharacter from "../images/main-character.png";
 
 // Register necessary Chart.js components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function Home() {
   const dispatch = useDispatch();
@@ -28,7 +50,8 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
-  const [theme, setTheme] = useState('light'); // Theme state: light or dark
+  const [theme, setTheme] = useState("light"); // Theme state: light or dark
+  const [clicks, setClicks] = useState([]);
   const [warningShown, setWarningShown] = useState(false); // Track if warning is shown
 
   const [isChartOpen, setIsChartOpen] = useState(false); // New state to control chart visibility
@@ -47,15 +70,37 @@ function Home() {
         await dispatch(fetchStats());
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setLoading(false); // Set loading to false if there's an error
       }
     };
     fetchData();
   }, [dispatch]);
   const handleNavigate = () => {
-    navigate('/Profile');
+    navigate("/Profile");
   };
+
+  const handleCardClick = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    card.style.transform = `perspective(1000px) rotateX(${
+      -y / 10
+    }deg) rotateY(${x / 10}deg)`;
+    setTimeout(() => {
+      card.style.transform = "";
+    }, 100);
+
+    //setPoints(points + pointsToAdd);
+    setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
+    console.log(clicks);
+  };
+
+  const handleAnimationEnd = (id) => {
+    setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
+  };
+
   const handleClick = () => {
     if (pendingCoin?.pending_coin === 0) {
       if (!warningShown) {
@@ -69,7 +114,9 @@ function Home() {
     setIsAnimating(true);
 
     // Play sound for 0.5 seconds
-    const vibrationSound = new Audio('src/assets/sound/mobile-phone-vibration-77849.mp3');
+    const vibrationSound = new Audio(
+      "src/assets/sound/mobile-phone-vibration-77849.mp3"
+    );
     vibrationSound.play();
     vibrationSound.currentTime = 0; // Reset to start
     setTimeout(() => vibrationSound.pause(), 500); // Stop sound after 0.5s
@@ -120,7 +167,9 @@ function Home() {
     if (statsData) {
       const dynamicLabels = Object.keys(statsData.monthly || {});
       const finalValue = statsData.final_value;
-      const totalMultiplierData = Array(dynamicLabels.length).fill(statsData.total?.multiplier || 0); // Set total multiplier data
+      const totalMultiplierData = Array(dynamicLabels.length).fill(
+        statsData.total?.multiplier || 0
+      ); // Set total multiplier data
 
       // Set chart data and options
       setChartData({
@@ -176,7 +225,9 @@ function Home() {
               callbacks: {
                 label: (tooltipItem) => {
                   // Customize tooltip label format
-                  return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)}`;
+                  return `${
+                    tooltipItem.dataset.label
+                  }: ${tooltipItem.raw.toFixed(2)}`;
                 },
               },
             },
@@ -192,16 +243,6 @@ function Home() {
       });
     }
   }, [statsData]);
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className="bg-black flex justify-center items-center font-Inter min-h-screen w-full overflow-hidden relative">
@@ -220,16 +261,22 @@ function Home() {
         <div className="w-full bg-black text-white min-h-screen  flex flex-col max-w-lg relative">
           {/* Header Section */}
           <Header />
-          <div style={{
-            position: 'absolute',
-            width: '239px',
-            height: '239px',
-            left: '160px',
-            top: '116px',
-            background: 'rgba(99, 57, 249, 0.25',
-            filter: 'blur(100px)',
-          }}>
-            <img src="src/images/Ellipse 9.png" alt="" style={{ width: '100%', height: '100%' }} />
+          <div
+            style={{
+              position: "absolute",
+              width: "239px",
+              height: "239px",
+              left: "160px",
+              top: "116px",
+              background: "rgba(99, 57, 249, 0.25",
+              filter: "blur(100px)",
+            }}
+          >
+            <img
+              src="src/images/Ellipse 9.png"
+              alt=""
+              style={{ width: "100%", height: "100%" }}
+            />
           </div>
           {/* User Info Section */}
           <div className="flex flex-col items-center  space-y-2">
@@ -247,10 +294,10 @@ function Home() {
                 <span className="text-4xl ">
                   {userData?.user_name
                     ? userData.user_name
-                      .split(" ")
-                      .map(word => word[0])
-                      .join("")
-                      .toUpperCase()
+                        .split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                        .toUpperCase()
                     : "UN"}
                 </span>
               )}
@@ -266,32 +313,41 @@ function Home() {
               </span>
               <span>{userData ? userData.coins : "0"}</span>
             </p> */}
-
           </div>
-          <div style={{
-            position: 'absolute',
-            width: '243px',
-            height: '243px',
-            left: '-91px',
-            top: '423px',
-            background: 'rgba(99, 57, 249, 0.25)',
-            filter: 'blur(100px)',
-          }}>
-            <img src="src/images/Ellipse 8.png" alt="" style={{ width: '100%', height: '100%' }} />
+          <div
+            style={{
+              position: "absolute",
+              width: "243px",
+              height: "243px",
+              left: "-91px",
+              top: "423px",
+              background: "rgba(99, 57, 249, 0.25)",
+              filter: "blur(100px)",
+            }}
+          >
+            <img
+              src="src/images/Ellipse 8.png"
+              alt=""
+              style={{ width: "100%", height: "100%" }}
+            />
           </div>
           {/* Chart Container */}
           {isChartOpen && (
             <div className="absolute top-0 left-0 w-full h-full z-50 flex justify-center items-center bg-black  p-4">
               {/* Close Button */}
 
-              <button onClick={handleChartToggle} className="absolute top-5 right-5 text-gray-400 hover:text-gray-200 focus:outline-none transition duration-300">
+              <button
+                onClick={handleChartToggle}
+                className="absolute top-5 right-5 text-gray-400 hover:text-gray-200 focus:outline-none transition duration-300"
+              >
                 <ImCross size={20} />
               </button>
               <div className="relative  p-6 rounded-xl shadow-lg max-w-full sm:max-w-md w-full h-[500px]">
                 {/* Chart Component */}
-                <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
-
-
+                <Line
+                  data={chartData}
+                  options={{ responsive: true, maintainAspectRatio: false }}
+                />
               </div>
             </div>
           )}
@@ -300,35 +356,37 @@ function Home() {
           <div className="mt-auto px-3 py-4 mb-12">
             <div>
               <div className="flex ">
-                <img src="https://cdn-icons-png.flaticon.com/512/2550/2550403.png" alt="" className="w-4 h-4 mt-1" />
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/2550/2550403.png"
+                  alt=""
+                  className="w-4 h-4 mt-1"
+                />
                 <p className="ml-0.5 text-sm font-medium ">
-                  <span>
-                    {userData ? userData.pending_coin : "0"}
-                  </span>/
-                  <span>
-                    {userData ? userData.coins : "0"}
-                  </span>
+                  <span>{userData ? userData.pending_coin : "0"}</span>/
+                  <span>{userData ? userData.coins : "0"}</span>
                 </p>
               </div>
               <div
-                onClick={handleClick}
+                // onClick={handleClick}
                 className="flex justify-center items-center bottom-[145px] my-2 relative cursor-pointer"
               >
                 {/* GIF Container */}
-                <img
-                  className={`w-72 h-72  object-cover absolute z-10 ${isAnimating ? "visible" : "invisible"}`}
-                  src={`src/assets/gif/button.gif?${new Date().getTime()}`} // Timestamp to force refresh the GIF
-                  alt="Animated GIF"
-                />
 
                 {/* Static Image */}
-                <img
-                  className={`w-72 h-72 object-cover absolute z-10 ${pendingCoin?.pending_coin === 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : "opacity-80"} ${isAnimating ? "invisible" : "visible"}`}
-                  src="src/assets/gif/coin.png"
-                  alt="Static Image"
-                />
+                <div className="px-4 mt-4 flex justify-center">
+                  <div
+                    className="w-80 h-80 p-4 rounded-full circle-outer"
+                    onClick={handleCardClick}
+                  >
+                    <div className="w-full h-full rounded-full circle-inner">
+                      <img
+                        src={mainCharacter}
+                        alt="Main Character"
+                        className="w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             {/* <div
@@ -355,16 +413,37 @@ function Home() {
                 <div className="flex flex-col space-y-2">
                   {/* Wallet Amount and Growth */}
                   <div className="flex items-center space-x-2">
-                    <p className="text-xl md:text-2xl flex">   <span>
-                      <img src="src/assets/logo/U.png" alt="" className="w-5 h-5 mt-1" />
-                    </span>   <span>{statsData && statsData.total && statsData.total.multiplier ? statsData.total.multiplier : "0"}</span></p>
+                    <p className="text-xl md:text-2xl flex">
+                      {" "}
+                      <span>
+                        <img
+                          src="src/assets/logo/U.png"
+                          alt=""
+                          className="w-5 h-5 mt-1"
+                        />
+                      </span>{" "}
+                      <span>
+                        {statsData &&
+                        statsData.total &&
+                        statsData.total.multiplier
+                          ? statsData.total.multiplier
+                          : "0"}
+                      </span>
+                    </p>
                     {/* <span className="text-[10px] px-1 py-0.5 bg-[#9AE8BB] text-[#0F572D] rounded-full">
                       +20%
                     </span> */}
                   </div>
 
                   {/* Last Month Profit */}
-                  <p className="text-xs md:text-sm text-gray-500">Last month profit: {statsData && statsData.monthly && statsData.monthly.multiplier ? statsData.monthly.multiplier : "0"}</p>
+                  <p className="text-xs md:text-sm text-gray-500">
+                    Last month profit:{" "}
+                    {statsData &&
+                    statsData.monthly &&
+                    statsData.monthly.multiplier
+                      ? statsData.monthly.multiplier
+                      : "0"}
+                  </p>
                 </div>
 
                 {/* Illustration Section */}
@@ -379,14 +458,26 @@ function Home() {
               </div>
             </div>
           </div>
-
-
-
         </div>
       )}
+      {clicks.map((click) => {
+        return (
+          <div
+            key={click.id}
+            className="absolute text-5xl font-bold text-white pointer-events-none -z-10"
+            style={{
+              top: `${click.y - 42}px`,
+              left: `${click.x - 28}px`,
+              animation: `float 1s ease-out`,
+            }}
+            onAnimationEnd={() => handleAnimationEnd(click.id)}
+          >
+            {pendingCoin.pending_coin}
+          </div>
+        );
+      })}
       <Footer />
     </div>
-
   );
 }
 
