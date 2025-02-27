@@ -528,7 +528,7 @@ function Home() {
             }}
             onAnimationEnd={() => handleAnimationEnd(click.id)}
           >
-            {pendingCoin.pending_coin}
+            {pendingCoin.reduce_coin_rate}
           </div>
         );
       })}

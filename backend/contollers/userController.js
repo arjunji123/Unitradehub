@@ -27,6 +27,7 @@ const {
   hasBothChildren,
   addUser,
 } = require("../utils/treeLogic");
+const path = require("path");
 const table_name = Model.table_name;
 const table_name2 = Model.table_name2;
 const table_name3 = Model.table_name3;
@@ -930,7 +931,7 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
     console.info(`User status updated for User ID: ${userId}`);
 
     // Distribute coins based on activation
-    // await distributeCoins(userId);
+    await distributeCoins(userId);
 
     const [userData] = await db.query("SELECT email, user_name FROM users WHERE id = ?", [userId]);
     if (!userData || userData.length === 0) {
@@ -978,6 +979,7 @@ exports.updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       email: userEmail, // User's email address
       subject: "Welcome to Unitradehub! Your Account is Now Activated 🚀",
       message: emailMessage, // Passing the HTML message content here
+      attachments: [{ filename: "T&C.pdf", path: path.resolve(__dirname, "../public/assets/T&C.pdf"), contentType: "application/pdf" }]
     };
 
     await sendEmail(emailOptions); // Send the email to the user's email address

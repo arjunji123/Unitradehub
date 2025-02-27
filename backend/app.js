@@ -23,7 +23,7 @@ app.use(
   cors({
     origin:
       "*",
-    methods: ["GET", "POST", "PATCH","PUT"],
+    methods: ["GET", "POST", "PATCH", "PUT"],
     credentials: true,
   })
 );
@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true })); //For body parser
 app.use(bodyParser.json());
 app.use(expressLayouts);
 app.use(express.static(__dirname + "/public"));
-app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
+app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -98,6 +98,5 @@ app.use("/api/v1", testimonials);
 app.use("/api/v1", transactions);
 app.use("/api/v1", companytransactions);
 // app.use("/api/v1", withdrwals);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorMiddleware);
 module.exports = app;

@@ -46,8 +46,8 @@ exports.createRecord = async (req, res, next) => {
 
   const start_date = req.body.start_date
     ? moment(req.body.start_date)
-        .tz("Asia/Kolkata")
-        .format("YYYY-MM-DD HH:mm:ss")
+      .tz("Asia/Kolkata")
+      .format("YYYY-MM-DD HH:mm:ss")
     : null;
   const end_date = req.body.end_date
     ? moment(req.body.end_date).tz(timezone).format("YYYY-MM-DD HH:mm:ss")
@@ -211,9 +211,9 @@ exports.deleteRecord = catchAsyncErrors(async (req, res, next) => {
 
 exports.getAllRecords = catchAsyncErrors(async (req, res, next) => {
   try {
-      // Fetch quest data with formatted dates
-      const quests = await db.query(
-          `SELECT 
+    // Fetch quest data with formatted dates
+    const quests = await db.query(
+      `SELECT 
               id,
               quest_name,
               DATE_FORMAT(start_date, "%d-%m-%Y") AS start_date,
@@ -222,17 +222,17 @@ exports.getAllRecords = catchAsyncErrors(async (req, res, next) => {
               status
            FROM quest
            ORDER BY id DESC`
-      );
+    );
 
-      res.render(module_slug + "/index", {
-          layout: module_layout,
-          title: module_single_title + " " + module_add_text,
-          module_slug,
-          quests, // Pass the quests array to the view
-          originalUrl: req.originalUrl, // Pass the original URL here
-      });
+    res.render(module_slug + "/index", {
+      layout: module_layout,
+      title: module_single_title + " " + module_add_text,
+      module_slug,
+      quests, // Pass the quests array to the view
+      originalUrl: req.originalUrl, // Pass the original URL here
+    });
   } catch (error) {
-      return next(new ErrorHandler('Failed to fetch quests', 500));
+    return next(new ErrorHandler('Failed to fetch quests', 500));
   }
 });
 
@@ -614,7 +614,7 @@ exports.getQuestHistory = async (req, res) => {
       status: quest.completion_status,
       image:
         process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image,
-duration: quest.duration,
+      duration: quest.duration,
       coin_earn: parseFloat(quest.coin_earn).toFixed(2),
       social_media: quest.social_media, // Include social_media in the response
     }));
@@ -906,7 +906,7 @@ exports.completeQuest = catchAsyncErrors(async (req, res, next) => {
       coin_earn: coinEarn,
       activity,
       quest_name: fetchedQuestName,
-duration: duration,
+      duration: duration,
     } = questResult[0];
 
     console.log("Quest ID, Coin Earn, Activity, Quest Name:", {
@@ -1035,6 +1035,12 @@ duration: duration,
 exports.getUserPendingCoins = catchAsyncErrors(async (req, res, next) => {
   const user_id = req.user.id;
 
+  const settingsResult = await db.query(
+    "SELECT reduce_coin_rate FROM settings LIMIT 1" // Assuming there's only one row in the settings table
+  );
+
+  const reduceCoinRate = settingsResult[0][0]?.reduce_coin_rate || 0;
+
   console.log("Fetching pending coins for user:", user_id);
 
   try {
@@ -1055,6 +1061,7 @@ exports.getUserPendingCoins = catchAsyncErrors(async (req, res, next) => {
       data: {
         user_id,
         pending_coin: totalPendingCoins,
+        reduce_coin_rate: reduceCoinRate
       },
     });
   } catch (error) {
@@ -1103,10 +1110,10 @@ exports.transferPendingCoinsToTotal = catchAsyncErrors(
       const updatedPendingCoins = userPendingCoins - reduceCoinRate; // Updated pending coins after deduction
       const earnCoins = reduceCoinRate; // Earn coins is the reduceCoinRate that is transferred
 
-         const title = "Tap-Tap";
+      const title = "Tap-Tap";
       const description = "Tap-Tap";
       const dateEntered = new Date().toISOString(); // Current date in ISO format
-      
+
       // Insert a new row into usercoin_audit with the updated values
       // await db.query(
       //   "INSERT INTO usercoin_audit (user_id, pending_coin, earn_coin) VALUES (?, ?, ?)",
@@ -1155,6 +1162,7 @@ exports.transferPendingCoinsToTotal = catchAsyncErrors(
           user_id,
           pending_coin: updatedPendingCoins,
           coins: updatedTotalCoins,
+          reduce_coin_rate: reduceCoinRate
         },
       });
     } catch (error) {

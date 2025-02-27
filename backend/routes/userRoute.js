@@ -101,6 +101,8 @@ const {
   authorizeRoles,
   isApiAuthenticatedUser,
 } = require("../middleware/auth");
+const path = require("path");
+
 const router = express.Router();
 router.route("/").get(isAuthenticatedUser, checkAdminLoginOrDashboard);
 router.route("/dashboard").get(isAuthenticatedUser, dashboard);
@@ -110,7 +112,6 @@ router.route("/login").get(showLogin);
 router.route("/login").post(loginUser);
 router.route("/forget-pass").post(forgotPassword);
 router.route("/forget").get(showForget);
-
 
 router
   .route("/read-notifications/mark-all-read")
