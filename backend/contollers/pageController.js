@@ -613,7 +613,7 @@ exports.getQuestHistory = async (req, res) => {
       description: quest.description,
       status: quest.completion_status,
       image:
-        process.env.BACKEND_URL + "uploads/" + module_slug + "/" + quest.image,
+        process.env.BACKEND_URL + "/" + "uploads/" + module_slug + "/" + quest.image,
       duration: quest.duration,
       coin_earn: parseFloat(quest.coin_earn).toFixed(2),
       social_media: quest.social_media, // Include social_media in the response

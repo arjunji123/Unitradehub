@@ -1115,7 +1115,7 @@ exports.getUserDetailApi = catchAsyncErrors(async (req, res, next) => {
       pending_coin: userData.pending_coin || 0, // If pending coins are null, set to 0
       upi_id: userData.upi_id || "", // If upi_id is null, set to an empty string
       user_photo: userData.user_photo
-        ? `${process.env.BACKEND_URL}uploads/${userData.user_photo}`
+        ? `${process.env.BACKEND_URL}/uploads/${userData.user_photo}`
         : null, // Full URL for user photo or null if not set
       referral_count: referralCount, // Include referral count in the response
       referral_code: userData.referral_code,
