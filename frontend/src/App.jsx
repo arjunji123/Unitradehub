@@ -32,7 +32,7 @@ import "./App.css";
 store.dispatch(loadUserFromLocalStorage());
 
 function App() {
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("user");
 
