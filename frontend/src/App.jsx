@@ -35,6 +35,11 @@ function App() {
   // const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("user");
+useEffect(() => {
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 1000); // 1 second delay for smooth transition
+}, []);
 
   // useEffect(() => {
   //   const checkDevice = () => {
